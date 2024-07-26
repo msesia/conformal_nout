@@ -18,13 +18,14 @@ n_cal <- 200
 n_test <- 100
 
 # Choose the alternative distribution for testing
+#alternative <- "uniform"
 alternative <- "lehmann-k2"
 
 # List of values for the proportion of outliers in the test set
 prop_out_values <- c(0, 0.25, 0.5)
 
 # Number of repetitions for each experimental setting
-n_exp <- 10
+n_exp <- 100
 
 ##########################
 ## Experiment functions ##
@@ -99,7 +100,7 @@ alpha <- 0.1
 power_results <- results %>%
   group_by(Method, Prop_Out) %>%
   summarize(
-    Power = mean(p.value < 0.05),  # Calculate power as the proportion of p-values below 0.05
+    Power = mean(p.value < alpha),  # Calculate power as the proportion of p-values below 0.05
     SE = sqrt((Power * (1 - Power)) / n())  # Calculate standard error of the power estimate
   )
 
@@ -113,9 +114,9 @@ power_results %>%
   theme_minimal(base_size = 15) +  # Set minimal theme for the plot
   labs(
     title = "Power of Different Methods for Various Proportions of Outliers",
-    subtitle = sprintf("Alternative distribution: %s", alternative),
+    subtitle = sprintf("N-cal: %d, N-test: %d, Alternative distribution: %s", n_cal, n_test, alternative),
     x = "Proportion of Outliers",
-    y = "Power (Proportion of p-values < 0.05)",
+    y = "Power",
     color = "Method"
   ) +
   ylim(0, 1)  # Set y-axis limits
