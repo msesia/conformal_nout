@@ -1,340 +1,252 @@
-
-# -------------------------------------------------------------------------------------------- #
-#  Estimate the mixing proportion in the mixture model using the method in Petra & Sen (2016)  #
-# -------------------------------------------------------------------------------------------- #
-
-# This function calculates the distance $\gamma  \ d_n(\hat{F}_{s,n}^{\gamma},\check{F}_{s,n}^\gamma)$
-# for grid of gamma values in [0,1].
-# data is a numeric vector containing observations from the mixture model.
-# Bigger gridsize  gives more  accurate estimates of alpha.
-
-EstMixMdl <- function(data,Fb,gridsize=200)
-{
-  n <- length(data)    		 			 ## Length of the data set
-  data <- sort(data)       ## Sorts the data set
-  data.1 <- unique(data)	 	## Finds the unique data points
-  Fn <- stats::ecdf(data)			        ## Computes the empirical DF of the data
-  Fn.1 <- Fn(data.1)		      ## Empirical DF of the data at the data points
-  Fb.data <- Fb(data.1)       ## evaluating Fb at the the unique data points
-  ## Compute the weights (= frequency/n) of the unique data values, i.e., dF_n
-  Freq <- diff(c(0,Fn.1))
-  distance <- rep(0,gridsize)
-  distance[0]<- sqrt(t((Fn.1-Fb.data)^2)%*%Freq)
-  for(i in 1:gridsize)
-  {
-    a <- i/gridsize               ## Assumes a value of the mixing proportion
-    F.hat <- (Fn.1-(1-a)*Fb.data)/a			    ## Computes the naive estimator of F_s
-    F.is <- Iso::pava(F.hat,Freq,decreasing=FALSE)	## Computes the Isotonic Estimator of F_s
-    F.is[which(F.is<=0)] <- 0
-    F.is[which(F.is>=1)] <- 1
-    distance[i] <- a*sqrt(t((F.hat-F.is)^2)%*%Freq);
-  }
-  return(distance)
+hush <- function(code){
+    sink("NUL") # use /dev/null in UNIX
+    tmp = code
+    sink()
+    return(tmp)
 }
 
+## Inverse transform sampling function
+inverse_transform_sampling <- function(cdf_function, n_samples=1000, lower_bound=0, upper_bound=1) {
+  ## Inverse transform sampling function
+  iCDF <- GoFKernel::inverse(cdf_function, 0, 1)
 
-
-# The following function evaluates the numerical second derivative of any function
-Comp_2ndDer <- function(dist.alpha, gridsize)
-{
-  dder <- diff(dist.alpha)    ## Computes the 1st order differences
-  dder <- diff(dder)      ## Computes the 2nd order differences
-  dder <- c(0,0,dder)       ## The numerical double derivative vector
-
-  return(dder)
+  ## Generate random samples through inverse CDF transformation
+  u_samples <- runif(n_samples)
+  samples <- sapply(u_samples, function(u) iCDF(u))
+  return(samples)
 }
 
+kernel_smoothed_pdf_function <- function(cdf_function, n_samples=1000) {
+  ## Generate random samples using the inverse transform sampling
+  samples <- inverse_transform_sampling(cdf_function)
 
-estimate_mixing_prop = function(X, Y, F_null, gridsize=4000){
+  ## Kernel Density Estimation on the sampled values
+  density_est <- density(samples, bw=0.05, kernel="gaussian", from=0, to=1)
 
-  n <- length(Y)
-  # m <- length(X)
-  # pval = sapply(1:n, function(i) (1+sum(X >= Y[i]))/(m+1))
-  # dist.alpha <- EstMixMdl(Y,F_null,gridsize)
-  c.n<-0.1*log(log(n))
-  # Est<- sum(dist.alpha>c.n/sqrt(n))/gridsize
+  ## Normalize the PDF
+  integral_value <- sum(density_est$y) * diff(density_est$x[1:2])
+  normalized_pdf_values <- density_est$y / integral_value
 
-  dist.out = mixmodel::dist.calc(data = Y, gridsize = 2000)
-  alp.hat <- sum(dist.out$distance > c.n/ sqrt(n))/gridsize
-  return(alp.hat)
-
-}
-
-
-
-# -------------------------------------------------------------------------------- #
-#                                    Estimate g                                    #
-# -------------------------------------------------------------------------------- #
-compute_estimate_null_distr = function(X){
-
-  F.hat = stats::ecdf(X)
-  f.hat = statip::densityfun(X, kernel="rectangular")
-
-  return(list("ecdf" = F.hat, "edensity"=f.hat))
-}
-
-
-KDE_mixture_density = function(X,Y,null_cdf,ker){
-
-  stopifnot("Error: kernel must be in .kernelsList()"= ker%in%statip::.kernelsList())
-
-  # Estimate mixture density
-  Z = c(X,Y)
-  FZ = null_cdf(Z)
-  mixture_hat = statip::densityfun(FZ, kernel=ker)
-
-  return(mixture_hat)
-}
-
-
-
-
-invert_mixture = function(mixture_density, null_density, prop.out){
-
-  g.hat = function(x){
-
-    # Invert and find estimated outlier distribution density
-    stopifnot("Error: x must be in [0,1]"= 0<=x & x<=1)
-
-    g.hat_eval = (mixture_density(x)-prop.out*null_density(x))/(1-prop.out)
-
-    res = ifelse(g.hat_eval>0,g.hat_eval,0)
-    return(res)
+  ## Create a function to return the normalized PDF
+  normalized_pdf_function <- function(x) {
+    approx(density_est$x, normalized_pdf_values, xout = x)$y
   }
 
-  return(g.hat)
+  return(list(pdf_function = normalized_pdf_function))
+}
+
+
+fit_beta_mixture <- function(data, num_starts = 10, monotone=NULL) {
+
+    ## Log-likelihood function
+    log_likelihood <- function(params, data) {
+        ## Extract parameters
+        alpha <- params[1]
+        beta <- params[2]
+        lambda <- params[3]
+
+        ## Ensure parameters are in valid range
+        if (alpha <= 0 || beta <= 0 || lambda <= 0 || lambda >= 1) return(-Inf)
+
+        ## Density of Beta distribution
+        beta_density <- dbeta(data, shape1 = alpha, shape2 = beta)
+
+        ## Density of Uniform distribution
+        uniform_density <- dunif(data, min = 0, max = 1)
+
+        ## Mixture density
+        mixture_density <- lambda * uniform_density + (1 - lambda) * beta_density
+
+        ## Log-likelihood
+        log_likelihood <- sum(log(mixture_density))
+
+        return(-log_likelihood) # Return negative log-likelihood for minimization
+    }
+
+    ## Make sure there are no 0's or 1's
+    tol <- 1e-3
+    data <- pmax(data, tol)
+    data <- pmin(data, 1 - tol)
+
+    ## Set up multiple starts for initial parameters
+    best_fit <- NULL
+    best_log_likelihood <- Inf
+
+    if(is.null(monotone)) {
+        lower <- c(0.01, 0.01, 0.01)
+        upper <- c(Inf, Inf, 0.99)
+    } else if (monotone=="increasing") {
+        lower <- c(1, 0.01, 0.01)
+        upper <- c(Inf, 1, 0.99)
+        
+    } else if (monotone=="decreasing") {
+        lower <- c(0, 1, 0.01)
+        upper <- c(1, Inf, 0.99)
+    } else {
+        print("Error! Unknown constraint.")
+        return(NULL)
+    }
+    
+    for (i in 1:num_starts) {
+        ## Random initial parameter guesses
+        initial_params <- c(runif(1, 0.5, 2), runif(1, 0.5, 2), runif(1, 0.01, 0.99))
+
+        ## Optimization to find the best parameters
+        fit <- optim(
+            par = initial_params,
+            fn = log_likelihood,
+            data = data,
+            method = "L-BFGS-B",
+            lower = lower,
+            upper = upper
+        )
+
+        ## Check if the current fit is the best one
+        if (fit$value < best_log_likelihood) {
+            best_log_likelihood <- fit$value
+            best_fit <- fit
+        }
+    }
+
+    ## Extract best fitted parameters
+    alpha_hat <- best_fit$par[1]
+    beta_hat <- best_fit$par[2]
+    lambda_hat <- best_fit$par[3]
+
+    return(list(shape1 = alpha_hat, shape2 = beta_hat, lambda = lambda_hat))
 }
 
 
 
-estimate_g = function(X1,X2,Y, constraint=NULL, ker="uniform"){
+estimate_g <- function(scores_reference, scores_pooled, constraint=NULL, method="betamix", monotone=NULL){
 
-  if(is.null(constraint)){
-    stopifnot("Error: kernel must be in .kernelsList()"= ker%in%statip::.kernelsList())
+    if(is.null(constraint)){
 
-    # F.hat = compute_estimate_null_distr(X=X1)$ecdf
-    F.hat = stats::ecdf(X1)
+        ## Transform the reference scores to make them approximately uniform
+        null.fit <- fitdistrplus::fitdist(scores_reference, "beta", start = list(shape1 = 0.999, shape2 = 0.999))
+        F.hat <- function(x) pbeta(x, null.fit$estimate[[1]], null.fit$estimate[[2]])
+        scores_pooled = F.hat(scores_pooled)
 
-    # Estimate the mixture model, without distinguishing each component
-    mixture_hat = KDE_mixture_density(X=X2, Y=Y, null_cdf=F.hat, ker=ker)
+        ## Fit beta mixture model
+        if(method=="betamix") {
+            betafit <- fit_beta_mixture(scores_pooled, monotone=monotone)
+            g.hat <- function(x) dbeta(x, betafit$shape1, betafit$shape2)
+            CDF.hat <- function(x) pbeta(x, betafit$shape1, betafit$shape2)
+        } else if (method=="mixmodel") {
 
-    # Estimate the proportion of outliers in the augmented test set
-    # pi.not = estimate_propOut_Storey(X=X2,Y=Y)
-    # pi.not = estimate_mixing_prop(X=FX2, Y=FY, F_null=stats::punif)
-    # pi.not = estimate_mixing_prop(X=X2, Y=Y, F_null=F.hat)
-    pooled = c(X2,Y)
-    pi.not = mixmodel::mix.model(F.hat(pooled), method = "fixed",
-                        c.n = .05*log(log(length(pooled))), gridsize = 600)$alp.hat
-    # Extrapolate estimate of g
-    g_hat = invert_mixture(mixture_density=mixture_hat,
-                           null_density=stats::dunif, prop.out=pi.not)
+            ## Fit mixture model and evaluate CDF values on a grid
+            model <- mixmodel::mix.model(scores_pooled, method = "fixed" , c.n = .05*log(log(length(scores_pooled))), gridsize = 600)
+            ##model = hush(suppressWarnings(mixmodel::cv.mix.model(scores_pooled, cn.length=50)))
+
+            if(is.null(monotone)) {
+                CDF.values <- model$Fs.hat
+
+                ## Define CDF function via monotone increasing interpolation
+                CDF.values$y[1] = 0
+                CDF.values$y[length(CDF.values$y)] = 1
+                CDF.hat <- splinefun(c(0, CDF.values$x, 1), c(0, CDF.values$y, 1), method = "monoH.FC")
+
+                ## # DEBUG
+                ## x.grid <- seq(0,1,length.out=1000)
+                ## plot(x.grid, CDF.hat(x.grid), "l")
+
+                ## Estimate PDF from CDF via kernel smoothing
+                g.hat <- kernel_smoothed_pdf_function(CDF.hat)$pdf_function
+            } else if (monotone=="increasing") {
+                g.hat.values <- mixmodel::den.mix.model(model, dec.density=FALSE)
+                g.hat.u <- splinefun(g.hat.values$x[-c(1,length(g.hat.values$x))], g.hat.values$y[-c(1,length(g.hat.values$y))], method = "monoH.FC")
+                ## Normalize the density
+                integral <- integrate(g.hat.u, 0, 1)$value
+                g.hat <- function(x) g.hat.u(x) / integral
+                CDF.hat <- NULL
+            } else if (monotone=="decreasing") {
+                g.hat.values <- mixmodel::den.mix.model(model, dec.density=TRUE)
+                g.hat.u <- splinefun(g.hat.values$x[-c(1,length(g.hat.values$x))], g.hat.values$y[-c(1,length(g.hat.values$y))], method = "monoH.FC")
+                ## Normalize the density
+                integral <- integrate(g.hat.u, 0, 1)$value
+                g.hat <- function(x) g.hat.u(x) / integral
+                CDF.hat <- NULL
+            } else {
+                print("Error! Unknown parameter.")
+                g.hat <- NULL
+            }
+        } else {
+            print("Error: unknown method!")
+            g.hat <- NULL
+            CDF.hat <- NULL
+        }
+
   } else {
-    stopifnot("Error: constraint must be either increasing, decreasing"= constraint%in%c("decreasing", "increasing"))
+                                        #    # TODO: check this
 
-    # pooled = c(X2,Y)
-    # F_hat = stats::ecdf(X1)
-    # est.fixed <- mixmodel::mix.model(F_hat(pooled), method = "fixed", c.n = .05*log(log(length(pooled))), gridsize = 600)
-    # dec.dens = ifelse(constraint=="decreasing", TRUE, FALSE)
-    # out = mixmodel::den.mix.model(est.fixed, dec.density = dec.dens)
-    # out$x[1] <- 0
-    # out$x <- out$x[-length(out$x)]
-    # out$y <- out$y[-length(out$y)]
-    # g_hat = function(u) sapply(u, function(i)
-    #   out$y[sum( i >= out$x )] )
+      stopifnot("Error: constraint must be either increasing, decreasing"= constraint%in%c("decreasing", "increasing"))
 
-    pooled = c(X2,Y)
-    F_hat = stats::ecdf(X1)
-    est.fixed <- mixmodel::mix.model(F_hat(pooled), method = "fixed", c.n = .05*log(log(length(pooled))), gridsize = 600)
-    dec.dens = ifelse(constraint=="decreasing", TRUE, FALSE)
-    out = mixmodel::den.mix.model(est.fixed, dec.density = dec.dens)
-    x = out$x[-length(out$x)]
-    y = out$y[-length(out$y)]
-    ind.min = which(x==min(x))
-    ind.max = which(x==max(x))
-    yleft = y[ind.min[length(ind.min)]]
-    yright = y[ind.max[1]]
+                                        #pooled = c(X2,Y)
+                                        #F_hat = stats::ecdf(X1)
+                                        #est.fixed <- mixmodel::mix.model(F_hat(pooled), method = "fixed", c.n = .05*log(log(length(pooled))), gridsize = 600)
+                                        #dec.dens = ifelse(constraint=="decreasing", TRUE, FALSE)
+                                        #out = mixmodel::den.mix.model(est.fixed, dec.density = dec.dens)
+                                        #x = out$x[-length(out$x)]
+                                        #y = out$y[-length(out$y)]
+                                        #ind.min = which(x==min(x))
+                                        #ind.max = which(x==max(x))
+                                        #yleft = y[ind.min[length(ind.min)]]
+                                        #yright = y[ind.max[1]]
 
-    g_hat = stats::approxfun(out$x[-length(out$x)],out$y[-length(out$y)], yleft=yleft, yright=yright)
+                                        #g_hat = stats::approxfun(out$x[-length(out$x)],out$y[-length(out$y)], yleft=yleft, yright=yright)
   }
 
-  return(g_hat)
-
+  return(list(pdf = g.hat, cdf = CDF.hat))
 }
 
+compute.global.pvalue.shirashi <- function(S_X, S_Y, g, num_mc=1000) {
+    m <- length(S_X)
+    n <- length(S_Y)
+    N <- m+n
 
+    S_pool = c(S_X, S_Y)
+    R = rank(S_pool)[(m+1):(m+n)]
+    T.obs <- mean(sapply(1:num_mc, function(b) {
+        U = sort(stats::runif(N))
+        return(sum(g(U[R])))
+    }))
 
+    Z <- t(sapply(1:num_mc, function(b) {
+        U = sort(stats::runif(N))
+        return(g(U))
+    }))
+    Z.exp = colMeans(Z)
 
+    mu <- mean(Z.exp)
+    sigma <- sqrt(m*n*sum((Z.exp-mu)^2) / (N*(N-1)))
 
+    if(sigma>0) {
+    p.value = stats::pnorm(q=T.obs, mean=n*mu, sd = sigma, lower.tail = F)
+    } else {
+        p.value = ifelse(n*mu >= T.obs, runif(1), 0)
+    }
 
-# --------------------------------------------------------------------------------------- #
-#  Implementation of the test proposed by Shiraishi (1985) with asymptotical distribution #
-# --------------------------------------------------------------------------------------- #
-
-
-# Stima MC delle statististiche test per singoli test points
-
-#' stats_G_j_MC
-#'
-#' @param N : pooled score sample size
-#' @param g : outlier distribution density
-#' @param B : number of Monte Carlo repetitions used to estimate the test statistic
-#'
-#' @return A vector of length N corresponding to the elementary statistics of Shiraishi test (1985).
-#' @export
-#'
-#' @examples
-#' g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
-#' stats_G = stats_G_j_MC(N=1000, g=g2, B=10^3)
-#'
-stats_G_j_MC = function(N, g, B){
-  aN_j = apply(replicate(B, sapply(X=sort(stats::runif(N)), FUN=g)), 1, mean)
-  return(aN_j)
+    return(p.value)
 }
 
+compute.global.pvalue.shirashi.adaptive <- function(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="betamix", monotone=NULL) {
 
+    ## Split the reference scores and create pooled vector
+    m = length(S_X)
+    n = length(S_Y)
+    m_2 = pmin(n, as.integer(round(prop_cal * m)))
+    m_1 = m - m_2
+    idx_X_1 = sample(m, m_1)
+    idx_X_2 = setdiff(1:m, idx_X_1)
+    S_X1 = S_X[idx_X_1]
+    S_X2 = S_X[idx_X_2]
+    S_pooled = sample(c(S_X2, S_Y))
 
-#' stat.G
-#'
-#' @param Z : pooled score vector
-#' @param m : calibration size
-#' @param stats_G_vector : vector of Shiraishi (1985) test statistics for a fixed test sample size
-#'
-#' @return vector of Shiraishi test statistics given a pooled score vector
-#' @export
-#'
-#' @examples
-#' g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
-#' rg2 = function(rnull, k=2) max(rnull(k))
-#' stats_G = stats_G_j_MC(N=1000, g=g2, B=500)
-#' stat.G = function(Z=c(runif(50),replicate(rg2(runif), 50)), m=50,stats_G_vector=stats_G)
-#'
-stat.G = function(Z,m,stats_G_vector){
+    ## Estimate g-hat by comparing S_X1 to S_pooled
+    g.hat <- estimate_g(S_X1, S_pooled, constraint=NULL, method=fit.method, monotone=monotone)$pdf
 
-  m = as.double(m)
-  N = as.double(length(Z))
+    ## Carry out test by comparing S_X2 to S_Y
+    p.val <- compute.global.pvalue.shirashi(S_X2, S_Y, g.hat, num_mc=num_mc)
 
-  R = rank(Z)[(m+1):N]
-  T.G_i = stats_G_vector[R]
-
-  return(T.G_i)
-}
-
-
-calc.stat.G = function(Z,m,stats_G_vector){
-
-  T.G_i = stat.G(Z=Z,m=m,stats_G_vector=stats_G_vector)
-  T.G_test = sum(T.G_i)
-
-  return(T.G_test)
-}
-
-
-#' meanG
-#'
-#' @param n : test size
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations
-#'
-#' @return A numeric value corresponding to the mean of the asymptotic distribution of Shiraishi test (1985)
-#' @export
-#'
-#' @examples
-#' n = 500
-#' g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
-#' stats_G = stats_G_j_MC(N=1000, g=g2, B=10^3)
-#' mu = meanG(n=n, stats_G_vector = stats_G)
-#'
-meanG = function(n, stats_G_vector){
-
-  out <- n*mean(stats_G_vector)
-
-  return(out)
-}
-
-
-#' varG
-#'
-#' @param n : test size
-#' @param m : calibration size
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations
-#'
-#' @return A numeric value corresponding to the variance of the asymptotic distribution of Shiraishi test (1985)
-#' @export
-#'
-#' @examples
-#' g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
-#' stats_G = stats_G_j_MC(N=1000, g=g2, B=10^3)
-#' Var = varG(n=500, m=500, stats_G_vector = stats_G)
-#'
-varG = function(n, m, stats_G_vector){
-
-  N = m+n
-  mm <- mean(stats_G_vector)
-  out = (m*n*sum((stats_G_vector - mm)^2))/(N*(N-1))
-  return(out)
-  #(m*h*sum((stats_G[[n-h+1]] - mm)^2))/(N*(N-1))
-}
-
-
-
-
-#' asymptotic.pvalue.G
-#'
-#' @param m : calibration size
-#' @param n : test size
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations
-#' @param T.obs : observed value of the test statistic
-#'
-#' @return asymptotic *p*-value corresponding to the global null
-
-asymptotic.pvalue.G <- function(m, n, stats_G_vector, T.obs) {
-
-  mean.TG = meanG(n=n, stats_G_vector=stats_G_vector)
-  variance.TG = varG(n=n, m=m, stats_G_vector=stats_G_vector)
-
-  if(variance.TG>0) {
-    p.value = stats::pnorm(q=T.obs, mean=mean.TG, sd = sqrt(variance.TG), lower.tail = F)
-  } else {
-    p.value = ifelse(mean.TG >= T.obs, runif(1), 0)
-  }
-
-  return(p.value)
-}
-
-
-
-
-
-#' asymptotic.critical.G
-#'
-#' @param m : calibration size
-#' @param n : test size
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations
-#' @param alpha : significance level
-#'
-#' @return asymptotic critical value for the Shiraishi test statistic at level \eqn{\alpha}
-
-asymptotic.critical.G <- function(m, n, stats_G_vector, alpha=0.1) {
-
-  mean.TG = meanG(n=n, stats_G_vector=stats_G_vector)
-  variance.TG = varG(n=n, m=m, stats_G_vector=stats_G_vector)
-
-  critical.value = as.double(stats::qnorm(alpha, mean=mean.TG, sd = sqrt(variance.TG), lower.tail = F))
-
-  return(critical.value)
-}
-
-
-
-#' k_mom_beta
-#' @description This function computes the \eqn{k}th moment of a Beta(a,b)
-#'
-#' @param a : first parameter of Beta distribution
-#' @param b : second parameter of Beta distribution
-#' @param k : order of the moment to be computed
-#'
-#' @return A real number
-k_mom_beta = function(a, b, k){
-  den = a+b+(0:(k-1))
-  num = a+(0:(k-1))
-  return(prod(num/den))
+    return(p.val)
 }

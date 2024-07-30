@@ -19,13 +19,27 @@ sample_scores <- function(n, distribution) {
   if (distribution == "uniform") {
     # Sample from a uniform distribution
     Z <- rg_null(n)
-  } else if (startsWith(distribution, "lehmann-k")) {
+  } else if (distribution == "normal") {
+    # Sample from a standard normal distribution
+    Z <- rnorm(n, mean=0, sd=1)
+  } else if (startsWith(distribution, "lehmann_k")) {
     # Extract the value of k from the distribution string
-    k <- as.numeric(str_split(distribution, "-k")[[1]][2])
+    k <- as.numeric(str_split(distribution, "_k")[[1]][2])
     # Sample from a Lehmann distribution with parameter k
     Z <- replicate(n, max(rg_null(k)))
+  } else if (startsWith(distribution, "beta_")) {
+    tmp = str_split(distribution, "_")[[1]]
+    shape1 = as.numeric(tmp[2])
+    shape2 = as.numeric(tmp[3])
+    # Sample from a Beta distribution with parameters shape1, shape2
+    Z <- rbeta(n=n, shape1 = shape1, shape2 = shape2)
+  } else if (startsWith(distribution, "normal_")) {
+    tmp = str_split(distribution, "_")[[1]]
+    mu = as.numeric(tmp[2])
+    sigma = as.numeric(tmp[3])
+    Z <- pnorm(rnorm(n=n, mean=mu, sd=sigma), 0, 1)
   } else {
-    stop("Error: unknown distribution.")
+  stop("Error: unknown distribution.")
   }
 
   return(Z)
@@ -51,11 +65,27 @@ density_scores <- function(x, distribution) {
   if (distribution == "uniform") {
     # Calculate density for a uniform distribution
     out <- ifelse(x >= 0 & x <= 1, 1, 0)
-  } else if (startsWith(distribution, "lehmann-k")) {
+  } else if (distribution == "normal") {
+    # Calculate density for a standard normal distribution
+    out <- dnorm(x, 0, 1)
+  } else if (startsWith(distribution, "lehmann_k")) {
     # Extract the value of k from the distribution string
-    k <- as.numeric(str_split(distribution, "-k")[[1]][2])
+    k <- as.numeric(str_split(distribution, "_k")[[1]][2])
     # Calculate density for a Lehmann distribution with parameter k
     out <- ifelse(x >= 0 & x <= 1, k * x^(k - 1), 0)
+  } else if (startsWith(distribution, "beta_")) {
+    tmp = str_split(distribution, "_")[[1]]
+    shape1 = as.numeric(tmp[2])
+    shape2 = as.numeric(tmp[3])
+    # Sample from a Beta distribution with parameters shape1, shape2
+    out <- dbeta(x, shape1 = shape1, shape2 = shape2)
+  } else if (startsWith(distribution, "normal_")) {
+    tmp = str_split(distribution, "_")[[1]]
+    mu = as.numeric(tmp[2])
+    sigma = as.numeric(tmp[3])
+    #out <- suppressWarnings( dnorm( qnorm(x) - shift )*(1/dnorm(qnorm(x))) )
+    out <- suppressWarnings( dnorm( (qnorm(x)-mu)/sigma )*(1/(sigma*dnorm(qnorm(x)))) ) # TODO: check this
+    out[is.nan(out)] <- 0
   } else {
     stop("Error: unknown distribution.")
   }
@@ -72,15 +102,16 @@ density_scores <- function(x, distribution) {
 #   n_test: Integer. The number of samples in the test set.
 #   prop_out: Numeric. The proportion of outliers in the test set.
 #   alternative: String. The type of distribution for outliers in the test set.
+#   null: String. The type of distribution for inliers.
 #
 # Returns:
 #   A list containing:
 #     - scores.cal: Numeric vector. Calibration set scores from a uniform distribution.
 #     - scores.test: Numeric vector. Test set scores with a mixture of inliers and outliers.
 #     - outlier.test: Integer vector. Indicator of outliers in the test set (0 = inlier, 1 = outlier).
-generate_cal_test_scores <- function(n_cal, n_test, prop_out, alternative) {
+generate_cal_test_scores <- function(n_cal, n_test, prop_out, alternative, null="uniform") {
     # Generate calibration set scores from a uniform distribution
-    Z_cal <- sample_scores(n_cal, "uniform")
+    Z_cal <- sample_scores(n_cal, null)
 
     # Calculate the number of outliers and inliers in the test set
     n_test_1 <- as.integer(round(prop_out * n_test))
@@ -88,7 +119,7 @@ generate_cal_test_scores <- function(n_cal, n_test, prop_out, alternative) {
 
     # Generate inlier test set scores from a uniform distribution
     if(n_test_0 > 0) {
-        Z_test_0 <- sample_scores(n_test_0, "uniform")
+        Z_test_0 <- sample_scores(n_test_0, null)
     } else {
 
     }

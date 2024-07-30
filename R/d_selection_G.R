@@ -51,12 +51,12 @@ d_selection_G <- function(S_Y, S_X, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 
   if(is.null(g.hat)){
 
-    # Compute the individual statistics for each test point using the input data
-    m1 = round(prop.F*m)
-    X1 = sample(S_X,m1)
-    X2 = setdiff(S_X,X1)
-    g.hat = estimate_g(X1=X1, X2=X2, Y=S_Y, constraint=monotonicity, ker="uniform")
-    stats_G = sapply(n:1, function(h) apply(replicate(B, g.hat(sort(stats::runif(m+h)))) , 1, mean))
+    ## # Compute the individual statistics for each test point using the input data
+    ## m1 = round(prop.F*m)
+    ## X1 = sample(S_X,m1)
+    ## X2 = setdiff(S_X,X1)
+    ## g.hat = estimate_g(X1=X1, X2=X2, Y=S_Y, constraint=monotonicity, ker="uniform")
+    ## stats_G = sapply(n:1, function(h) apply(replicate(B, g.hat(sort(stats::runif(m+h)))) , 1, mean))
 
 
   } else if(is.character(g.hat)){

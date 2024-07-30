@@ -49,11 +49,13 @@ d_selection_G2 <- function(S_Y, S_X, S=NULL, k=NULL, g.hat=NULL, monotonicity=NU
   s = ifelse(is.null(S), n, length(S))
 
   if(is.null(g.hat)){
-    # Compute the individual statistics for each test point using the input data
-    m1 = round(prop.F*m)
-    X1=sample(S_X,m1)
-    X2=setdiff(S_X,X1)
-    g.hat = estimate_g(X1=X1, X2=X2, Y=S_Y, constraint=monotonicity, ker="uniform")
+    ## # Compute the individual statistics for each test point using the input data
+    ## m1 = round(prop.F*m)
+    ## X1=sample(S_X,m1)
+    ## X2=setdiff(S_X,X1)
+    ## Y = c(X1,Y)
+
+    ## g.hat = estimate_g(X1=X1, X2=X2, Y=S_Y, constraint=monotonicity, ker="uniform")
   }
 
   if(is.null(monotonicity))
@@ -189,6 +191,7 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 
     R = stat.G(Z=ZZ, m=m, stats_G_vector=stats_G)
     T.global = sum(R)
+    cat(sprintf("T.global = %.3f\n", T.global))
     pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local.test="g", stats_G_vector=stats_G,
                                         n_perm=n_perm, B=B, seed=seed)
     d=0
