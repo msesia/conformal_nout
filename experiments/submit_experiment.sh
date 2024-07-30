@@ -5,21 +5,22 @@ SETUP=1
 
 if [[ $SETUP == 1 ]]; then
   # List of calibration sample sizes
-  N_CAL_LIST=(100)
+  N_CAL_LIST=(500)
   # List of test sample sizes
-  N_TEST_LIST=(100)
+  N_TEST_LIST=(200)
   # List of alternative distributions
-  ALT_LIST=("lehmann_k2")
+  ALT_LIST=("uniform" "lehmann_k2" "beta_0.5_0.5" "beta_4_4" "normal_0.5_1" "normal_-0.5_1" "normal_0_0.5" "normal_0_1.5")
+#  ALT_LIST=("uniform" "lehmann_k2")
   # List of proportions of outlier
-  PROP_OUT_LIST=(0.0 0.1)
+  PROP_OUT_LIST=(0 0.1 0.2 0.3 0.4 0.5 0.6 0.7)
   # Sequence of seeds for randomization
-  SEED_LIST=$(seq 1 1)
+  SEED_LIST=$(seq 1 10)
   MEMO=5G
 
 fi
 
 # Slurm parameters
-TIME=00-01:00:00                    # Time required (1 h)
+TIME=00-00:20:00                    # Time required (20 m)
 CORE=1                              # Cores required (1)
 
 # Assemble order prefix
@@ -61,9 +62,9 @@ for SEED in $SEED_LIST; do
             # Print order
             echo $ORD
             # Submit order
-            #$ORD
+            $ORD
             # Run command now
-            ./$SCRIPT
+            #./$SCRIPT
 
           fi
 

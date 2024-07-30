@@ -21,7 +21,8 @@ Imports:
     sumSome,
     Iso,
     statip,
-    mixmodel
+    mixmodel,
+    fitdistrplus
 URL: https://github.com/chiaragaiamagnani/nout
 BugReports: https://github.com/chiaragaiamagnani/nout/issues
 Suggests: 
