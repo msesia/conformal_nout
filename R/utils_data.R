@@ -87,7 +87,7 @@ density_scores <- function(x, distribution) {
     out <- suppressWarnings( dnorm( (qnorm(x)-mu)/sigma )*(1/(sigma*dnorm(qnorm(x)))) ) # TODO: check this
     out[is.nan(out)] <- 0
   } else {
-    stop("Error: unknown distribution.")
+    stop(sprintf("Error: unknown distribution: %s.", distribution))
   }
 
   return(out)

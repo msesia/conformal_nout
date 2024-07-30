@@ -9,24 +9,24 @@
 ##
 ## Returns:
 ##   A data frame with the computed global p-values for each method.
-run_global_testing <- function(data, alternative=NULL, monotonicity=NULL) {
+run_global_testing <- function(data, alternative=NULL) {
 
     S_X = data$scores.cal
     S_Y = data$scores.test
-    
+
     ## Compute global p-value with Fisher's test
     pval.fisher <- d_selection_fisher(S_X = S_X, S_Y = S_Y, n_perm = 0, pvalue_only = TRUE)$global.pvalue
-    
+
     ## Compute global p-value with WMW test
     pval.wmw <- d_selection_higher(S_X = S_X, S_Y = S_Y, local.test = "WMW", n_perm = 0, pvalue_only = TRUE)$global.pvalue
-    
+
     ## Compute global p-value with WMW test (k=2)
     pval.wmw.2 <- d_selection_higher(S_X = S_X, S_Y = S_Y, local.test = "higher", k = 2, n_perm = 0, pvalue_only = TRUE)$global.pvalue
-    
+
     ## Compute global p-value with WMW test (k=3)
     pval.wmw.3 <- d_selection_higher(S_X = S_X, S_Y = S_Y, local.test = "higher", k = 3, n_perm = 0, pvalue_only = TRUE)$global.pvalue
-    
-    ## Compute global p-value with Shirashi's approach (using oracle density)   
+
+    ## Compute global p-value with Shirashi's approach (using oracle density)
     if(!is.null(alternative)) {
         density_oracle <- function(x) density_scores(x, alternative)
         pval.g.oracle <- compute.global.pvalue.shirashi(S_X, S_Y, density_oracle, num_mc=1000)
@@ -41,19 +41,17 @@ run_global_testing <- function(data, alternative=NULL, monotonicity=NULL) {
     pval.g.hat.2 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="betamix", monotone="increasing")
 
     ## Apply Shirashi's method using g-hat estimated through mixmodel
-    #pval.g.hat.3 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="mixmodel")
-    pval.g.hat.3 <- NA
+    pval.g.hat.3 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="mixmodel")
 
     ## Apply Shirashi's method using g-hat estimated through mixmodel (increasing)
-    #pval.g.hat.4 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="mixmodel", monotone="increasing")
-    pval.g.hat.4 <- NA
-    
+    pval.g.hat.4 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="mixmodel", monotone="increasing")
+
     ## Create a data frame with the p-values
     pval_df <- tibble::tibble(
                            Method = c("Fisher", "WMW", "WMW_k2", "WMW_k3", "Shirashi_oracle", "Shirashi_ghat_betamix", "Shirashi_ghat_betamix_inc",
                                       "Shirashi_ghat_mixmodel", "Shirashi_ghat_mixmodel_inc"),
                            p.value = c(pval.fisher, pval.wmw, pval.wmw.2, pval.wmw.3, pval.g.oracle, pval.g.hat.1, pval.g.hat.2, pval.g.hat.3, pval.g.hat.4)
                        )
-    
+
     return(pval_df)
 }
