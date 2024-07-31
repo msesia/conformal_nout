@@ -79,7 +79,7 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local.test="wmw", k=NULL, alpha=
     T_wc = sapply(1:length(R), function(h) sum(R[[h]]))
 
     ## Compare the worst-case statistics to the critical values for k in {n,...,1}, starting from the max cardinality
-    tentative.d = as.double(sum(cumsum(rev(T_wc) >= rev(crit)) == 1:n))-n+s
+    tentative.d = as.double(sum(cumsum(rev(T_wc) > rev(crit)) == 1:n))-n+s # NOTE: this should be strictly larger!
     d = ifelse(tentative.d>0, tentative.d, 0)
 
     ## Compute p-value for the global null

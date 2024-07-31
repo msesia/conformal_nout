@@ -219,7 +219,7 @@ compute.global.pvalue.shirashi <- function(S_X, S_Y, g, num_mc=1000) {
     sigma <- sqrt(m*n*sum((Z.exp-mu)^2) / (N*(N-1)))
 
     if(sigma>0) {
-    p.value = stats::pnorm(q=T.obs, mean=n*mu, sd = sigma, lower.tail = F)
+        p.value = stats::pnorm(q=T.obs, mean=n*mu, sd = sigma, lower.tail = F)
     } else {
         p.value = ifelse(n*mu >= T.obs, runif(1), 0)
     }

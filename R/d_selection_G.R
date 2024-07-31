@@ -137,7 +137,7 @@ d_G_cons = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, B=10
   T_wc = sapply(1:length(R), function(h) sum(R[[h]][1:h]))
 
   ## Compare the worst-case statistics to the critical values for k in {n,...,1}, starting from the max cardinality
-  tentative.d = as.double(sum(cumsum(rev(T_wc) >= rev(crit)) == 1:n))-n+s
+  tentative.d = as.double(sum(cumsum(rev(T_wc) > rev(crit)) == 1:n))-n+s # NOTE: this should be strictly larger!
   d = ifelse(tentative.d>0, tentative.d, 0)
 
   ## Compute p-value for the global null
@@ -222,7 +222,7 @@ d_G_monotone = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, 
 
 
   ## Compare the worst-case statistics to the critical values for k in {n,...,1}, starting from the max cardinality
-  tentative.d = as.double(sum(cumsum(rev(T_wc) >= crit) == 1:n))-n+s
+  tentative.d = as.double(sum(cumsum(rev(T_wc) > crit) == 1:n))-n+s # NOTE: this should be strictly larger!
   d = ifelse(tentative.d>0, tentative.d, 0)
 
   ## Compute p-value for the global null

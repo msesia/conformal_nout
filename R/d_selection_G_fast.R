@@ -168,7 +168,7 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
         pval.global = pval.global
       }
 
-      if(T_wc >= crit){
+      if(T_wc > crit){ # NOTE: this should be strictly larger!
         tentative.d = tentative.d+1
         l=l-1
       }
@@ -370,7 +370,7 @@ d_G_cons2 = function(S_X, S_Y, S=NULL, g.hat, k=NULL, alpha=0.1, pvalue_only=FAL
         pval.global = pval.global
       }
 
-      if(T_wc >= crit){
+      if(T_wc > crit){ # NOTE: this should be strictly larger!
         tentative.d = tentative.d+1
         l=l-1
       } else{
