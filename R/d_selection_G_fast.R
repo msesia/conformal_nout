@@ -1,18 +1,17 @@
-
 #' d_selection_G2
 #'
-#' @param S_Y : test score vector
 #' @param S_X :  calibration score vector
+#' @param S_Y : test score vector
 #' @param S : selection set in the index test set
 #' @param k : order of the generalized Wilcoxon rank sum test. Classic Wilcoxon test corresponds to \eqn{k=1}
-#' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
-#' If g.hat=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.
+#' @param g.oracle : it can be either a character ("analytical") or a function denoting the outlier density.
+#' If g.oracle=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.
 #' If NULL it is estimated from the data
+#' @param fit.method: method used to fit g
 #' @param monotonicity : character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is NULL
-#' @param prop.F  : proportion of inliers used to estimate the inliser distribution while estimating the outlier density.
+#' @param prop.cal  : proportion of inliers used for calibration (the others are used to estimate the inlier distribution)
 #' Default value is 0.5
 #' @param alpha : significance level
-#' @param pvalue_only : logical value. If TRUE, only the global test is performed
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
 #' local.test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
@@ -35,37 +34,46 @@
 #'
 #' X = stats::runif(50)
 #' Y = replicate(50, rg2(rnull=runif))
-#' res = d_selection_G2(S_Y=Y, S_X=X, B=100)
-#' res = d_selection_G2(S_Y=Y, S_X=X, S = c(1:40), g.hat = g2, monotonicity="increasing", B=100)
-d_selection_G2 <- function(S_Y, S_X, S=NULL, k=NULL, g.hat=NULL, monotonicity=NULL, prop.F=0.5, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
+#' res = d_selection_G2(X, Y, B=100)
+#' res = d_selection_G2(X, Y, S = c(1:40), g.oracle = g2, monotonicity="increasing", B=100)
+d_selection_G2 <- function(S_X, S_Y, S=NULL, k=NULL, g.oracle=NULL, fit.method=NULL, monotonicity=NULL, prop.cal=0.5, alpha=0.1, n_perm=10, B=10^3, B_MC=10^3, seed=123){
 
-  if(!is.null(monotonicity)){
-    stopifnot("Error: monotonicity must be either increasing, decreasing"= monotonicity%in%c("decreasing", "increasing"))
-  }
+    if(!is.null(monotonicity)){
+        stopifnot("Error: monotonicity must be either increasing, decreasing"= monotonicity%in%c("decreasing", "increasing"))
+    }
 
-  n = as.double(length(S_Y))
-  m = as.double(length(S_X))
-  N = as.double(m+n)
-  s = ifelse(is.null(S), n, length(S))
+    n = as.double(length(S_Y))
+    m = as.double(length(S_X))
+    N = as.double(m+n)
+    s = ifelse(is.null(S), n, length(S))
 
-  if(is.null(g.hat)){
-    ## # Compute the individual statistics for each test point using the input data
-    ## m1 = round(prop.F*m)
-    ## X1=sample(S_X,m1)
-    ## X2=setdiff(S_X,X1)
-    ## Y = c(X1,Y)
+    if(is.null(g.oracle)){
+        stopifnot(!is.null(fit.method))
+        ## Split the reference scores and create pooled vector
+        m = length(S_X)
+        n = length(S_Y)
+        m_2 = pmin(n, as.integer(round(prop.cal * m)))
+        m_1 = m - m_2
+        idx_X_1 = sample(m, m_1)
+        idx_X_2 = setdiff(1:m, idx_X_1)
+        S_X1 = S_X[idx_X_1]
+        S_ref = S_X[idx_X_2]
+        S_pooled = sample(c(S_ref, S_Y))
+        ## Estimate g-hat by comparing S_X1 to S_pooled
+        g <- estimate_g(S_X1, S_pooled, method=fit.method, monotone=monotonicity)$pdf
+    } else {
+        S_ref = S_X
+        g <- g.oracle
+    }
 
-    ## g.hat = estimate_g(X1=X1, X2=X2, Y=S_Y, constraint=monotonicity, ker="uniform")
-  }
+    if(is.null(monotonicity))
+        res = d_G_cons2(S_X=S_ref, S_Y=S_Y, S=S, g.hat=g, k=k, alpha=alpha, n_perm=n_perm, B=B, seed=seed)
+    else{
+        decr = ifelse(monotonicity=="increasing", FALSE, TRUE)
+        res = d_G_monotone2(S_X=S_ref, S_Y=S_Y, S=S, g.hat=g, decr=decr, k=k, alpha=alpha, n_perm=n_perm, B=B, seed=seed)
+    }
 
-  if(is.null(monotonicity))
-    res = d_G_cons2(S_X=S_X, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, seed=seed)
-  else{
-    decr = ifelse(monotonicity=="increasing", FALSE, TRUE)
-    res = d_G_monotone2(S_X=S_X, S_Y=S_Y, S=S, g.hat=g.hat, decr=decr, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, seed=seed)
-  }
-
-  return(res)
+    return(res)
 
 }
 
@@ -73,8 +81,8 @@ d_selection_G2 <- function(S_Y, S_X, S=NULL, k=NULL, g.hat=NULL, monotonicity=NU
 
 #' d_G_monotone2
 #'
-#' @param S_Y : test score vector
 #' @param S_X :  calibration score vector
+#' @param S_Y : test score vector
 #' @param S : selection set in the index test set
 #' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
 #' If g.hat=="analytical" the test statistics are computed analytically without Monte Carlo estimation.
@@ -106,7 +114,7 @@ d_selection_G2 <- function(S_Y, S_X, S=NULL, k=NULL, g.hat=NULL, monotonicity=NU
 #' m = 10; n=10;
 #' X = runif(m)
 #' Y = replicate(n, rg2(rnull=runif))
-#' res = d_G_monotone2(S_Y=Y, S_X=X, S=c(1:7), decr=FALSE,  g.hat=g2, B=100)
+#' res = d_G_monotone2(X, Y, S=c(1:7), decr=FALSE,  g.hat=g2, B=100)
 d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC = 10^3, seed=123){
 
   n = length(S_Y)
@@ -191,7 +199,6 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 
     R = stat.G(Z=ZZ, m=m, stats_G_vector=stats_G)
     T.global = sum(R)
-    cat(sprintf("T.global = %.3f\n", T.global))
     pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local.test="g", stats_G_vector=stats_G,
                                         n_perm=n_perm, B=B, seed=seed)
     d=0
@@ -276,8 +283,8 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 
 #' d_G_cons2
 #'
-#' @param S_Y : test score vector
 #' @param S_X :  calibration score vector
+#' @param S_Y : test score vector
 #' @param S : selection set in the index test set
 #' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
 #' If g.hat=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.
@@ -307,7 +314,7 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 #' m = 10; n=10;
 #' X = runif(m)
 #' Y = replicate(n, rg2(rnull=runif))
-#' res = d_G_cons2(S_Y=Y, S_X=X, g.hat=g2, k=1, B=100)
+#' res = d_G_cons2(X, Y, g.hat=g2, k=1, B=100)
 d_G_cons2 = function(S_X, S_Y, S=NULL, g.hat, k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
 
   m = as.double(length(S_X))
@@ -391,6 +398,3 @@ d_G_cons2 = function(S_X, S_Y, S=NULL, g.hat, k=NULL, alpha=0.1, pvalue_only=FAL
              "selection.p.value" = 1)
 
 }
-
-
-

@@ -3,8 +3,8 @@
 #' @description It returns the lower bound for the number of true discoveries in closed testing procedure
 #' using Simes local test.
 #'
-#' @param S_Y : score vector of test observations
 #' @param S_X : score vector of calibration observations
+#' @param S_Y : score vector of test observations
 #' @param S : set of selected indices in the test set on which compute the lower bound for the number of outliers.
 #' If S is missing, dthe global null hypothesis is used
 #' @param alpha : significance level of the local test. Default value is set equal to 0.1.
@@ -26,11 +26,11 @@
 #' Sxy = sample(x=1:1000, size=100)
 #' Sx = sample(Sxy, size=70)
 #' Sy = setdiff(Sxy, Sx)
-#' d_selection_simes(S_Y=Sy, S_X=Sx, S=3)
-#' d_selection_simes(S_Y=Sy, S_X=Sx, S=c(3, 7:13))
-#' d_selection_simes(S_Y=Sy, S_X=Sx)
+#' d_selection_simes(Sx, Sy, S=3)
+#' d_selection_simes(Sx, Sy, S=c(3, 7:13))
+#' d_selection_simes(Sx, Sy)
 #'
-d_selection_simes = function(S_Y, S_X, S=NULL, alpha = 0.1, pvalue_only=FALSE){
+d_selection_simes = function(S_X, S_Y, S=NULL, alpha = 0.1, pvalue_only=FALSE){
   n = length(S_Y)
   m = length(S_X)
   pval = sapply(1:n, function(i) (1+sum(S_X >= S_Y[i]))/(m+1))
@@ -76,8 +76,8 @@ d_selection_simes = function(S_Y, S_X, S=NULL, alpha = 0.1, pvalue_only=FALSE){
 #' @description It returns the lower bound for the number of true discoveries in closed testing procedure
 #' using Simes local test with Storey estimator for the proportion of true null hypotheses.
 #'
-#' @param S_Y : score vector of test observations
 #' @param S_X : score vector of calibration observations
+#' @param S_Y : score vector of test observations
 #' @param S : set of selected indices in the test set on which compute the lower bound for the number of outliers.
 #' If S is missing, dthe global null hypothesis is used
 #' @param alpha : significance level of the local test. Default value is set equal to 0.1
@@ -101,14 +101,14 @@ d_selection_simes = function(S_Y, S_X, S=NULL, alpha = 0.1, pvalue_only=FALSE){
 #' Sxy = sample(x=1:1000, size=100)
 #' Sx = sample(Sxy, size=70)
 #' Sy = setdiff(Sxy, Sx)
-#' d_selection_storey(S_Y=Sy, S_X=Sx)
-#' d_selection_storey(S_Y=Sy, S_X=Sx, S=3)
-#' d_selection_storey(S_Y=Sy, S_X=Sx, S=c(3, 7:13))
-#' d_selection_storey(S_Y=Sy, S_X=Sx)
+#' d_selection_storey(Sx, Sy)
+#' d_selection_storey(Sx, Sy, S=3)
+#' d_selection_storey(Sx, Sy, S=c(3, 7:13))
+#' d_selection_storey(Sx, Sy)
 #'
 #'
 #'
-d_selection_storey = function(S_Y, S_X, S=NULL, alpha=0.1, lambda = 0.5, pvalue_only=FALSE){
+d_selection_storey = function(S_X, S_Y, S=NULL, alpha=0.1, lambda = 0.5, pvalue_only=FALSE){
 
   n = length(S_Y)
   m = length(S_X)

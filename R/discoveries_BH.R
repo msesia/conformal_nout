@@ -3,8 +3,8 @@
 #'
 #' @description Applies Benjamini-Hochberg procedure to conformal *p*-values.
 #'
-#' @param S_Y : score vector for the test set
 #' @param S_X : score vector for the calibration set
+#' @param S_Y : score vector for the test set
 #' @param alpha : significance level. Default level is set equal to 0.1
 #'
 #' @return A vector corresponding to indices of test observations which are rejected
@@ -18,10 +18,10 @@
 #' Sxy = sample(x=1:1000, size=100)
 #' Sx = sample(Sxy, size=70)
 #' Sy = setdiff(Sxy, Sx)
-#' discoveries_BH(S_Y=Sy, S_X=Sx)
+#' discoveries_BH(Sx, Sy)
 #'
 #'
-discoveries_BH = function(S_Y, S_X, alpha = 0.1){
+discoveries_BH = function(S_X, S_Y, alpha = 0.1){
   m = length(S_Y)
   n = length(S_X)
   pval = sapply(1:m, function(i) (1+sum(S_X >= S_Y[i]))/(n+1))

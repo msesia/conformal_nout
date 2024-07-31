@@ -1,11 +1,7 @@
-
-
-
-
 #' d_selection_G
 #'
-#' @param S_Y : test score vector
 #' @param S_X :  calibration score vector
+#' @param S_Y : test score vector
 #' @param S : selection set in the index test set
 #' @param k : order of the generalized Wilcoxon rank sum test. Classic Wilcoxon test corresponds to \eqn{k=1}
 #' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
@@ -37,8 +33,8 @@
 #'
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
-#' res = d_selection_G(S_Y=Y, S_X=X, S = c(1:7), g.hat = g2, monotonicity="increasing", B=100)
-d_selection_G <- function(S_Y, S_X, S=NULL, k=NULL, g.hat=NULL, monotonicity=NULL, prop.F=0.5, alpha=0.1, n_perm=10, B=10^3, B_MC=10^3, seed=123){
+#' res = d_selection_G(X, Y, S = c(1:7), g.hat = g2, monotonicity="increasing", B=100)
+d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NULL, prop.F=0.5, alpha=0.1, n_perm=10, B=10^3, B_MC=10^3, seed=123){
 
   if(!is.null(monotonicity))
     stopifnot("Error: monotonicity must be either increasing, decreasing"= monotonicity%in%c("decreasing", "increasing"))
@@ -86,8 +82,8 @@ d_selection_G <- function(S_Y, S_X, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 
 #' d_G_cons
 #'
-#' @param S_Y : test score vector
 #' @param S_X :  calibration score vector
+#' @param S_Y : test score vector
 #' @param S : selection set in the index test set
 #' @param stats_G_vector : list of Shiraishi (1985) test statistics for each closed testing level
 #' @param alpha : significance level
@@ -114,7 +110,7 @@ d_selection_G <- function(S_Y, S_X, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 #' X = runif(m)
 #' Y = replicate(n, rg2(rnull=runif))
 #' stats_G = sapply(n:1, function(h) apply(replicate(100, g2(sort(runif(m+h)))) , 1, mean))
-#' res = d_G_cons(S_Y=Y, S_X=X, stats_G_vector=stats_G, B=100)
+#' res = d_G_cons(X, Y, stats_G_vector=stats_G, B=100)
 d_G_cons = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, B=10^3, seed=123){
 
   m = as.double(length(S_X))
@@ -161,17 +157,10 @@ d_G_cons = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, B=10
 }
 
 
-
-
-
-
-
-
-
 #' d_G_monotone
 #'
-#' @param S_Y : test score vector
 #' @param S_X :  calibration score vector
+#' @param S_Y : test score vector
 #' @param S : selection set in the index test set
 #' @param stats_G_vector : list of Shiraishi (1985) test statistics for each closed testing level
 #' @param alpha : significance level
@@ -198,7 +187,7 @@ d_G_cons = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, B=10
 #' X = runif(m)
 #' Y = replicate(n, rg2(rnull=runif))
 #' stats_G =  sapply(n:1, function(h) apply(replicate(100, g2(sort(runif(m+h)))) , 1, mean))
-#' res = d_G_monotone(S_Y=Y, S_X=X, S=c(1:8), stats_G_vector=stats_G, B=100)
+#' res = d_G_monotone(X, Y, S=c(1:8), stats_G_vector=stats_G, B=100)
 d_G_monotone = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, B=10^3, seed=123){
 
   n = length(S_Y)
@@ -250,13 +239,3 @@ d_G_monotone = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, 
              "selection.p.value" = 1)
 
 }
-
-
-
-
-
-
-
-
-
-

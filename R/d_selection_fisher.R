@@ -1,11 +1,7 @@
-
-
-
-
 #' d_selection_fisher
 #'
-#' @param S_Y : test score vector
 #' @param S_X :  calibration score vector
+#' @param S_Y : test score vector
 #' @param S : selection set in the index test set
 #' @param alpha : significance level
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
@@ -32,9 +28,9 @@
 #'
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
-#' res = d_selection_fisher(S_Y=Y, S_X=X, B=100)
-#' res = d_selection_fisher(S_Y=Y, S_X=X, S = c(1:8), B=100)
-d_selection_fisher = function(S_X, S_Y, S=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, critical_values=NULL, seed=123){
+#' res = d_selection_fisher(X, Y, B=100)
+#' res = d_selection_fisher(X, Y, S = c(1:8), B=100)
+d_selection_fisher = function(S_Y, S_X, S=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, critical_values=NULL, seed=123){
 
   n = as.double(length(S_Y))
   m = as.double(length(S_X))

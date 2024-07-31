@@ -1,8 +1,3 @@
-
-
-
-
-
 #' find_d
 #'
 #' @param X : calibration score vector
@@ -17,7 +12,7 @@
 #' It must be specified when the local test is "g"
 #' @param g.hat : it denotes the outlier density. If NULL it is estimated from the data
 #' @param alpha : significance level
-#' @param prop.F : proportion of inliers used to estimate the inliser distribution while estimating the outlier density.
+#' @param prop.cal  : proportion of inliers used for calibration (the others are used to estimate the inlier distribution)
 #' Default value is 0.5
 #' @param lambda : parameter to be specified when computing Storey's estimator. Default value is 0.5
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
@@ -49,7 +44,7 @@
 #' Y = replicate(10, rg2(rnull=runif))
 #' res = find_d(X, Y, local.test="higher", k=3, B=100)
 #' res = find_d(X, Y, local.test="g", g.hat = g2, monotonicity="increasing", B=100)
-find_d = function(X, Y, local.test = "wmw", S=NULL, k=NULL, monotonicity=NULL, g.hat=NULL, alpha=0.1, prop.F=0.5, lambda=0.5, n_perm=0, B=10^3, B_MC=10^3, critical_values=NULL, seed=123){
+find_d = function(X, Y, local.test = "wmw", S=NULL, k=NULL, monotonicity=NULL, g.hat=NULL, alpha=0.1, prop.cal=0.5, lambda=0.5, n_perm=0, B=10^3, B_MC=10^3, critical_values=NULL, seed=123){
 
   local.test = tolower(local.test)
   stopifnot(local.test %in% c("wmw", "higher", "fisher", "g", "simes", "storey"))
@@ -64,23 +59,23 @@ find_d = function(X, Y, local.test = "wmw", S=NULL, k=NULL, monotonicity=NULL, g
 
   if(local.test=="wmw" || local.test=="higher"){
 
-    res = d_selection_higher(S_Y=Y, S_X=X, S=S, k=k, alpha=alpha, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed )
+    res = d_selection_higher(X, Y, S=S, k=k, alpha=alpha, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed )
 
   } else if(local.test=="fisher"){
 
-    res = d_selection_fisher(S_Y=Y, S_X=X, S=S, alpha=alpha, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed )
+    res = d_selection_fisher(X, Y, S=S, alpha=alpha, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed )
 
   } else if(local.test=="g"){
 
-    res = d_selection_G2(S_Y=Y, S_X=X, S=S, g.hat=g.hat, monotonicity=monotonicity, prop.F=prop.F, alpha=alpha, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
+    res = d_selection_G2(X, Y, S=S, g.oracle=g.hat, monotonicity=monotonicity, prop.cal=prop.cal, alpha=alpha, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
 
   } else if(local.test=="simes"){
 
-    res = d_selection_simes(S_Y=Y, S_X=X, S=S, alpha=alpha)
+    res = d_selection_simes(X, Y, S=S, alpha=alpha)
 
   } else if(local.test=="storey"){
 
-    res = d_selection_storey(S_Y=Y, S_X=X, S=S, alpha=alpha, lambda=lambda)
+    res = d_selection_storey(X, Y, S=S, alpha=alpha, lambda=lambda)
 
   }
 

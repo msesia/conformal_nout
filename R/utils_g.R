@@ -1,3 +1,22 @@
+## Function to make density function monotone
+make_density_monotone <- function(g) {
+  tol = 1e-3
+  x.grid <- seq(tol,1-tol,length.out=1000)
+    
+  ## Obtain density estimates from the model
+  g.hat.values <- list(x=x.grid, y=g(x.grid))
+  
+  ## Create a monotone interpolation function
+  iso_fit <- isoreg(g.hat.values$x, g.hat.values$y)
+  g.hat.u <- approxfun(iso_fit$x, iso_fit$yf, method = "linear", rule = 2)
+  
+  ## Normalize the density
+  integral <- integrate(g.hat.u, 0, 1)$value
+  g.mon <- function(x) g.hat.u(x) / integral
+  
+  return(g.mon)
+}
+
 hush <- function(code){
     sink("NUL") # use /dev/null in UNIX
     tmp = code
@@ -118,83 +137,62 @@ fit_beta_mixture <- function(data, num_starts = 10, monotone=NULL) {
 
 
 
-estimate_g <- function(scores_reference, scores_pooled, constraint=NULL, method="betamix", monotone=NULL){
+estimate_g <- function(scores_reference, scores_pooled, method="betamix", monotone=NULL) {
 
-    if(is.null(constraint)){
+    ## Transform the reference scores to make them approximately uniform
+    null.fit <- fitdistrplus::fitdist(scores_reference, "beta", start = list(shape1 = 0.999, shape2 = 0.999))
+    F.hat <- function(x) pbeta(x, null.fit$estimate[[1]], null.fit$estimate[[2]])
+    scores_pooled = F.hat(scores_pooled)
 
-        ## Transform the reference scores to make them approximately uniform
-        null.fit <- fitdistrplus::fitdist(scores_reference, "beta", start = list(shape1 = 0.999, shape2 = 0.999))
-        F.hat <- function(x) pbeta(x, null.fit$estimate[[1]], null.fit$estimate[[2]])
-        scores_pooled = F.hat(scores_pooled)
+    ## Fit beta mixture model
+    if(method=="betamix") {
+        betafit <- fit_beta_mixture(scores_pooled, monotone=monotone)
+        g.hat <- function(x) dbeta(x, betafit$shape1, betafit$shape2)
+        CDF.hat <- function(x) pbeta(x, betafit$shape1, betafit$shape2)
+    } else if (method=="mixmodel") {
 
-        ## Fit beta mixture model
-        if(method=="betamix") {
-            betafit <- fit_beta_mixture(scores_pooled, monotone=monotone)
-            g.hat <- function(x) dbeta(x, betafit$shape1, betafit$shape2)
-            CDF.hat <- function(x) pbeta(x, betafit$shape1, betafit$shape2)
-        } else if (method=="mixmodel") {
+        ## Fit mixture model and evaluate CDF values on a grid
+        model <- mixmodel::mix.model(scores_pooled, method = "fixed" , c.n = .05*log(log(length(scores_pooled))), gridsize = 600)
+        ##model = hush(suppressWarnings(mixmodel::cv.mix.model(scores_pooled, cn.length=50)))
 
-            ## Fit mixture model and evaluate CDF values on a grid
-            model <- mixmodel::mix.model(scores_pooled, method = "fixed" , c.n = .05*log(log(length(scores_pooled))), gridsize = 600)
-            ##model = hush(suppressWarnings(mixmodel::cv.mix.model(scores_pooled, cn.length=50)))
+        if(is.null(monotone)) {
+            CDF.values <- model$Fs.hat
 
-            if(is.null(monotone)) {
-                CDF.values <- model$Fs.hat
+            ## Define CDF function via monotone increasing interpolation
+            CDF.values$y[1] = 0
+            CDF.values$y[length(CDF.values$y)] = 1
+            CDF.hat <- splinefun(c(0, CDF.values$x, 1), c(0, CDF.values$y, 1), method = "monoH.FC")
 
-                ## Define CDF function via monotone increasing interpolation
-                CDF.values$y[1] = 0
-                CDF.values$y[length(CDF.values$y)] = 1
-                CDF.hat <- splinefun(c(0, CDF.values$x, 1), c(0, CDF.values$y, 1), method = "monoH.FC")
+            ## # DEBUG
+            ## x.grid <- seq(0,1,length.out=1000)
+            ## plot(x.grid, CDF.hat(x.grid), "l")
 
-                ## # DEBUG
-                ## x.grid <- seq(0,1,length.out=1000)
-                ## plot(x.grid, CDF.hat(x.grid), "l")
-
-                ## Estimate PDF from CDF via kernel smoothing
-                g.hat <- kernel_smoothed_pdf_function(CDF.hat)$pdf_function
-            } else if (monotone=="increasing") {
-                g.hat.values <- mixmodel::den.mix.model(model, dec.density=FALSE)
-                g.hat.u <- splinefun(g.hat.values$x[-c(1,length(g.hat.values$x))], g.hat.values$y[-c(1,length(g.hat.values$y))], method = "monoH.FC")
-                ## Normalize the density
-                integral <- integrate(g.hat.u, 0, 1)$value
-                g.hat <- function(x) g.hat.u(x) / integral
-                CDF.hat <- NULL
-            } else if (monotone=="decreasing") {
-                g.hat.values <- mixmodel::den.mix.model(model, dec.density=TRUE)
-                g.hat.u <- splinefun(g.hat.values$x[-c(1,length(g.hat.values$x))], g.hat.values$y[-c(1,length(g.hat.values$y))], method = "monoH.FC")
-                ## Normalize the density
-                integral <- integrate(g.hat.u, 0, 1)$value
-                g.hat <- function(x) g.hat.u(x) / integral
-                CDF.hat <- NULL
-            } else {
-                print("Error! Unknown parameter.")
-                g.hat <- NULL
-            }
-        } else {
-            print("Error: unknown method!")
-            g.hat <- NULL
+            ## Estimate PDF from CDF via kernel smoothing
+            g.hat <- kernel_smoothed_pdf_function(CDF.hat)$pdf_function
+        } else if (monotone=="increasing") {
+            g.hat.values <- mixmodel::den.mix.model(model, dec.density=FALSE)
+            g.hat.u <- splinefun(g.hat.values$x[-c(1,length(g.hat.values$x))], g.hat.values$y[-c(1,length(g.hat.values$y))], method = "monoH.FC")
+            ## Normalize the density
+            integral <- integrate(g.hat.u, 0, 1)$value
+            g.hat <- function(x) g.hat.u(x) / integral
             CDF.hat <- NULL
+        } else if (monotone=="decreasing") {
+            g.hat.values <- mixmodel::den.mix.model(model, dec.density=TRUE)
+            g.hat.u <- splinefun(g.hat.values$x[-c(1,length(g.hat.values$x))], g.hat.values$y[-c(1,length(g.hat.values$y))], method = "monoH.FC")
+            ## Normalize the density
+            integral <- integrate(g.hat.u, 0, 1)$value
+            g.hat <- function(x) g.hat.u(x) / integral
+            CDF.hat <- NULL
+        } else {
+            print("Error! Unknown parameter.")
+            g.hat <- NULL
         }
+    } else {
+        print("Error: unknown method!")
+        g.hat <- NULL
+        CDF.hat <- NULL
+    }
 
-  } else {
-                                        #    # TODO: check this
-
-      stopifnot("Error: constraint must be either increasing, decreasing"= constraint%in%c("decreasing", "increasing"))
-
-                                        #pooled = c(X2,Y)
-                                        #F_hat = stats::ecdf(X1)
-                                        #est.fixed <- mixmodel::mix.model(F_hat(pooled), method = "fixed", c.n = .05*log(log(length(pooled))), gridsize = 600)
-                                        #dec.dens = ifelse(constraint=="decreasing", TRUE, FALSE)
-                                        #out = mixmodel::den.mix.model(est.fixed, dec.density = dec.dens)
-                                        #x = out$x[-length(out$x)]
-                                        #y = out$y[-length(out$y)]
-                                        #ind.min = which(x==min(x))
-                                        #ind.max = which(x==max(x))
-                                        #yleft = y[ind.min[length(ind.min)]]
-                                        #yright = y[ind.max[1]]
-
-                                        #g_hat = stats::approxfun(out$x[-length(out$x)],out$y[-length(out$y)], yleft=yleft, yright=yright)
-  }
 
   return(list(pdf = g.hat, cdf = CDF.hat))
 }
@@ -243,7 +241,7 @@ compute.global.pvalue.shirashi.adaptive <- function(S_X, S_Y, prop_cal=0.5, num_
     S_pooled = sample(c(S_X2, S_Y))
 
     ## Estimate g-hat by comparing S_X1 to S_pooled
-    g.hat <- estimate_g(S_X1, S_pooled, constraint=NULL, method=fit.method, monotone=monotone)$pdf
+    g.hat <- estimate_g(S_X1, S_pooled, method=fit.method, monotone=monotone)$pdf
 
     ## Carry out test by comparing S_X2 to S_Y
     p.val <- compute.global.pvalue.shirashi(S_X2, S_Y, g.hat, num_mc=num_mc)

@@ -1,5 +1,3 @@
-
-
 # For Lehmann's alternatives we know that the outlier distribution g is monotone
 
 #' d_selection_higher
@@ -34,8 +32,8 @@
 #'
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
-#' res = d_selection_higher(S_X=X, S_Y=Y, local.test="WMW", n_perm=0, B=100)
-#' res = d_selection_higher(S_X=X, S_Y=Y, local.test="higher", k=2, S = c(1:7), B=100)
+#' res = d_selection_higher(X, Y, local.test="WMW", n_perm=0, B=100)
+#' res = d_selection_higher(X, Y, local.test="higher", k=2, S = c(1:7), B=100)
 d_selection_higher = function(S_X, S_Y, S=NULL, local.test="wmw", k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, critical_values=NULL, seed=123){
 
   local.test=tolower(local.test)
