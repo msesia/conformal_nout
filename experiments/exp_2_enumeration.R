@@ -60,9 +60,12 @@ cat("Output file name:", output_file, "\n")
 
 ## Number of repetitions for each experimental setting
 n_exp <- 10
-    
+
+## Alpha level
+alpha <- 0.1
+
 ## Make tibble with experiment meta-data
-header <- tibble(n_cal=n_cal, n_test=n_test, alternative=alternative, prop_out=prop_out)
+header <- tibble(n_cal=n_cal, n_test=n_test, Alpha=alpha, alternative=alternative, prop_out=prop_out)
 
 ##########################
 ## Experiment functions ##
@@ -84,7 +87,7 @@ run_experiment <- function(i) {
     n.out <- sum(data$outlier.test)
 
     ## Apply global testing methods to the generated data
-    res <- run_outlier_enumeration(data, alternative = alternative) |> select(Method, Lower)
+    res <- run_outlier_enumeration(data, alpha=alpha, alternative = alternative) |> select(Method, Lower)
 
     ## Combine the results with experiment metadata
     results <- tibble(Seed = random_state) |> cbind(header) |> cbind(res)
