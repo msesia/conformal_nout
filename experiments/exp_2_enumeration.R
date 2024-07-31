@@ -90,7 +90,7 @@ run_experiment <- function(i) {
     res <- run_outlier_enumeration(data, alpha=alpha, alternative = alternative) |> select(Method, Lower)
 
     ## Combine the results with experiment metadata
-    results <- tibble(Seed = random_state) |> cbind(header) |> cbind(res)
+    results <- tibble(Seed = random_state, n.out=n.out) |> cbind(header) |> cbind(res)
 
     return(results)
 }

@@ -95,7 +95,7 @@ run_outlier_enumeration <- function(data, alpha=0.1, alternative=NULL) {
 
     ## Create a data frame with the p-values
     df <- tibble::tibble(
-                           Method = c("Fisher", "WMW", "WMW_k2", "WMW_k3", "Shirashi_oracle_inc", "Shirashi_g_hat_betamix_inc", "Shirashi_g_hat_mixmodel_inc"),
+                           Method = c("Fisher", "WMW", "WMW_k2", "WMW_k3", "Shirashi_oracle_inc", "Shirashi_ghat_betamix_inc", "Shirashi_ghat_mixmodel_inc"),
                            Lower = c(res.fisher$lower.bound, res.wmw$lower.bound, res.wmw.2$lower.bound, res.wmw.3$lower.bound,
                                      d.g.oracle, res.g.hat.1$lower.bound, res.g.hat.2$lower.bound),
                            p.value = c(res.fisher$p.value, res.wmw$p.value, res.wmw.2$p.value, res.wmw.3$p.value,
