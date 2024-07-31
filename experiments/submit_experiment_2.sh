@@ -10,12 +10,14 @@ if [[ $SETUP == 2 ]]; then
   N_TEST_LIST=(200)
   # List of alternative distributions
 #  ALT_LIST=("uniform" "lehmann_k2" "beta_0.5_0.5" "beta_4_4" "normal_0.5_1" "normal_-0.5_1" "normal_0_0.5" "normal_0_1.5")
-  ALT_LIST=("uniform" "lehmann_k2")
+  ALT_LIST=("uniform" "lehmann_k2" "beta_0.25_0.25" "beta_4_4" "normal_2_1" "normal_-2_1" "normal_0_0.25" "normal_0_2")
+#  ALT_LIST=("beta_0.5_0.5" "beta_4_4" "normal_0.5_1" "normal_-0.5_1" "normal_0_0.5" "normal_0_1.5")
+#  ALT_LIST=("uniform" "lehmann_k2")
   # List of proportions of outlier
 #  PROP_OUT_LIST=(0 0.1 0.2 0.3 0.4 0.5 0.6 0.7)
   PROP_OUT_LIST=(0 0.2 0.4 0.6)
   # Sequence of seeds for randomization
-  SEED_LIST=$(seq 1 1)
+  SEED_LIST=$(seq 1 5)
   MEMO=5G
 
 fi

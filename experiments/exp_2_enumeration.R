@@ -59,7 +59,7 @@ output_file <- paste0("results/", "setup", setup, "/",
 cat("Output file name:", output_file, "\n")
 
 ## Number of repetitions for each experimental setting
-n_exp <- 10
+n_exp <- 20
 
 ## Alpha level
 alpha <- 0.1

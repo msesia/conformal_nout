@@ -79,7 +79,7 @@ run_outlier_enumeration <- function(data, alpha=0.1, alternative=NULL) {
         density_oracle <- function(x) density_scores(x, alternative)
         ## Check whether the oracle is increasing or decreasing
         g.oracle <- choose_best_monotonic_density(density_oracle)$density
-        res.g.oracle <- d_selection_G2(S_X, S_Y, g.oracle=g.oracle, monotone=TRUE, alpha=alpha, n_perm=0, B=10^3, B_MC=10^3, seed=123)
+        res.g.oracle <- d_selection_G2(S_X, S_Y, g.oracle=g.oracle, monotone=TRUE, alpha=alpha, n_perm=0, B=10^3, B_MC=10^4)
         d.g.oracle <- res.g.oracle$lower.bound
         pval.g.oracle <- res.g.oracle$p.value
     } else {
@@ -88,7 +88,7 @@ run_outlier_enumeration <- function(data, alpha=0.1, alternative=NULL) {
     }
 
     ## Apply Shirashi's method using g-hat estimated through beta mixture (monotone)
-    res.g.hat.1 <- d_selection_G2(S_X, S_Y, g.oracle=NULL, monotone=TRUE, fit.method="betamix", prop.cal=0.5, alpha=alpha, n_perm=0, B=10^3, B_MC=10^3, seed=123)
+    res.g.hat.1 <- d_selection_G2(S_X, S_Y, g.oracle=NULL, monotone=TRUE, fit.method="betamix", prop.cal=0.5, alpha=alpha, n_perm=0, B=10^3, B_MC=10^4)
 
     ## Create a data frame with the p-values
     df <- tibble::tibble(
