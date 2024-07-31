@@ -43,8 +43,8 @@
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
 #' res = find_d(X, Y, local.test="higher", k=3, B=100)
-#' res = find_d(X, Y, local.test="g", g.hat = g2, monotonicity="increasing", B=100)
-find_d = function(X, Y, local.test = "wmw", S=NULL, k=NULL, monotonicity=NULL, g.hat=NULL, alpha=0.1, prop.cal=0.5, lambda=0.5, n_perm=0, B=10^3, B_MC=10^3, critical_values=NULL, seed=123){
+#' res = find_d(X, Y, local.test="g", g.hat = g2, monotone=FALSE,, B=100)
+find_d = function(X, Y, local.test = "wmw", S=NULL, k=NULL, monotone=FALSE, g.hat=NULL, alpha=0.1, prop.cal=0.5, lambda=0.5, n_perm=0, B=10^3, B_MC=10^3, critical_values=NULL, seed=123){
 
   local.test = tolower(local.test)
   stopifnot(local.test %in% c("wmw", "higher", "fisher", "g", "simes", "storey"))
@@ -67,7 +67,7 @@ find_d = function(X, Y, local.test = "wmw", S=NULL, k=NULL, monotonicity=NULL, g
 
   } else if(local.test=="g"){
 
-    res = d_selection_G2(X, Y, S=S, g.oracle=g.hat, monotonicity=monotonicity, prop.cal=prop.cal, alpha=alpha, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
+    res = d_selection_G2(X, Y, S=S, g.oracle=g.hat, monotone=monotone, prop.cal=prop.cal, alpha=alpha, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
 
   } else if(local.test=="simes"){
 

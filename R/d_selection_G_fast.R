@@ -7,8 +7,8 @@
 #' @param g.oracle : it can be either a character ("analytical") or a function denoting the outlier density.
 #' If g.oracle=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.
 #' If NULL it is estimated from the data
+#' @param monotone : character indicating if the outlier density function is monotone. Default value is FALSE
 #' @param fit.method: method used to fit g
-#' @param monotonicity : character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is NULL
 #' @param prop.cal  : proportion of inliers used for calibration (the others are used to estimate the inlier distribution)
 #' Default value is 0.5
 #' @param alpha : significance level
@@ -35,12 +35,8 @@
 #' X = stats::runif(50)
 #' Y = replicate(50, rg2(rnull=runif))
 #' res = d_selection_G2(X, Y, B=100)
-#' res = d_selection_G2(X, Y, S = c(1:40), g.oracle = g2, monotonicity="increasing", B=100)
-d_selection_G2 <- function(S_X, S_Y, S=NULL, k=NULL, g.oracle=NULL, fit.method=NULL, monotonicity=NULL, prop.cal=0.5, alpha=0.1, n_perm=10, B=10^3, B_MC=10^3, seed=123){
-
-    if(!is.null(monotonicity)){
-        stopifnot("Error: monotonicity must be either increasing, decreasing"= monotonicity%in%c("decreasing", "increasing"))
-    }
+#' res = d_selection_G2(X, Y, S = c(1:40), g.oracle = g2, monotone=TRUE, B=100)
+d_selection_G2 <- function(S_X, S_Y, S=NULL, k=NULL, g.oracle=NULL, monotone=FALSE, fit.method=NULL, prop.cal=0.5, alpha=0.1, n_perm=10, B=10^3, B_MC=10^3, seed=123){
 
     n = as.double(length(S_Y))
     m = as.double(length(S_X))
@@ -60,10 +56,16 @@ d_selection_G2 <- function(S_X, S_Y, S=NULL, k=NULL, g.oracle=NULL, fit.method=N
         S_ref = S_X[idx_X_2]
         S_pooled = sample(c(S_ref, S_Y))
         ## Estimate g-hat by comparing S_X1 to S_pooled
-        g <- estimate_g(S_X1, S_pooled, method=fit.method, monotone=monotonicity)$pdf
+        g.fit <- estimate_g(S_X1, S_pooled, method=fit.method, monotone=monotone)
+        g <- g.fit$pdf
+        monotonicity <- g.fit$monotonicity
     } else {
         S_ref = S_X
         g <- g.oracle
+        if(monotone) {
+            tol = 1e-3
+            monotonicity <- ifelse(g(1-tol)>g(tol), "increasing", "decreasing")
+        }
     }
 
     if(is.null(monotonicity))
