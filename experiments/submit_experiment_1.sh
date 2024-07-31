@@ -14,7 +14,7 @@ if [[ $SETUP == 1 ]]; then
   # List of proportions of outlier
   PROP_OUT_LIST=(0 0.1 0.2 0.3 0.4 0.5 0.6 0.7)
   # Sequence of seeds for randomization
-  SEED_LIST=$(seq 1 10)
+  SEED_LIST=$(seq 1 1)
   MEMO=5G
 
 fi

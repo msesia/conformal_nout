@@ -118,7 +118,7 @@ kernel_smoothed_pdf_function <- function(cdf_function, n_samples=1000) {
 }
 
 
-fit_beta_mixture <- function(data, num_starts = 10, monotone=NULL) {
+fit_beta_mixture <- function(data, num_starts = 10, monotone=FALSE) {
 
     ## Log-likelihood function
     log_likelihood <- function(params, data) {
@@ -154,20 +154,8 @@ fit_beta_mixture <- function(data, num_starts = 10, monotone=NULL) {
     best_fit <- NULL
     best_log_likelihood <- Inf
 
-    if(is.null(monotone)) {
-        lower <- c(0.01, 0.01, 0.01)
-        upper <- c(Inf, Inf, 0.99)
-    } else if (monotone=="increasing") {
-        lower <- c(1, 0.01, 0.01)
-        upper <- c(Inf, 1, 0.99)
-        
-    } else if (monotone=="decreasing") {
-        lower <- c(0, 1, 0.01)
-        upper <- c(1, Inf, 0.99)
-    } else {
-        print("Error! Unknown constraint.")
-        return(NULL)
-    }
+    lower <- c(0.01, 0.01, 0.01)
+    upper <- c(Inf, Inf, 0.99)
     
     for (i in 1:num_starts) {
         ## Random initial parameter guesses
@@ -260,7 +248,7 @@ estimate_g <- function(scores_reference, scores_pooled, method="betamix", monoto
     ##         g.hat <- NULL
     ##     }
     } else {
-        print("Error: unknown method!")
+        stop("Error: unknown method!")
         g.hat <- NULL
         CDF.hat <- NULL
     }
@@ -299,7 +287,7 @@ compute.global.pvalue.shirashi <- function(S_X, S_Y, g, num_mc=1000) {
     return(p.value)
 }
 
-compute.global.pvalue.shirashi.adaptive <- function(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="betamix", monotone=NULL) {
+compute.global.pvalue.shirashi.adaptive <- function(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="betamix", monotone=FALSE) {
 
     ## Split the reference scores and create pooled vector
     m = length(S_X)
