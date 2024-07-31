@@ -37,10 +37,10 @@ plot_lb_1 <- function() {
 
     results <- load_data(2)
 
-    method.values <- c("Fisher", "WMW", "Shirashi_oracle_inc", "Shirashi_ghat_betamix_inc")
+    method.values <- c("Fisher", "WMW", "Shirashi_oracle", "Shirashi_ghat_betamix")
     method.labels <- c("Fisher", "WMW", "LMP (oracle)", "LMP (empirical, monotone)")
 ##    alternative.values <- c("uniform", "lehmann_k2", "beta_0.5_0.5", "beta_4_4", "normal_0.5_1", "normal_-0.5_1", "normal_0_0.5", "normal_0_1.5")
-    alternative.values <- c("uniform", "lehmann_k2", "beta_0.25_0.25", "beta_4_4", "normal_1_1", "normal_-1_1", "normal_0_2", "normal_0_0.25")
+    alternative.values <- c("uniform", "lehmann_k2", "beta_0.25_0.25", "beta_4_4", "normal_2_1", "normal_-2_1", "normal_0_2", "normal_0_0.25")
     alternative.labels <- c("Uniform (null)", "Lehmann", "Beta (overdispersed)", "Beta (underdispersed)", "Normal (positive shift)", "Normal (negative shift)",
                             "Normal (overdispersed)", "Normal (underdispersed)")
     ## Manual color and shape scales
