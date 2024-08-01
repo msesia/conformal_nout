@@ -11,7 +11,7 @@ make_density_monotone_increasing <- function(g) {
   g.hat.u <- approxfun(iso_fit$x, iso_fit$yf, method = "linear", rule = 2)
   
   ## Normalize the density
-  integral <- integrate(g.hat.u, 0, 1)$value
+  integral <- integrate(g.hat.u, 0, 1, stop.on.error=FALSE)$value
   g.mon <- function(x) g.hat.u(x) / integral
   
   return(g.mon)
@@ -35,7 +35,7 @@ make_density_monotone_decreasing <- function(g) {
   g.hat.u <- approxfun(g.hat.values$x, decreasing_y, method = "linear", rule = 2)
   
   ## Normalize the density
-  integral <- integrate(g.hat.u, 0, 1)$value
+  integral <- integrate(g.hat.u, 0, 1, stop.on.error=FALSE)$value
   g.mon <- function(x) g.hat.u(x) / integral
   
   return(g.mon)
@@ -70,7 +70,7 @@ create_cdf_interpolated <- function(pdf_func, lower_bound=0, upper_bound=1, grid
     ## Compute CDF values on the grid using numerical integration
     cdf_values <- numeric(grid_points)
     for (i in 1:grid_points) {
-        cdf_values[i] <- integrate(pdf_func, lower_bound, x_grid[i])$value
+        cdf_values[i] <- integrate(pdf_func, lower_bound, x_grid[i], stop.on.error=FALSE)$value
     }
     
     ## Create interpolation function

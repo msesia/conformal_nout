@@ -1,9 +1,9 @@
 options(width = 300)
 
 library(tidyverse)
-library(latex2exp)
+#library(latex2exp)
 library(RColorBrewer)
-library(kableExtra)
+#library(kableExtra)
 
 plot.power_1 <- TRUE
 plot.lb_1 <- TRUE
@@ -109,7 +109,19 @@ plot_power_1 <- function() {
     results <- load_data(1)
     
 
-    init_settings()
+    method.values <- c("Fisher", "WMW", "Shirashi_oracle", "Shirashi_ghat_betamix", "Shirashi_ghat_betamix_inc")
+    method.labels <- c("Fisher", "WMW", "LMP (oracle)", "LMP (empirical)", "LMP (empirical, monotone)")
+    alternative.values <- c("uniform", "lehmann_k2", "beta_0.25_0.25", "beta_4_4", "normal_2_1", "normal_-2_1", "normal_0_2", "normal_0_0.25")
+    alternative.labels <- c("Uniform (null)", "Lehmann", "Beta (overdispersed)", "Beta (underdispersed)", "Normal (positive shift)", "Normal (negative shift)",
+                            "Normal (overdispersed)", "Normal (underdispersed)")
+    ## Manual color and shape scales
+    colors <- c("Fisher" = "#66A9D2",
+                "WMW" = "#E69F00", 
+                "LMP (oracle)" = "#00441B",    # Very dark green
+                "LMP (empirical)" = "#238B45", # Darker green
+                "LMP (empirical, monotone)" = "#41AB5D") # Dark green
+    shapes <- c("Fisher" = 1, "WMW" = 2, "LMP (oracle)" = 8, 
+                "LMP (empirical)" = 15, "LMP (empirical, monotone)" = 16)
 
     ## Significance level
     alpha <- 0.1
@@ -133,13 +145,13 @@ plot_power_1 <- function() {
     plot_power_for_n <- function(n_cal.plot, n_test.plot) {
         ## Filter for the specified alternative
         df <- power_results |>
-        filter(n_cal==n_cal.plot, n_test == n_test.plot)
+        filter(n_cal==n_cal.plot, n_test == n_test.plot, prop_out<=0.25)
         ## Make plot
         pp <- df |>
         ggplot(aes(x = prop_out, y = Power, color = Method, shape = Method)) +
             geom_line() +
             geom_point() +
-##            geom_errorbar(aes(ymin = Power - 2*SE, ymax = Power + 2*SE), width = 0.02) +
+            geom_errorbar(aes(ymin = Power - 2*SE, ymax = Power + 2*SE), width = 0.02) +
             geom_hline(yintercept = alpha, linetype = 2) +
             facet_wrap(.~Alternative, nrow=2, labeller="label_value") +
             ylim(0,1) +

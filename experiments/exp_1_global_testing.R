@@ -13,7 +13,7 @@ source("../R/utils_g.R")
 ###########################
 
 ## Flag to determine if input should be parsed from command line
-parse_input <- TRUE
+parse_input <- FALSE
 
 if(parse_input) {
     ## Reading command line arguments
@@ -32,11 +32,11 @@ if(parse_input) {
 } else {
     ## Use default values
     setup <- 1
-    n_cal <- 200
-    n_test <- 100
+    n_cal <- 500
+    n_test <- 200
     seed <- 1
-    alternative <- "lehmann_k2"
-    prop_out <- 0.25
+    alternative <- "beta_0.25_0.25"
+    prop_out <- 0.05
 }
 
 ## Print the values to verify they are correctly assigned
