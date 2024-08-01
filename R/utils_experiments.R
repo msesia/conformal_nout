@@ -37,19 +37,19 @@ run_global_testing <- function(data, alternative=NULL) {
     ## Apply Shirashi's method using g-hat estimated through beta mixture
     pval.g.hat.1 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="betamix")
 
-        ## Apply Shirashi's method using g-hat estimated through beta mixture (increasing)
+    ## Apply Shirashi's method using g-hat estimated through beta mixture (increasing)
     pval.g.hat.2 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="betamix", monotone=TRUE)
 
-    ## ## Apply Shirashi's method using g-hat estimated through mixmodel
-    ## pval.g.hat.3 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="mixmodel")
+    ## Apply Shirashi's method using g-hat estimated through mixmodel
+    pval.g.hat.3 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="mixmodel")
 
-    ## ## Apply Shirashi's method using g-hat estimated through mixmodel (increasing)
-    ## pval.g.hat.4 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="mixmodel", monotone=TRUE)
+    ## Apply Shirashi's method using g-hat estimated through mixmodel (increasing)
+    pval.g.hat.4 <- compute.global.pvalue.shirashi.adaptive(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="mixmodel", monotone=TRUE)
 
     ## Create a data frame with the p-values
     pval_df <- tibble::tibble(
-                           Method = c("Fisher", "WMW", "WMW_k2", "WMW_k3", "Shirashi_oracle", "Shirashi_ghat_betamix", "Shirashi_ghat_betamix_inc"),
-                           p.value = c(pval.fisher, pval.wmw, pval.wmw.2, pval.wmw.3, pval.g.oracle, pval.g.hat.1, pval.g.hat.2)
+                           Method = c("Fisher", "WMW", "WMW_k2", "WMW_k3", "Shirashi_oracle", "Shirashi_ghat_betamix", "Shirashi_ghat_betamix_inc", "Shirashi_ghat_mixmodel", "Shirashi_ghat_mixmodel_inc"),
+                           p.value = c(pval.fisher, pval.wmw, pval.wmw.2, pval.wmw.3, pval.g.oracle, pval.g.hat.1, pval.g.hat.2, pval.g.hat.3, pval.g.hat.4)
                        )
 
     return(pval_df)

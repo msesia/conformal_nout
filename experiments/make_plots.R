@@ -17,7 +17,7 @@ load_data <- function(setup) {
     return(results)
 }
 
-init_settings <- function(idx.exclude=NULL) { 
+init_settings <- function(idx.exclude=NULL) {
     method.values <- c("Fisher", "WMW", "Shirashi_oracle", "Shirashi_ghat_betamix", "Shirashi_ghat_betamix_inc")
     method.labels <- c("Fisher", "WMW", "LMP (oracle)", "LMP (empirical)", "LMP (empirical, monotone)")
     alternative.values <- c("uniform", "lehmann_k2", "beta_0.5_0.5", "beta_4_4", "normal_0.5_1", "normal_-0.5_1", "normal_0_1.5", "normal_0_0.5")
@@ -25,11 +25,11 @@ init_settings <- function(idx.exclude=NULL) {
                             "Normal (overdispersed)", "Normal (underdispersed)")
     ## Manual color and shape scales
     colors <- c("Fisher" = "#66A9D2",
-                "WMW" = "#E69F00", 
+                "WMW" = "#E69F00",
                 "LMP (oracle)" = "#00441B",    # Very dark green
                 "LMP (empirical)" = "#238B45", # Darker green
                 "LMP (empirical, monotone)" = "#41AB5D") # Dark green
-    shapes <- c("Fisher" = 1, "WMW" = 2, "LMP (oracle)" = 8, 
+    shapes <- c("Fisher" = 1, "WMW" = 2, "LMP (oracle)" = 8,
                 "LMP (empirical)" = 15, "LMP (empirical, monotone)" = 16)
 }
 
@@ -45,12 +45,12 @@ plot_lb_1 <- function() {
                             "Normal (overdispersed)", "Normal (underdispersed)")
     ## Manual color and shape scales
     colors <- c("Fisher" = "#66A9D2",
-                "WMW" = "#E69F00", 
+                "WMW" = "#E69F00",
                 "LMP (oracle)" = "#00441B",    # Very dark green
                 "LMP (empirical, monotone)" = "#238B45") # Darker green
-    shapes <- c("Fisher" = 1, "WMW" = 2, "LMP (oracle)" = 8, 
+    shapes <- c("Fisher" = 1, "WMW" = 2, "LMP (oracle)" = 8,
                 "LMP (empirical)" = 15, "LMP (empirical, monotone)" = 16)
-    
+
     ## Calculate power for different methods and prop_out values
     lb_results.raw <- results %>%
         mutate(n.out = round(n_test*prop_out)) |>
@@ -88,14 +88,14 @@ plot_lb_1 <- function() {
                  x = "Number of Outliers",
                  y = "Lower bound",
                  color = "Method") +
-            theme(legend.position = "bottom")       
+            theme(legend.position = "bottom")
         ## Save the plot as a PNG file
         filename <- sprintf("figures/lb_ncal%d_ntest%d.png", n_cal.plot, n_test.plot)
         ggsave(filename = filename, plot = pp, width = 10, height = 5)
     }
 
     plot_lb_for_n(500,200)
-    
+
 }
 
 if(plot.lb_1) {
@@ -104,23 +104,32 @@ if(plot.lb_1) {
 
 
 
-plot_power_1 <- function() {
+plot_power_1 <- function(setup) {
 
-    results <- load_data(1)
-    
+    results <- load_data(setup)
 
     method.values <- c("Fisher", "WMW", "Shirashi_oracle", "Shirashi_ghat_betamix", "Shirashi_ghat_betamix_inc")
     method.labels <- c("Fisher", "WMW", "LMP (oracle)", "LMP (empirical)", "LMP (empirical, monotone)")
-    alternative.values <- c("uniform", "lehmann_k2", "beta_0.25_0.25", "beta_4_4", "normal_2_1", "normal_-2_1", "normal_0_2", "normal_0_0.25")
+
+    if(setup==1) {
+        n_cal.plot <- 500
+        n_test.plot <- 200
+        alternative.values <- c("uniform", "lehmann_k2", "beta_0.25_0.25", "beta_10_10", "normal_1.5_1", "normal_-1.5_1", "normal_0_2", "normal_0_0.25")
+    } else {
+        n_cal.plot <- 2000
+        n_test.plot <- 1000
+        alternative.values <- c("uniform", "lehmann_k2", "beta_0.5_0.5", "beta_4_4", "normal_0.75_1", "normal_-0.75_1", "normal_0_1.5", "normal_0_0.5")
+    }
     alternative.labels <- c("Uniform (null)", "Lehmann", "Beta (overdispersed)", "Beta (underdispersed)", "Normal (positive shift)", "Normal (negative shift)",
                             "Normal (overdispersed)", "Normal (underdispersed)")
+    
     ## Manual color and shape scales
     colors <- c("Fisher" = "#66A9D2",
-                "WMW" = "#E69F00", 
+                "WMW" = "#E69F00",
                 "LMP (oracle)" = "#00441B",    # Very dark green
                 "LMP (empirical)" = "#238B45", # Darker green
                 "LMP (empirical, monotone)" = "#41AB5D") # Dark green
-    shapes <- c("Fisher" = 1, "WMW" = 2, "LMP (oracle)" = 8, 
+    shapes <- c("Fisher" = 1, "WMW" = 2, "LMP (oracle)" = 8,
                 "LMP (empirical)" = 15, "LMP (empirical, monotone)" = 16)
 
     ## Significance level
@@ -134,9 +143,8 @@ plot_power_1 <- function() {
             SE = sqrt((Power * (1 - Power)) / n())
         )
 
-    
+
     power_results <- power_results.raw |>
-    filter(n_test == 200) |>
     filter(Method %in% method.values, alternative %in% alternative.values) |>
     mutate(Alternative = factor(alternative, alternative.values, alternative.labels),
            Method = factor(Method, method.values, method.labels))
@@ -148,7 +156,8 @@ plot_power_1 <- function() {
         filter(n_cal==n_cal.plot, n_test == n_test.plot, prop_out<=0.25)
         ## Make plot
         pp <- df |>
-        ggplot(aes(x = prop_out, y = Power, color = Method, shape = Method)) +
+        mutate(n_out = round(prop_out*n_test)) |>
+        ggplot(aes(x = n_out, y = Power, color = Method, shape = Method)) +
             geom_line() +
             geom_point() +
             geom_errorbar(aes(ymin = Power - 2*SE, ymax = Power + 2*SE), width = 0.02) +
@@ -159,32 +168,30 @@ plot_power_1 <- function() {
             scale_color_manual(values = colors) +
             scale_shape_manual(values = shapes) +
             labs(#title = paste("Power of Different Methods for Global Testing"),
-                 #subtitle = sprintf("Calibration size: %d, Test size: %d", n_cal.plot, n_test.plot),
-                 x = "Proportion of Outliers",
-                 y = "Power",
-                 color = "Method") +
-            theme(legend.position = "bottom")       
+                                        #subtitle = sprintf("Calibration size: %d, Test size: %d", n_cal.plot, n_test.plot),
+                x = "Number of Outliers",
+                y = "Power",
+                color = "Method") +
+            theme(legend.position = "bottom")
         ## Save the plot as a PNG file
         filename <- sprintf("figures/power_ncal%d_ntest%d.png", n_cal.plot, n_test.plot)
         ggsave(filename = filename, plot = pp, width = 10, height = 5)
     }
-
-    ##    plot_power_for_n(200, 200)
-    plot_power_for_n(500, 200)
-
-    
+    plot_power_for_n(n_cal.plot, n_test.plot)
 }
+
 
 if(plot.power_1) {
-    plot_power_1()
+    plot_power_1(1)
+    plot_power_1(2)
 }
 
 
-    
+
     ## Function to plot and save the power plot for a given alternative value
     plot_power_for_alternative <- function(alt.idx) {
         alternative.plot <- alternative.labels[alt.idx]
-        alternative.plot.value <- alternative.values[alt.idx]       
+        alternative.plot.value <- alternative.values[alt.idx]
         ## Filter for the specified alternative
         df <- power_results |>
         filter(alternative == alternative.plot)
@@ -203,7 +210,7 @@ if(plot.power_1) {
                  x = "Proportion of Outliers",
                  y = "Power",
                  color = "Method") +
-            theme(legend.position = "bottom")       
+            theme(legend.position = "bottom")
         ## Save the plot as a PNG file
         filename <- paste0("figures/power_", alternative.plot.value, ".png")
         ggsave(filename = filename, plot = pp, width = 8, height = 6)
@@ -214,7 +221,7 @@ if(plot.power_1) {
         plot_power_for_alternative(alt.idx)
     }
 
-    
+
     ## Example usage:
     plot_power_for_alternative(1)
 
@@ -234,5 +241,5 @@ if(plot.power_1) {
              y = "Power",
              color = "Method")
 
-    
+
 }
