@@ -1,3 +1,42 @@
+plot_density <- function(function_list) {
+  # Generate a sequence of values between 0 and 1
+  x_values <- seq(0, 1, length.out = 1000)
+  
+  # Create an empty list to store plot data
+  plot_data_list <- list()
+  
+  # Loop through each function in the list
+  for (function_name in names(function_list)) {
+    my_function <- function_list[[function_name]]
+    
+    # Evaluate the function at these points
+    y_values <- sapply(x_values, my_function)
+    
+    # Add padding values
+    x_values_padded <- c(-1e-2, -1e-6, x_values, 1 + 1e-6, 1 + 1e-2)
+    y_values_padded <- c(0, 0, y_values, 0, 0)
+    
+    # Create a data frame for the current function
+    plot_data <- data.frame(x = x_values_padded, y = y_values_padded, function_name = function_name)
+    
+    # Add to the list
+    plot_data_list[[function_name]] <- plot_data
+  }
+  
+  # Combine all data frames into one
+  combined_plot_data <- do.call(rbind, plot_data_list)
+  
+  # Plot the functions with different colors
+  ggplot(combined_plot_data, aes(x = x, y = y, color = function_name)) +
+    geom_line() +
+    ylim(0, NA) +
+    theme_minimal(base_size = 15) +
+    labs(title = "Plot of Density Functions from 0 to 1",
+         x = "x",
+         y = "Probability density") +
+    scale_color_discrete(name = "Density")
+}
+
 ## Function to make density function monotone increasing
 make_density_monotone_increasing <- function(g) {
   tol = 1e-3
@@ -218,6 +257,7 @@ estimate_g <- function(scores_reference, scores_pooled, method="betamix", monoto
         ## Fit beta mixture model
         betafit <- fit_beta_mixture(scores_pooled)
         g.hat <- function(x) dbeta(x, betafit$shape1, betafit$shape2)
+        g.hat.o <- g.hat
         CDF.hat <- function(x) pbeta(x, betafit$shape1, betafit$shape2)
     } else if (method=="mixmodel") {
         g.hat <- fit_mixmodel(scores_pooled)

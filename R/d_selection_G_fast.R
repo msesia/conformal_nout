@@ -69,10 +69,10 @@ d_selection_G2 <- function(S_X, S_Y, S=NULL, k=NULL, g.oracle=NULL, monotone=FAL
     }
 
     if(is.null(monotonicity))
-        res = d_G_cons2(S_X=S_ref, S_Y=S_Y, S=S, g.hat=g, k=k, alpha=alpha, n_perm=n_perm, B=B, seed=seed)
+        res = d_G_cons2(S_X=S_ref, S_Y=S_Y, S=S, g.hat=g, k=k, alpha=alpha, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
     else{
         decr = ifelse(monotonicity=="increasing", FALSE, TRUE)
-        res = d_G_monotone2(S_X=S_ref, S_Y=S_Y, S=S, g.hat=g, decr=decr, k=k, alpha=alpha, n_perm=n_perm, B=B, seed=seed)
+        res = d_G_monotone2(S_X=S_ref, S_Y=S_Y, S=S, g.hat=g, decr=decr, k=k, alpha=alpha, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
     }
 
     return(res)

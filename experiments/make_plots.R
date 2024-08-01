@@ -17,30 +17,13 @@ load_data <- function(setup) {
     return(results)
 }
 
-init_settings <- function(idx.exclude=NULL) {
-    method.values <- c("Fisher", "WMW", "Shirashi_oracle", "Shirashi_ghat_betamix", "Shirashi_ghat_betamix_inc")
-    method.labels <- c("Fisher", "WMW", "LMP (oracle)", "LMP (empirical)", "LMP (empirical, monotone)")
-    alternative.values <- c("uniform", "lehmann_k2", "beta_0.5_0.5", "beta_4_4", "normal_0.5_1", "normal_-0.5_1", "normal_0_1.5", "normal_0_0.5")
-    alternative.labels <- c("Uniform (null)", "Lehmann", "Beta (overdispersed)", "Beta (underdispersed)", "Normal (positive shift)", "Normal (negative shift)",
-                            "Normal (overdispersed)", "Normal (underdispersed)")
-    ## Manual color and shape scales
-    colors <- c("Fisher" = "#66A9D2",
-                "WMW" = "#E69F00",
-                "LMP (oracle)" = "#00441B",    # Very dark green
-                "LMP (empirical)" = "#238B45", # Darker green
-                "LMP (empirical, monotone)" = "#41AB5D") # Dark green
-    shapes <- c("Fisher" = 1, "WMW" = 2, "LMP (oracle)" = 8,
-                "LMP (empirical)" = 15, "LMP (empirical, monotone)" = 16)
-}
-
 plot_lb_1 <- function() {
 
-    results <- load_data(2)
+    results <- load_data(10)
 
     method.values <- c("Fisher", "WMW", "Shirashi_oracle", "Shirashi_ghat_betamix")
     method.labels <- c("Fisher", "WMW", "LMP (oracle)", "LMP (empirical, monotone)")
-##    alternative.values <- c("uniform", "lehmann_k2", "beta_0.5_0.5", "beta_4_4", "normal_0.5_1", "normal_-0.5_1", "normal_0_0.5", "normal_0_1.5")
-    alternative.values <- c("uniform", "lehmann_k2", "beta_0.25_0.25", "beta_4_4", "normal_2_1", "normal_-2_1", "normal_0_2", "normal_0_0.25")
+    alternative.values <- c("uniform", "lehmann_k2", "beta_0.25_0.25", "beta_10_10", "normal_1.5_1", "normal_-1.5_1", "normal_0_2", "normal_0_0.25")
     alternative.labels <- c("Uniform (null)", "Lehmann", "Beta (overdispersed)", "Beta (underdispersed)", "Normal (positive shift)", "Normal (negative shift)",
                             "Normal (overdispersed)", "Normal (underdispersed)")
     ## Manual color and shape scales
@@ -79,6 +62,7 @@ plot_lb_1 <- function() {
             geom_point() +
             geom_errorbar(aes(ymin = LB - 2*SE, ymax = LB + 2*SE), width = 0.02) +
             geom_abline(slope=1, linetype = 2) +
+#            geom_hline(yintercept=15, alpha=0, linetype = 2) +
             facet_wrap(.~Alternative, nrow=2, labeller="label_value") +
             theme_bw(base_size = 15) +
             scale_color_manual(values = colors) +
@@ -133,7 +117,7 @@ plot_power_1 <- function(setup) {
                 "LMP (empirical)" = 15, "LMP (empirical, monotone)" = 16)
 
     ## Significance level
-    alpha <- 0.1
+    alpha <- 0.05
 
     ## Calculate power for different methods and prop_out values
     power_results.raw <- results %>%
