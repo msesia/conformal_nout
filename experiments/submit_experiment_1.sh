@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Parameters
-SETUP=2
+SETUP=1
 
 if [[ $SETUP == 1 ]]; then
   # List of calibration sample sizes
@@ -10,7 +10,6 @@ if [[ $SETUP == 1 ]]; then
   N_TEST_LIST=(200)
   # List of alternative distributions
   ALT_LIST=("uniform" "lehmann_k2" "beta_0.25_0.25" "beta_10_10" "normal_1.5_1" "normal_-1.5_1" "normal_0_0.25" "normal_0_2")
-#  ALT_LIST=("uniform" "lehmann_k2")
   # List of proportions of outlier
   PROP_OUT_LIST=(0 0.05 0.1 0.15 0.2 0.25)
   # Sequence of seeds for randomization
@@ -24,7 +23,6 @@ elif [[ $SETUP == 2 ]]; then
   N_TEST_LIST=(1000)
   # List of alternative distributions
   ALT_LIST=("uniform" "lehmann_k2" "beta_0.5_0.5" "beta_4_4" "normal_0.75_1" "normal_-0.75_1" "normal_0_0.5" "normal_0_1.5")
-#  ALT_LIST=("uniform" "lehmann_k2")
   # List of proportions of outlier
   PROP_OUT_LIST=(0 0.05 0.1 0.15 0.2 0.25)
   # Sequence of seeds for randomization

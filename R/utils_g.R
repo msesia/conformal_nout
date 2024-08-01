@@ -65,7 +65,8 @@ choose_best_monotonic_density <- function(g) {
 ## Function to create CDF using interpolation
 create_cdf_interpolated <- function(pdf_func, lower_bound=0, upper_bound=1, grid_points = 1000) {
     ## Generate a sequence of x values within the specified bounds
-    x_grid <- seq(lower_bound, upper_bound, length.out = grid_points)
+    tol = 1e-4
+    x_grid <- seq(lower_bound+tol, upper_bound-tol, length.out = grid_points)
 
     ## Compute CDF values on the grid using numerical integration
     cdf_values <- numeric(grid_points)
