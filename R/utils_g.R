@@ -12,7 +12,7 @@ make_density_monotone_increasing <- function(g) {
   
   ## Normalize the density
   integral <- integrate(g.hat.u, 0, 1, stop.on.error=FALSE)$value
-  g.mon <- function(x) g.hat.u(x) / integral
+  g.mon <- function(x) g.hat.u(x) / pmax(1e-6, integral)
   
   return(g.mon)
 }
@@ -36,7 +36,7 @@ make_density_monotone_decreasing <- function(g) {
   
   ## Normalize the density
   integral <- integrate(g.hat.u, 0, 1, stop.on.error=FALSE)$value
-  g.mon <- function(x) g.hat.u(x) / integral
+  g.mon <- function(x) g.hat.u(x) / pmax(1e-6, integral)
   
   return(g.mon)
 }
@@ -49,7 +49,7 @@ choose_best_monotonic_density <- function(g) {
   # Generate monotone increasing and decreasing density functions
   g.hat.inc <- make_density_monotone_increasing(g)
   g.hat.dec <- make_density_monotone_decreasing(g)
-  
+
   # Calculate residual sum of squares (RSS) for increasing and decreasing densities
   rss.inc <- sum((g.hat.inc(x.grid) - g(x.grid))^2)
   rss.dec <- sum((g.hat.dec(x.grid) - g(x.grid))^2)
@@ -107,7 +107,7 @@ kernel_smoothed_pdf_function <- function(cdf_function, n_samples=1000) {
 
   ## Normalize the PDF
   integral_value <- sum(density_est$y) * diff(density_est$x[1:2])
-  normalized_pdf_values <- density_est$y / integral_value
+  normalized_pdf_values <- density_est$y / pmax(1e-6, integral_value)
 
   ## Create a function to return the normalized PDF
   normalized_pdf_function <- function(x) {
