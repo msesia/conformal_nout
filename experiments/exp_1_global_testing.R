@@ -13,7 +13,7 @@ source("../R/utils_g.R")
 ###########################
 
 ## Flag to determine if input should be parsed from command line
-parse_input <- FALSE
+parse_input <- TRUE
 
 if(parse_input) {
     ## Reading command line arguments

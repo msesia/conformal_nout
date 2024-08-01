@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Parameters
-SETUP=2
+SETUP=10
 
-if [[ $SETUP == 2 ]]; then
+if [[ $SETUP == 10 ]]; then
   # List of calibration sample sizes
   N_CAL_LIST=(500)
   # List of test sample sizes
