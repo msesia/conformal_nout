@@ -2,7 +2,7 @@
 #'
 #' @param X : calibration score vector
 #' @param Y : test score vector
-#' @param local.test : local test to be used in the closed testing procedure.
+#' @param local_test : local test to be used in the closed testing procedure.
 #' It can be either "wmw" for Wilcoxon rank sum test, "higher" for higher order Wilcoxon rank sum tests,
 #' "fisher" for Fisher's combination test, "g" for the test by Shiraishi (1985), "simes" for Simes' test or
 #' "storey" for Simes' test using Storey's estimator for the proportion of true null hypotheses.
@@ -16,7 +16,7 @@
 #' Default value is 0.5
 #' @param lambda : parameter to be specified when computing Storey's estimator. Default value is 0.5
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local.test is either "higher" or "fisher"
+#' local_test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param B_MC : number of replications to compute the Shiraishi test statistic
 #' @param critical_values : if not \code{NULL}, a vector of precomputed critical values obtained using
@@ -42,38 +42,38 @@
 #'
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
-#' res = find_d(X, Y, local.test="higher", k=3, B=100)
-#' res = find_d(X, Y, local.test="g", g.hat = g2, monotone=FALSE,, B=100)
-find_d = function(X, Y, local.test = "wmw", S=NULL, k=NULL, monotone=FALSE, g.hat=NULL, alpha=0.1, prop.cal=0.5, lambda=0.5, n_perm=0, B=10^3, B_MC=10^3, critical_values=NULL, seed=123){
+#' res = find_d(X, Y, local_test="higher", k=3, B=100)
+#' res = find_d(X, Y, local_test="g", g.hat = g2, monotone=FALSE,, B=100)
+find_d = function(X, Y, local_test = "wmw", S=NULL, k=NULL, monotone=FALSE, g.hat=NULL, alpha=0.1, prop.cal=0.5, lambda=0.5, n_perm=0, B=10^3, B_MC=10^3, critical_values=NULL, seed=123){
 
-  local.test = tolower(local.test)
-  stopifnot(local.test %in% c("wmw", "higher", "fisher", "g", "simes", "storey"))
+  local_test = tolower(local_test)
+  stopifnot(local_test %in% c("wmw", "higher", "fisher", "g", "simes", "storey"))
 
-  if(local.test=="higher"){
+  if(local_test=="higher"){
     stopifnot(k%%1==0 & k>0)
-    if(k==1) local.test = "wmw"
+    if(k==1) local_test = "wmw"
   }
 
-  if(local.test=="wmw") k=1
+  if(local_test=="wmw") k=1
 
 
-  if(local.test=="wmw" || local.test=="higher"){
+  if(local_test=="wmw" || local_test=="higher"){
 
     res = d_selection_higher(X, Y, S=S, k=k, alpha=alpha, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed )
 
-  } else if(local.test=="fisher"){
+  } else if(local_test=="fisher"){
 
     res = d_selection_fisher(X, Y, S=S, alpha=alpha, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed )
 
-  } else if(local.test=="g"){
+  } else if(local_test=="g"){
 
     res = d_selection_G2(X, Y, S=S, g.oracle=g.hat, monotone=monotone, prop.cal=prop.cal, alpha=alpha, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
 
-  } else if(local.test=="simes"){
+  } else if(local_test=="simes"){
 
     res = d_selection_simes(X, Y, S=S, alpha=alpha)
 
-  } else if(local.test=="storey"){
+  } else if(local_test=="storey"){
 
     res = d_selection_storey(X, Y, S=S, alpha=alpha, lambda=lambda)
 

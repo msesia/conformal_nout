@@ -5,12 +5,12 @@
 #' @param S_X :  calibration score vector
 #' @param S_Y : test score vector
 #' @param S : selection set in the index test set
-#' @param local.test : it can be either "wmw" for Wilcoxon rank sum test or "higher" for higher order Wilcoxon rank sum test
+#' @param local_test : it can be either "wmw" for Wilcoxon rank sum test or "higher" for higher order Wilcoxon rank sum test
 #' @param k : order of the generalized Wilcoxon rank sum test. Classic Wilcoxon test corresponds to \eqn{k=1}
 #' @param alpha : significance level
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local.test is either "higher" or "fisher"
+#' local_test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param critical_values : if not \code{NULL}, a vector of precomputed critical values obtained using
 #' the permutation distribution of the test statistic
@@ -32,18 +32,18 @@
 #'
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
-#' res = d_selection_higher(X, Y, local.test="WMW", n_perm=0, B=100)
-#' res = d_selection_higher(X, Y, local.test="higher", k=2, S = c(1:7), B=100)
-d_selection_higher = function(S_X, S_Y, S=NULL, local.test="wmw", k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, critical_values=NULL, seed=123){
+#' res = d_selection_higher(X, Y, local_test="WMW", n_perm=0, B=100)
+#' res = d_selection_higher(X, Y, local_test="higher", k=2, S = c(1:7), B=100)
+d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, critical_values=NULL, seed=123){
 
-  local.test=tolower(local.test)
-  stopifnot(local.test %in% c("wmw", "higher"))
+  local_test=tolower(local_test)
+  stopifnot(local_test %in% c("wmw", "higher"))
 
-  if(local.test=="wmw") {
+  if(local_test=="wmw") {
     k=1
   } else { stopifnot(k>1 & k%%1==0) }
 
-  if(k==1) local.test="wmw"
+  if(k==1) local_test="wmw"
 
   m = as.double(length(S_X))
   n = as.double(length(S_Y))
@@ -73,7 +73,7 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local.test="wmw", k=NULL, alpha=
     R = sapply(length(ZZ):1, function(h) stat.Tk(Z=ZZ[[h]], m=m, k=k))
 
     # Compute all critical values for (m,k) from k in {1,...,n}
-    crit = as.double(compute.critical.values(m=m, n=n, local.test=local.test,
+    crit = as.double(compute.critical.values(m=m, n=n, local_test=local_test,
                                              alpha=alpha, k=k, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed))
 
     T_wc = sapply(1:length(R), function(h) sum(R[[h]]))
@@ -85,7 +85,7 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local.test="wmw", k=NULL, alpha=
     ## Compute p-value for the global null
     T.global = T_wc[s]
 
-    pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local.test="higher", k=k, n_perm=n_perm, B=B, seed=seed)
+    pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local_test="higher", k=k, n_perm=n_perm, B=B, seed=seed)
 
     ## Compute p-value for the selected null
     ## NOTE: this calculation is missing
@@ -98,7 +98,7 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local.test="wmw", k=NULL, alpha=
 
     R = stat.Tk(Z=ZZ, m=m, k=k)
     T.global = sum(R)
-    pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=n, local.test="higher", k=k, n_perm=n_perm, B=B, seed=seed)
+    pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=n, local_test="higher", k=k, n_perm=n_perm, B=B, seed=seed)
     d=0
   }
 

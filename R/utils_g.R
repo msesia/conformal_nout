@@ -1,40 +1,12 @@
-plot_density <- function(function_list) {
-  # Generate a sequence of values between 0 and 1
-  x_values <- seq(0, 1, length.out = 1000)
-  
-  # Create an empty list to store plot data
-  plot_data_list <- list()
-  
-  # Loop through each function in the list
-  for (function_name in names(function_list)) {
-    my_function <- function_list[[function_name]]
-    
-    # Evaluate the function at these points
-    y_values <- sapply(x_values, my_function)
-    
-    # Add padding values
-    x_values_padded <- c(-1e-2, -1e-6, x_values, 1 + 1e-6, 1 + 1e-2)
-    y_values_padded <- c(0, 0, y_values, 0, 0)
-    
-    # Create a data frame for the current function
-    plot_data <- data.frame(x = x_values_padded, y = y_values_padded, function_name = function_name)
-    
-    # Add to the list
-    plot_data_list[[function_name]] <- plot_data
-  }
-  
-  # Combine all data frames into one
-  combined_plot_data <- do.call(rbind, plot_data_list)
-  
-  # Plot the functions with different colors
-  ggplot(combined_plot_data, aes(x = x, y = y, color = function_name)) +
-    geom_line() +
-    ylim(0, NA) +
-    theme_minimal(base_size = 15) +
-    labs(title = "Plot of Density Functions from 0 to 1",
-         x = "x",
-         y = "Probability density") +
-    scale_color_discrete(name = "Density")
+standardize_to_uniform <- function(X1, X2) {
+  # Rank the data and scale ranks to [0, 1]
+  n1 <- length(X1)
+  X.pool <- c(X1, X2)
+  n.pool <- length(X.pool)
+  uniform_data <- rank(X.pool, ties.method = "average") / (n.pool + 1)
+  X1.s <- uniform_data[1:n1]
+  X2.s <- uniform_data[(n1+1):n.pool]
+  return(list(X1=X1.s, X2=X2.s))
 }
 
 ## Function to make density function monotone increasing
@@ -245,9 +217,8 @@ fit_beta_mixture <- function(data, num_starts = 10) {
 }
 
 estimate_g <- function(scores_reference, scores_pooled, method="betamix", monotone=FALSE) {
-
     ## Transform the reference scores to make them approximately uniform
-    null.fit <- fitdistrplus::fitdist(scores_reference, "beta", start = list(shape1 = 0.999, shape2 = 0.999))
+    null.fit <- fitdistrplus::fitdist(as.numeric(scores_reference), "beta", start = list(shape1 = 0.999, shape2 = 0.999))
     F.hat <- function(x) pbeta(x, null.fit$estimate[[1]], null.fit$estimate[[2]])
     scores_pooled = F.hat(scores_pooled)
 
@@ -308,7 +279,7 @@ compute.global.pvalue.shirashi <- function(S_X, S_Y, g, num_mc=1000) {
     return(p.value)
 }
 
-compute.global.pvalue.shirashi.adaptive <- function(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit.method="betamix", monotone=FALSE) {
+compute.global.pvalue.shirashi.adaptive <- function(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit_method="betamix", monotone=FALSE) {
 
     ## Split the reference scores and create pooled vector
     m = length(S_X)
@@ -322,7 +293,7 @@ compute.global.pvalue.shirashi.adaptive <- function(S_X, S_Y, prop_cal=0.5, num_
     S_pooled = sample(c(S_X2, S_Y))
 
     ## Estimate g-hat by comparing S_X1 to S_pooled
-    g.hat <- estimate_g(S_X1, S_pooled, method=fit.method, monotone=monotone)$pdf
+    g.hat <- estimate_g(S_X1, S_pooled, method=fit_method, monotone=monotone)$pdf
 
     ## Carry out test by comparing S_X2 to S_Y
     p.val <- compute.global.pvalue.shirashi(S_X2, S_Y, g.hat, num_mc=num_mc)

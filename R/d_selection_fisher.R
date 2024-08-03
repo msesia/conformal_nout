@@ -6,7 +6,7 @@
 #' @param alpha : significance level
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local.test is either "higher" or "fisher"
+#' local_test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param critical_values : if not \code{NULL}, a vector of precomputed critical values obtained using
 #' the permutation distribution of the test statistic
@@ -43,7 +43,7 @@ d_selection_fisher = function(S_X, S_Y, S=NULL, alpha=0.1, pvalue_only=FALSE, n_
 
   if(!pvalue_only){
     # Compute all critical values for (m,k) from k in {1,...,n}
-    crit = as.double(compute.critical.values(m=m, n=n, local.test="fisher", alpha=alpha, n_perm=n_perm, B=B,
+    crit = as.double(compute.critical.values(m=m, n=n, local_test="fisher", alpha=alpha, n_perm=n_perm, B=B,
                                              critical_values=critical_values,
                                              seed=seed))
 
@@ -56,7 +56,7 @@ d_selection_fisher = function(S_X, S_Y, S=NULL, alpha=0.1, pvalue_only=FALSE, n_
     ## Compute p-value for the global null
     T.global = sum(R)
 
-    pval.global = compute.global.pvalue(T.obs=T.global, local.test="fisher", m=m, n=n,
+    pval.global = compute.global.pvalue(T.obs=T.global, local_test="fisher", m=m, n=n,
                                         n_perm=n_perm, B=B, seed=seed)
 
     ## Compute p-value for the selected null
@@ -67,7 +67,7 @@ d_selection_fisher = function(S_X, S_Y, S=NULL, alpha=0.1, pvalue_only=FALSE, n_
 
     T.global = sum(R)
 
-    pval.global = compute.global.pvalue(T.obs=T.global, local.test="fisher", m=m, n=n,
+    pval.global = compute.global.pvalue(T.obs=T.global, local_test="fisher", m=m, n=n,
                                         n_perm=n_perm, B=B, seed=seed)
     pval.selection = 1
     lower.bound = 0

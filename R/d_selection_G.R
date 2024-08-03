@@ -12,7 +12,7 @@
 #' Default value is 0.5
 #' @param alpha : significance level
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local.test is either "higher" or "fisher"
+#' local_test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param B_MC : number of replications to compute the Shiraishi test statistic
 #' @param seed : seed to ensure reproducible results
@@ -88,7 +88,7 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 #' @param stats_G_vector : list of Shiraishi (1985) test statistics for each closed testing level
 #' @param alpha : significance level
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local.test is either "higher" or "fisher"
+#' local_test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param seed : seed to ensure reproducible results
 #'
@@ -143,7 +143,7 @@ d_G_cons = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, B=10
   ## Compute p-value for the global null
   T.global = T_wc[s]
 
-  pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=n, local.test="g", stats_G_vector=stats_G_vector[[n-s+1]],
+  pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=n, local_test="g", stats_G_vector=stats_G_vector[[n-s+1]],
                                       n_perm=n_perm, B=B, seed=seed)
 
   ## Compute p-value for the selected null
@@ -165,7 +165,7 @@ d_G_cons = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, B=10
 #' @param stats_G_vector : list of Shiraishi (1985) test statistics for each closed testing level
 #' @param alpha : significance level
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local.test is either "higher" or "fisher"
+#' local_test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param seed : seed to ensure reproducible results
 #'
@@ -227,7 +227,7 @@ d_G_monotone = function(S_X, S_Y, S=NULL, stats_G_vector, alpha=0.1, n_perm=10, 
 
   ## Compute p-value for the global null
   T.global = T_wc[s]
-  pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local.test="g", stats_G_vector=stats_G_vector[[n-s+1]],
+  pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local_test="g", stats_G_vector=stats_G_vector[[n-s+1]],
                                       n_perm=n_perm, B=B, seed=seed)
   ## Compute p-value for the selected null
   ## NOTE: this calculation is missing

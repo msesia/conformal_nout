@@ -8,12 +8,12 @@
 #' If g.oracle=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.
 #' If NULL it is estimated from the data
 #' @param monotone : character indicating if the outlier density function is monotone. Default value is FALSE
-#' @param fit.method: method used to fit g
-#' @param prop.cal  : proportion of inliers used for calibration (the others are used to estimate the inlier distribution)
+#' @param fit_method: method used to fit g
+#' @param prop_cal  : proportion of inliers used for calibration (the others are used to estimate the inlier distribution)
 #' Default value is 0.5
 #' @param alpha : significance level
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local.test is either "higher" or "fisher"
+#' local_test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param B_MC : number of replications to compute the Shiraishi test statistic
 #' @param seed : seed to ensure reproducible results
@@ -36,19 +36,27 @@
 #' Y = replicate(50, rg2(rnull=runif))
 #' res = d_selection_G2(X, Y, B=100)
 #' res = d_selection_G2(X, Y, S = c(1:40), g.oracle = g2, monotone=TRUE, B=100)
-d_selection_G2 <- function(S_X, S_Y, S=NULL, k=NULL, g.oracle=NULL, monotone=FALSE, fit.method=NULL, prop.cal=0.5, alpha=0.1, n_perm=10, B=10^3, B_MC=10^3, seed=123){
+d_selection_G2 <- function(S_X, S_Y, S=NULL, k=NULL, g.oracle=NULL, monotone=FALSE, fit_method=NULL, prop_cal=0.5, alpha=0.1, n_perm=10, B=10^3, B_MC=10^3, seed=123,
+                           standardize=TRUE){
 
     n = as.double(length(S_Y))
     m = as.double(length(S_X))
     N = as.double(m+n)
     s = ifelse(is.null(S), n, length(S))
 
+    ## Make sure the scores are between 0 and 1
+    if(standardize) {
+        tmp <- standardize_to_uniform(S_X, S_Y)
+        S_X <- tmp[[1]]
+        S_Y <- tmp[[2]]
+    }
+
     if(is.null(g.oracle)){
-        stopifnot(!is.null(fit.method))
+        stopifnot(!is.null(fit_method))
         ## Split the reference scores and create pooled vector
         m = length(S_X)
         n = length(S_Y)
-        m_2 = pmin(n, as.integer(round(prop.cal * m)))
+        m_2 = pmin(n, as.integer(round(prop_cal * m)))
         m_1 = m - m_2
         idx_X_1 = sample(m, m_1)
         idx_X_2 = setdiff(1:m, idx_X_1)
@@ -56,7 +64,7 @@ d_selection_G2 <- function(S_X, S_Y, S=NULL, k=NULL, g.oracle=NULL, monotone=FAL
         S_ref = S_X[idx_X_2]
         S_pooled = sample(c(S_ref, S_Y))
         ## Estimate g-hat by comparing S_X1 to S_pooled
-        g.fit <- estimate_g(S_X1, S_pooled, method=fit.method, monotone=monotone)
+        g.fit <- estimate_g(S_X1, S_pooled, method=fit_method, monotone=monotone)
         g <- g.fit$pdf
         monotonicity <- g.fit$monotonicity
     } else {
@@ -94,7 +102,7 @@ d_selection_G2 <- function(S_X, S_Y, S=NULL, k=NULL, g.oracle=NULL, monotone=FAL
 #' @param alpha : significance level
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local.test is either "higher" or "fisher"
+#' local_test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param B_MC : number of replications to compute the Shiraishi test statistic
 #' @param seed : seed to ensure reproducible results
@@ -164,7 +172,7 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 
       if(l==s){
         T.global = T_wc
-        pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local.test="g", stats_G_vector=stats_G,
+        pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local_test="g", stats_G_vector=stats_G,
                                             n_perm=n_perm, B=B, seed=seed)
       } else {
         pval.global = pval.global
@@ -201,7 +209,7 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 
     R = stat.G(Z=ZZ, m=m, stats_G_vector=stats_G)
     T.global = sum(R)
-    pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local.test="g", stats_G_vector=stats_G,
+    pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local_test="g", stats_G_vector=stats_G,
                                         n_perm=n_perm, B=B, seed=seed)
     d=0
   }
@@ -262,7 +270,7 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 #
 #     if(l==s){
 #       T.global = T_wc
-#       pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local.test="g", stats_G_vector=stats_G_v,
+#       pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local_test="g", stats_G_vector=stats_G_v,
 #                                           n_perm=n_perm, B=B, seed=seed)
 #     } else {
 #       pval.global = pval.global
@@ -294,7 +302,7 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 #' @param alpha : significance level
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local.test is either "higher" or "fisher"
+#' local_test is either "higher" or "fisher"
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param B_MC : number of replications to compute the Shiraishi test statistic
 #' @param seed : seed to ensure reproducible results
@@ -366,7 +374,7 @@ d_G_cons2 = function(S_X, S_Y, S=NULL, g.hat, k=NULL, alpha=0.1, pvalue_only=FAL
 
       if(l==s){
         T.global = T_wc
-        pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local.test="g", stats_G_vector=stats_G,
+        pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local_test="g", stats_G_vector=stats_G,
                                             n_perm=n_perm, B=B, seed=seed)
       } else {
         pval.global = pval.global
@@ -389,7 +397,7 @@ d_G_cons2 = function(S_X, S_Y, S=NULL, g.hat, k=NULL, alpha=0.1, pvalue_only=FAL
     R = sort(stats_G[range_test_ranks_n], decreasing=F)[1:n]
 
     T.global = sum(R)
-    pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=n, local.test="g", stats_G_vector=stats_G,
+    pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=n, local_test="g", stats_G_vector=stats_G,
                                         n_perm=n_perm, B=B, seed=seed)
     d=0
   }
