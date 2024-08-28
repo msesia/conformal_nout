@@ -56,7 +56,7 @@ Y = replicate(20, rg2(rnull=runif))
 res1 = d_selection_simes(X, Y,alpha = 0.1)
 
 # Confidence lower-bound for the number of outliers using Closed Testing with local Fisher's method
-res2 = d_selection_fisher = function(X, Y, B=100, n_perm=0, alpha=0.1)
+res2 = d_selection_fisher(X, Y, B=100, n_perm=0, alpha=0.1)
 
 # Confidence lower-bound for the number of outliers using Closed Testing with local Wilcoxon sum-rank test 
 res3 = d_selection_higher(X, Y, local_test="WMW", n_perm=0, B=100, alpha=0.1)
