@@ -227,3 +227,64 @@ compute.critical.values <- function(m, n, local_test="wmw", alpha, k=NULL, stats
 
 
 
+#' compute.1critical.value
+#'
+#' @description It computes the critical value for a chosen test statistic
+#' at significance level \eqn{\alpha}.
+#'
+#' @param m : calibration size
+#' @param n : test size
+#' @param local_test : local test to be used in the closed testing procedure. Default value is Wilcoxon test
+#' @param alpha : significance level
+#' @param k : order of the LMPI test statistic. If \code{NULL} it refers to Fisher test statistic
+#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations
+#' @param n_perm : if \eqn{min(m,n)\leq n_perm} critical values will be computed via permutation. Default value is 0
+#' @param B : number of permutation to compute critical values. Default value is 10^3
+#' @param critical_values : if not \code{NULL}, a vector of precomputed critical values obtained using
+#' the permutation distribution of the test statistic
+#' @param seed : seed to ensure reproducible results
+#'
+#'
+#' @return A ritical value for a test statistic chosen among LMPI \eqn{T_k}, Fisher or Shiraishi statistics
+#' at significance level \eqn{\alpha} with calibration size \eqn{m} fixed for each level of closed testing.
+#'
+#'
+compute.1critical.value <- function(m, n, local_test="wmw", alpha, k=NULL, stats_G_vector=NULL, n_perm=0, B=10^3, critical_values=NULL, seed=123){
+  
+  local_test = tolower(local_test)
+  stopifnot(local_test %in% c("wmw", "higher", "fisher", "g"))
+  
+  if(local_test=="higher"){
+    stopifnot(k%%1==0 & k>0)
+    if(k==1) local_test = "wmw"
+  }
+  if(local_test=="wmw") k=1
+  
+  # For small values of m and n compute critical values via permutation
+  if(min(m,n)<=n_perm) {
+    found.value = FALSE
+    # In order to avoid repeating computation of precomputed critical values that are saved in "tables" folder
+    if(!is.null(critical_values)) {
+      if(length(critical_values)>=n) {
+        critical.value = critical_values[n]
+        found.value = TRUE
+      }
+    }
+    if(!found.value) {
+      #cat(sprintf("Running permutations...\n"))
+      
+      critical.value = as.double(perm.crit.T(m=m, n=n, k=k, local_test=local_test, alpha=alpha, B=B, seed=seed))
+    }
+  } else { # For large values of m or n compute critical values using the asymptotic approximation of the test statistic
+    if(local_test=="fisher"){
+      critical.value = as.double(asymptotic.critical.Fisher(m=m, n=n, alpha=alpha))
+    } else if(local_test=="g"){
+      critical.value = as.double(asymptotic.critical.G(m=m, n=n, stats_G_vector=stats_G_vector, alpha=alpha))
+    } else if(local_test=="higher" || local_test=="wmw"){
+      critical.value = as.double(asymptotic.critical.Tk(m=m, n=n, k=k, alpha=alpha))
+    }
+  }
+  
+  return(critical.value)
+}
+

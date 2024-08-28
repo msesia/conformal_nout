@@ -46,7 +46,31 @@ stat.Tk <- function(Z, m, k) {
 }
 
 
-
+#' stat.MW
+#'
+#' @description It computes the ranks of the test observations in the
+#' vector of calibration scores.
+#'
+#' @param Z : pooled score vector with the first \eqn{m} components corresponding
+#' to calibration observations and the last \eqn{n} components corresponding
+#' to test observations
+#' @param m : calibration sample size
+#'
+#' @return A rank vector
+#'
+#'
+stat.MW <- function(Z, m) {
+  m = as.double(m)
+  N = as.double(length(Z))
+  n = as.double(N-m)
+  
+  X = Z[1:m]
+  Y = Z[(m+1):N]
+  
+  R = sapply(1:n, function(j) rank(c(X,Y[j]))[m+1]-1)
+  
+  return(R)
+}
 
 
 

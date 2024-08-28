@@ -2,6 +2,9 @@
 
 #' d_selection_higher
 #'
+#'@description  It performs closed testing method with (higher) WMW local tests using an exact shortcut
+#' relying on the increasing monotonicity of the Lehmann's alternatives.
+#' 
 #' @param S_X :  calibration score vector
 #' @param S_Y : test score vector
 #' @param S : selection set in the index test set
@@ -18,7 +21,7 @@
 #'
 #' @return A list:
 #' \itemize{
-#' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
+#' \item \code{lower.bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
 #' the number of true discoveries in closed testing procedure using the chosen local test
 #' \item \code{S}: the selection set, i.e., the selected subset of the test indices
 #' \item \code{global.pvalue}: the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
@@ -29,85 +32,136 @@
 #' @examples
 #' g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
 #' rg2 = function(rnull, k=2) max(rnull(k))
-#'
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
-#' res = d_selection_higher(X, Y, local_test="WMW", n_perm=0, B=100)
-#' res = d_selection_higher(X, Y, local_test="higher", k=2, S = c(1:7), B=100)
-d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, critical_values=NULL, seed=123){
-
+#' res1 = d_selection_higher(X, Y, local_test="WMW", n_perm=0, B=100)
+#' res2 = d_selection_higher(X, Y, local_test="higher", k=2, S = c(1:7), n_perm=0, B=100)
+d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=0, B=10^3, critical_values=NULL, seed=123){
+  
   local_test=tolower(local_test)
   stopifnot(local_test %in% c("wmw", "higher"))
-
+  
   if(local_test=="wmw") {
     k=1
   } else { stopifnot(k>1 & k%%1==0) }
-
+  
   if(k==1) local_test="wmw"
-
+  
   m = as.double(length(S_X))
   n = as.double(length(S_Y))
   N = as.double(n+m)
-
-
+  s = ifelse(is.null(S), n, length(S))
+  
+  Z = c(S_X, base::sort(S_Y, decreasing = F))
+  
   if(!pvalue_only){
-
-    if(is.null(S)){
-      # S = [n]
-      s = n
-      Y.S = sort(S_Y, decreasing = F)
-      ZZ = sapply(length(Y.S):1, function(h) c(S_X, Y.S[1:h]))
-
-    } else {
-      s = length(S)
-      Y.S = sort(S_Y[S], decreasing = F)
-      notS = setdiff(1:n, S)
-      Y.notS = sort(S_Y[notS], decreasing = F)
-      Z.up = sapply(length(Y.notS):1, function(h) c(S_X, Y.S, Y.notS[1:h]))
-      Z.down = sapply(length(Y.S):1, function(h) c(S_X, Y.S[1:h]))
-      ZZ = c(Z.up, Z.down)
+    
+    if(local_test=="wmw"){ # Use Mann-Whitney test statistic (ranks computed in the calibration set only) and Tian et al.(2023) shortcut
+      
+      # Compute individual statistics for each test point
+      S_Z = c(S_X, S_Y)
+      R = stat.MW(Z=S_Z, m=m)
+      
+      # Compute all critical values for (m,k) from k in {1,...,n}
+      crit =sapply(1:n, function(h) as.double(stats::qnorm(alpha, mean=m*h/2, sd = sqrt(m*h*(m+h+1)/12), lower.tail = F)))
+      
+      # Compute lower bound for S
+      res = sumSome::sumStatsPar(g = R, S = S, alpha = alpha, cvs = crit)
+      
+      ## Compute p-value for the global null
+      if(is.null(S)){
+        S=1:n
+      }
+      R.S = R[S]
+      T.global.S = sum(R.S)
+      
+      pval.global = stats::pnorm(q=T.global.S, mean=m*s/2, sd = sqrt(m*s*(m+s+1)/12), lower.tail = F)
+      d_S = res$TD
+      
+    } else { # for higher order WMW tests use our shortcut
+      ## Find d
+      Z = c(X,base::sort(S_Y, decreasing = F))
+      
+      # Closed-testing shortcut: sort the test points based on their individual statistics
+      # For each k in {1,...,n} consider the worst-case subset of test points with cardinality k
+      R = sapply(n:1, function(h) stat.Tk(Z=Z[1:(m+h)], m=m, k=k))
+      
+      # Compute all critical values for (m,k) from k in {1,...,n}
+      crit = as.double(compute.critical.values(m=m, n=n, local_test=local_test,
+                                               alpha=alpha, k=k, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed))
+      
+      T_wc = sapply(n:1, function(h) sum(R[[h]]))
+      
+      # Compare the worst-case statistics to the critical values for k in {n,...,1}, starting from the max cardinality
+      d = as.double(sum(cumsum(rev(T_wc) > rev(crit)) == 1:n)) # NOTE: this should be strictly larger!
+      
+      # Compute p-value for the global null
+      T.global = T_wc[s]
+      pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local_test="higher", k=k, n_perm=n_perm, B=B, seed=seed)
+      
+      # Compute p-value for the selected null
+      # NOTE: this calculation is missing
+      pval.selection = 1
+      
+      h = n - d
+      
+      ## Find d_S
+      if (!is.null(S)) {
+        
+        Y_S <- sort(S_Y[S], decreasing = TRUE)
+        s = length(Y_S)
+        Y_notS <- sort(S_Y[-S], decreasing = FALSE)
+        
+        d_S = 0
+        for (i in 1:s) {
+          for (j in max(0, (h - s + i - 1)):0) {
+            ZZ <- c(S_X, Y_S[i:s], Y_notS[0:j])
+            R = stat.Tk(Z=ZZ, m=m, k=k)
+            l = length(ZZ) - m
+            crit = as.double(compute.1critical.value(m=m, n=l, local_test=local_test,
+                                                     alpha=alpha, k=k, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed))
+            
+            T_wc = sum(R)
+            
+            notrejected = T_wc < crit
+            
+            if (notrejected) {
+              break
+            }
+          }
+          
+          if (notrejected) {
+            break
+          }
+          d_S = d_S + 1
+          
+        }
+        
+      } else {
+        d_S = d
+      }
+      
     }
-
-    ## Closed-testing shortcut: sort the test points based on their individual statistics
-    ## For each k in {1,...,n} consider the worst-case subset of test points with cardinality k
-    R = sapply(length(ZZ):1, function(h) stat.Tk(Z=ZZ[[h]], m=m, k=k))
-
-    # Compute all critical values for (m,k) from k in {1,...,n}
-    crit = as.double(compute.critical.values(m=m, n=n, local_test=local_test,
-                                             alpha=alpha, k=k, n_perm=n_perm, B=B, critical_values=critical_values, seed=seed))
-
-    T_wc = sapply(1:length(R), function(h) sum(R[[h]]))
-
-    ## Compare the worst-case statistics to the critical values for k in {n,...,1}, starting from the max cardinality
-    tentative.d = as.double(sum(cumsum(rev(T_wc) > rev(crit)) == 1:n))-n+s # NOTE: this should be strictly larger!
-    d = ifelse(tentative.d>0, tentative.d, 0)
-
-    ## Compute p-value for the global null
-    T.global = T_wc[s]
-
-    pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=s, local_test="higher", k=k, n_perm=n_perm, B=B, seed=seed)
-
-    ## Compute p-value for the selected null
-    ## NOTE: this calculation is missing
-    pval.selection = 1
-
-  } else {
-
+  }  else { # if pvalue_only==TRUE (only when S=NULL)
+    
     Y.S = sort(S_Y, decreasing = F)
     ZZ = c(S_X, Y.S)
-
+    
     R = stat.Tk(Z=ZZ, m=m, k=k)
     T.global = sum(R)
     pval.global = compute.global.pvalue(T.obs=T.global, m=m, n=n, local_test="higher", k=k, n_perm=n_perm, B=B, seed=seed)
-    d=0
+    d_S=0
   }
-
-  out = list("lower.bound" = d,
+  
+  out = list("lower.bound" = d_S,
              "global.pvalue" = pval.global,
              "S" = S,
              "selection.p.value" = 1)
-
+  
+  return(out)
+  
 }
+
 
 
 
