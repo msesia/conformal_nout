@@ -245,11 +245,11 @@ sim_d = function(B, B_MC, cons=TRUE, m, n, theta, rg_null, rg, g, g.hat, g_hat_m
     d_WMW = find_d(X=X, Y=Y, local.test = "wmw", k=1, alpha=alpha, B=B_MC, B_MC=B_MC)$lower.bound
     d_oracle = find_d(X=X, Y=Y, local.test = "g", monotonicity=mono, g.hat=g, alpha=alpha, B=B_MC, B_MC=B_MC)$lower.bound
     if(cons){
-      d_estG <- d_G_cons2(S_X=X, S_Y=Y, g.hat=g.hat, alpha=alpha, n_perm=0, B=B_MC, B_MC=B_MC)$lower.bound # è pensato per usare KDE per g e shortcut esatto
+      d_estG <- d_G_cons(S_X=X, S_Y=Y, g.hat=g.hat, alpha=alpha, n_perm=0, B=B_MC, B_MC=B_MC)$lower.bound # è pensato per usare KDE per g e shortcut esatto
     } else{
-      d_estG <- d_G_monotone2(S_X=X, S_Y=Y, g.hat=g.hat, decr=decr, alpha=alpha, n_perm=0, B=B_MC, B_MC=B_MC)$lower.bound # è pensato per usare KDE per g e shortcut esatto
+      d_estG <- d_G_monotone(S_X=X, S_Y=Y, g.hat=g.hat, decr=decr, alpha=alpha, n_perm=0, B=B_MC, B_MC=B_MC)$lower.bound # è pensato per usare KDE per g e shortcut esatto
     }
-    d_estGmono <- d_G_monotone2(S_X=X, S_Y=Y, g.hat=g_hat_mono, decr=decr, alpha=alpha, n_perm=0, B=B_MC, B_MC=B_MC)$lower.bound # è pensato per usare monotone estimate per g e shortcut esatto
+    d_estGmono <- d_G_monotone(S_X=X, S_Y=Y, g.hat=g_hat_mono, decr=decr, alpha=alpha, n_perm=0, B=B_MC, B_MC=B_MC)$lower.bound # è pensato per usare monotone estimate per g e shortcut esatto
     d_fisher <- find_d(X=X, Y=Y, local.test = "fisher", alpha=alpha, B=B_MC, B_MC=B_MC)$lower.bound
 
     res = matrix(data=cbind("d_WMW"=d_WMW,
