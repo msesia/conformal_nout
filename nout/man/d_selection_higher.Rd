@@ -8,11 +8,11 @@ d_selection_higher(
   S_X,
   S_Y,
   S = NULL,
-  local.test = "wmw",
+  local_test = "wmw",
   k = NULL,
   alpha = 0.1,
   pvalue_only = FALSE,
-  n_perm = 10,
+  n_perm = 0,
   B = 10^3,
   critical_values = NULL,
   seed = 123
@@ -25,7 +25,7 @@ d_selection_higher(
 
 \item{S}{: selection set in the index test set}
 
-\item{local.test}{: it can be either "wmw" for Wilcoxon rank sum test or "higher" for higher order Wilcoxon rank sum test}
+\item{local_test}{: it can be either "wmw" for Wilcoxon rank sum test or "higher" for higher order Wilcoxon rank sum test}
 
 \item{k}{: order of the generalized Wilcoxon rank sum test. Classic Wilcoxon test corresponds to \eqn{k=1}}
 
@@ -34,7 +34,7 @@ d_selection_higher(
 \item{pvalue_only}{: logical value. If TRUE, only the global test is performed}
 
 \item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic when
-local.test is either "higher" or "fisher"}
+local_test is either "higher" or "fisher"}
 
 \item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3}
 
@@ -46,7 +46,7 @@ the permutation distribution of the test statistic}
 \value{
 A list:
 \itemize{
-\item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
+\item \code{lower.bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
 the number of true discoveries in closed testing procedure using the chosen local test
 \item \code{S}: the selection set, i.e., the selected subset of the test indices
 \item \code{global.pvalue}: the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
@@ -54,14 +54,14 @@ the number of true discoveries in closed testing procedure using the chosen loca
 }
 }
 \description{
-d_selection_higher
+It performs closed testing method with (higher) WMW local tests using an exact shortcut
+relying on the increasing monotonicity of the Lehmann's alternatives.
 }
 \examples{
 g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
 rg2 = function(rnull, k=2) max(rnull(k))
-
 X = runif(10)
 Y = replicate(10, rg2(rnull=runif))
-res = d_selection_higher(S_X=X, S_Y=Y, local.test="WMW", n_perm=0, B=100)
-res = d_selection_higher(S_X=X, S_Y=Y, local.test="higher", k=2, S = c(1:7), B=100)
+res1 = d_selection_higher(X, Y, local_test="WMW", n_perm=0, B=100)
+res2 = d_selection_higher(X, Y, local_test="higher", k=2, S = c(1:7), n_perm=0, B=100)
 }

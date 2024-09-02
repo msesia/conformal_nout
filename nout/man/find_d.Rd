@@ -7,13 +7,13 @@
 find_d(
   X,
   Y,
-  local.test = "wmw",
+  local_test = "wmw",
   S = NULL,
   k = NULL,
-  monotonicity = NULL,
+  monotone = FALSE,
   g.hat = NULL,
   alpha = 0.1,
-  prop.F = 0.5,
+  prop.cal = 0.5,
   lambda = 0.5,
   n_perm = 0,
   B = 10^3,
@@ -27,7 +27,7 @@ find_d(
 
 \item{Y}{: test score vector}
 
-\item{local.test}{: local test to be used in the closed testing procedure.
+\item{local_test}{: local test to be used in the closed testing procedure.
 It can be either "wmw" for Wilcoxon rank sum test, "higher" for higher order Wilcoxon rank sum tests,
 "fisher" for Fisher's combination test, "g" for the test by Shiraishi (1985), "simes" for Simes' test or
 "storey" for Simes' test using Storey's estimator for the proportion of true null hypotheses.}
@@ -36,20 +36,17 @@ It can be either "wmw" for Wilcoxon rank sum test, "higher" for higher order Wil
 
 \item{k}{: positive integer indicating the order of generalized Wilcoxon rank sum test. Default value is NULL}
 
-\item{monotonicity}{: logical value indicating if the outlier density function is monotone increasing or decreasing or neither.
-It must be specified when the local test is "g"}
-
 \item{g.hat}{: it denotes the outlier density. If NULL it is estimated from the data}
 
 \item{alpha}{: significance level}
 
-\item{prop.F}{: proportion of inliers used to estimate the inliser distribution while estimating the outlier density.
+\item{prop.cal}{: proportion of inliers used for calibration (the others are used to estimate the inlier distribution)
 Default value is 0.5}
 
 \item{lambda}{: parameter to be specified when computing Storey's estimator. Default value is 0.5}
 
 \item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic when
-local.test is either "higher" or "fisher"}
+local_test is either "higher" or "fisher"}
 
 \item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3}
 
@@ -59,6 +56,9 @@ local.test is either "higher" or "fisher"}
 the permutation distribution of the test statistic}
 
 \item{seed}{: seed to ensure reproducible results}
+
+\item{monotonicity}{: logical value indicating if the outlier density function is monotone increasing or decreasing or neither.
+It must be specified when the local test is "g"}
 }
 \value{
 A list:
@@ -79,6 +79,6 @@ rg2 = function(rnull, k=2) max(rnull(k))
 
 X = runif(10)
 Y = replicate(10, rg2(rnull=runif))
-res = find_d(X, Y, local.test="higher", k=3, B=100)
-res = find_d(X, Y, local.test="g", g.hat = g2, monotonicity="increasing", B=100)
+res = find_d(X, Y, local_test="higher", k=3, B=100)
+res = find_d(X, Y, local_test="g", g.hat = g2, monotone=FALSE,, B=100)
 }

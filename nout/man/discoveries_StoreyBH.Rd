@@ -4,12 +4,12 @@
 \alias{discoveries_StoreyBH}
 \title{discoveries_StoreyBH}
 \usage{
-discoveries_StoreyBH(S_Y, S_X, alpha = 0.1, lambda = 0.5)
+discoveries_StoreyBH(S_X, S_Y, alpha = 0.1, lambda = 0.5)
 }
 \arguments{
-\item{S_Y}{: score vector for the test set}
-
 \item{S_X}{: score vector for the calibration set}
+
+\item{S_Y}{: score vector for the test set}
 
 \item{alpha}{: significance level. Default level is set equal to 0.1}
 
@@ -34,7 +34,7 @@ set.seed(321)
 Sxy = sample(x=1:1000, size=100)
 Sx = sample(Sxy, size=70)
 Sy = setdiff(Sxy, Sx)
-discoveries_StoreyBH(S_Y=Sy, S_X=Sx)
+discoveries_StoreyBH(Sx, Sy)
 
 
 

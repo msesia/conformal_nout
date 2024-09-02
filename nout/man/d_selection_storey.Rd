@@ -5,8 +5,8 @@
 \title{d_selection_storey}
 \usage{
 d_selection_storey(
-  S_Y,
   S_X,
+  S_Y,
   S = NULL,
   alpha = 0.1,
   lambda = 0.5,
@@ -14,9 +14,9 @@ d_selection_storey(
 )
 }
 \arguments{
-\item{S_Y}{: score vector of test observations}
-
 \item{S_X}{: score vector of calibration observations}
+
+\item{S_Y}{: score vector of test observations}
 
 \item{S}{: set of selected indices in the test set on which compute the lower bound for the number of outliers.
 If S is missing, dthe global null hypothesis is used}
@@ -46,10 +46,10 @@ set.seed(321)
 Sxy = sample(x=1:1000, size=100)
 Sx = sample(Sxy, size=70)
 Sy = setdiff(Sxy, Sx)
-d_selection_storey(S_Y=Sy, S_X=Sx)
-d_selection_storey(S_Y=Sy, S_X=Sx, S=3)
-d_selection_storey(S_Y=Sy, S_X=Sx, S=c(3, 7:13))
-d_selection_storey(S_Y=Sy, S_X=Sx)
+d_selection_storey(Sx, Sy)
+d_selection_storey(Sx, Sy, S=3)
+d_selection_storey(Sx, Sy, S=c(3, 7:13))
+d_selection_storey(Sx, Sy)
 
 
 

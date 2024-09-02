@@ -28,7 +28,7 @@ d_selection_fisher(
 \item{pvalue_only}{: logical value. If TRUE, only the global test is performed}
 
 \item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic when
-local.test is either "higher" or "fisher"}
+local_test is either "higher" or "fisher"}
 
 \item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3}
 
@@ -56,6 +56,6 @@ rg2 = function(rnull, k=2) max(rnull(k))
 
 X = runif(10)
 Y = replicate(10, rg2(rnull=runif))
-res = d_selection_fisher(S_Y=Y, S_X=X, B=100)
-res = d_selection_fisher(S_Y=Y, S_X=X, S = c(1:8), B=100)
+res = d_selection_fisher(X, Y, B=100)
+res = d_selection_fisher(X, Y, S = c(1:8), B=100)
 }

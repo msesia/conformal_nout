@@ -7,7 +7,7 @@
 perm.crit.T(
   m,
   n,
-  local.test = "wmw",
+  local_test = "wmw",
   k = NULL,
   stats_G_vector = NULL,
   alpha = 0.1,
@@ -20,7 +20,7 @@ perm.crit.T(
 
 \item{n}{: test sample size}
 
-\item{local.test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon test}
+\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon test}
 
 \item{k}{: order of the LMPI test statistic. If \code{NULL} it refers to Fisher test statistic}
 

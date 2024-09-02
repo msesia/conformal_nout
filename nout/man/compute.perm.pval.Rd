@@ -6,7 +6,7 @@
 \usage{
 compute.perm.pval(
   T.obs,
-  local.test = "wmw",
+  local_test = "wmw",
   m,
   n,
   k = NULL,
@@ -18,7 +18,7 @@ compute.perm.pval(
 \arguments{
 \item{T.obs}{: observed value of the chosen test statistic}
 
-\item{local.test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon test}
+\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon test}
 
 \item{m}{: calibration sample size}
 

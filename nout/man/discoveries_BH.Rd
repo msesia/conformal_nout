@@ -4,12 +4,12 @@
 \alias{discoveries_BH}
 \title{discoveries_BH}
 \usage{
-discoveries_BH(S_Y, S_X, alpha = 0.1)
+discoveries_BH(S_X, S_Y, alpha = 0.1)
 }
 \arguments{
-\item{S_Y}{: score vector for the test set}
-
 \item{S_X}{: score vector for the calibration set}
+
+\item{S_Y}{: score vector for the test set}
 
 \item{alpha}{: significance level. Default level is set equal to 0.1}
 }
@@ -26,7 +26,7 @@ set.seed(321)
 Sxy = sample(x=1:1000, size=100)
 Sx = sample(Sxy, size=70)
 Sy = setdiff(Sxy, Sx)
-discoveries_BH(S_Y=Sy, S_X=Sx)
+discoveries_BH(Sx, Sy)
 
 
 }

@@ -84,7 +84,7 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 
 
 
-#' d_G_monotone2
+#' d_G_monotone
 #'
 #' @description  It performs closed testing method with Shiraishi local test using an exact shortcut
 #' valid when the outlier density is monotone, either increasing or decreasing.
@@ -122,8 +122,8 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 #' m = 10; n=10;
 #' X = runif(m)
 #' Y = replicate(n, rg2(rnull=runif))
-#' res = d_G_monotone2(X, Y, S=c(1:7), g.hat=g2, decr=F, B=100)
-d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=0, B=10^3, B_MC = 10^3, seed=123) {
+#' res = d_G_monotone(X, Y, S=c(1:7), g.hat=g2, decr=F, B=100)
+d_G_monotone = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=0, B=10^3, B_MC = 10^3, seed=123) {
   
   m = length(S_X)
   n = length(S_Y)
@@ -286,7 +286,7 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 
 
 
-#' d_G_cons2
+#' d_G_cons
 #'
 #' @param S_X :  calibration score vector
 #' @param S_Y : test score vector
@@ -319,8 +319,8 @@ d_G_monotone2 = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pva
 #' m = 10; n=10;
 #' X = runif(m)
 #' Y = replicate(n, rg2(rnull=runif))
-#' res = d_G_cons2(X, Y, g.hat=g2, k=1, B=100)
-d_G_cons2 = function(S_X, S_Y, S=NULL, g.hat, k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
+#' res = d_G_cons(X, Y, g.hat=g2, k=1, B=100)
+d_G_cons = function(S_X, S_Y, S=NULL, g.hat, k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
 
   m = as.double(length(S_X))
   n = as.double(length(S_Y))
