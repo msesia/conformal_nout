@@ -78,6 +78,10 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=
       pval.global = stats::pnorm(q=T.global.S, mean=m*s/2, sd = sqrt(m*s*(m+s+1)/12), lower.tail = F)
       d_S = res$TD
       
+      if(is.null(S)){
+        S=NULL
+      }
+      
     } else { # for higher order WMW tests use our shortcut
       ## Find d
       Z = c(X,base::sort(S_Y, decreasing = F))
