@@ -21,10 +21,12 @@ Imports:
     sumSome,
     Iso,
     statip,
-    mixmodel,
+    mixmodel (>= 0.5),
     fitdistrplus
 URL: https://github.com/chiaragaiamagnani/nout
 BugReports: https://github.com/chiaragaiamagnani/nout/issues
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Remotes:  
+    rohitpatra/mixmodel
