@@ -70,9 +70,10 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=
       
       ## Compute p-value for the global null
       if(is.null(S)){
-        S=1:n
+        R.S = R[1:n] 
+      } else {
+        R.S = R[S]
       }
-      R.S = R[S]
       T.global.S = sum(R.S)
       
       pval.global = stats::pnorm(q=T.global.S, mean=m*s/2, sd = sqrt(m*s*(m+s+1)/12), lower.tail = F)
