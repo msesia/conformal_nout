@@ -29,7 +29,7 @@ You can install the development version of nout from [GitHub](https://github.com
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("msesia/conformal_nout")
+devtools::install_github("msesia/conformal_nout", subdir="nout")
 ```
 
 ## Example
