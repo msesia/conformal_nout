@@ -9,16 +9,14 @@ mean_analytical.Lk(N, k, n)
 \arguments{
 \item{N}{: pooled sample size}
 
-\item{k}{: an integer greater than 1, order of the Lehmann's alternative distribution}
+\item{k}{: an integer which is the order of the Lehmann's alternative distribution}
 
 \item{n}{: test sample size}
 }
 \value{
-Asymptotic mean of Shiraishi (1985) test statistic under Lehmann's alternative of order k
+A number which is the asymptotic mean of Shiraishi test statistic under Lehmann's alternative of order k
 }
 \description{
-mean_analytical.Lk
-}
-\examples{
-m = mean_analytical.Lk(N=100,k=2,n=50)
+It compute the analytical (not estimated through Monte Carlo simulation)
+asymptotic mean of the Shiraishi test statistic
 }

@@ -75,17 +75,15 @@ stat.MW <- function(Z, m) {
 
 
 # Compute the k-th moment of a Beta(h, N-h+1), k =1,2,3,...
+
 #' beta_moment.k
 #'
 #' @param h : an integer between \eqn{1} and \eqn{N}
 #' @param N : integer
 #' @param k : order of moment
 #'
-#' @return \eqn{k}the moment of a Beta(h, N-h+1) distribution
-#' @export
+#' @return A number which is the \eqn{k}th moment of a Beta(h, N-h+1) distribution
 #'
-#' @examples
-#' mom = beta_moment.k(h=5,N=10,k=3)
 beta_moment.k = function(h,N,k){
 
   stopifnot(k>=1 & k%%1==0)
@@ -102,15 +100,15 @@ beta_moment.k = function(h,N,k){
 
 #' mean_analytical.Lk
 #'
+#' @description It compute the analytical (not estimated through Monte Carlo simulation) 
+#' asymptotic mean of the Shiraishi test statistic
+#' 
 #' @param N : pooled sample size
-#' @param k : an integer greater than 1, order of the Lehmann's alternative distribution
+#' @param k : an integer which is the order of the Lehmann's alternative distribution
 #' @param n : test sample size
 #'
-#' @return Asymptotic mean of Shiraishi (1985) test statistic under Lehmann's alternative of order k
-#' @export
-#'
-#' @examples
-#' m = mean_analytical.Lk(N=100,k=2,n=50)
+#' @return A number which is the asymptotic mean of Shiraishi test statistic under Lehmann's alternative of order k
+#' 
 mean_analytical.Lk = function(N,k,n){
 
   stopifnot(k>=2 & k%%1==0)
@@ -126,15 +124,15 @@ mean_analytical.Lk = function(N,k,n){
 
 #' var_analytical.Lk
 #'
+#' @description It compute the analytical (not estimated through Monte Carlo simulation) 
+#' asymptotic variance of the Shiraishi test statistic
+#' 
 #' @param N : pooled sample size
-#' @param k : an integer greater than 1, order of the Lehmann's alternative distribution
+#' @param k : an integer which is the order of the Lehmann's alternative distribution
 #' @param n : test sample size
 #'
-#' @return Asymptotic variance of Shiraishi (1985) test statistic
-#' @export
-#'
-#' @examples
-#' v = var_analytical.Lk(N=100,k=2,n=50)
+#' @return A number which is the asymptotic variance of Shiraishi test statistic under Lehmann's alternative of order k
+#' 
 var_analytical.Lk = function(N,k,n){
 
   stopifnot(k>=2 & k%%1==0)
@@ -157,17 +155,14 @@ var_analytical.Lk = function(N,k,n){
 
 #' asymptotic.moments.Tk
 #'
-#' @description It computes the mean and the variance of the asymptotic distribution of \eqn{T_k}.
-#' For \eqn{k=1,2,3} the exact mean is given, i.e., the finite-sample mean,
-#' and the provided estimate of the variance is more accurate than the first order asymptotic approximation.
+#' @description It computes the mean and the variance of the asymptotic distribution of the higher order Wilcoxon sum-rank test statistic.
 #'
 #' @param m : calibration sample size
 #' @param n : test sample size
 #' @param k : order of the LMPI test statistic
 #'
-#' @return It returns the mean and the variance of the asymptotic distribution of \eqn{T_k}.
-#' For \eqn{k=1,2,3} the exact mean is given, i.e., the finite-sample mean,
-#' and the provided estimate of the variance is more accurate than the first order asymptotic approximation.
+#' @return A list with the mean and the variance of the asymptotic distribution of the higher order Wilcoxon sum-rank test statistic.
+#' 
 asymptotic.moments.Tk <- function(m, n, k) {
 
   stopifnot(k>=1 & k%%1==0)
@@ -196,16 +191,16 @@ asymptotic.moments.Tk <- function(m, n, k) {
 
 #' asymptotic.critical.Tk
 #'
-#' @description It computes the \eqn{(1-\alpha)}-quantile of LMPI \eqn{T_k} test statistic
-#' based on asymptotic normal approximation. For \eqn{k=1,2,3} the exact mean and a more accurate estimate are used.
-
+#' @description It computes the \eqn{(1-\alpha)}-quantile of the higher order Wilcoxon sum-rank \eqn{T_k} test statistic
+#' based on asymptotic normal approximation.
+#' 
 #' @param m : calibration sample size
 #' @param n : test sample size
-#' @param k : order of the LMPI test statistic
+#' @param k : order of the higher order Wilcoxon sum-rank test statistic
 #' @param alpha : significance level. Default value is set equal to 0.1
 #'
 #'
-#' @return It returns the \eqn{(1-\alpha)}-quantile of LMPI \eqn{T_k} test statistic
+#' @return A number, which is the \eqn{(1-\alpha)}-quantile of higher order Wilcoxon sum-rank test statistic
 #' based on asymptotic normal approximation.
 #'
 asymptotic.critical.Tk <- function(m, n, k, alpha=0.1) {
@@ -230,11 +225,11 @@ asymptotic.critical.Tk <- function(m, n, k, alpha=0.1) {
 #'
 #' @param m : calibration sample size
 #' @param n : test sample size
-#' @param k : order of the LMPI test statistic
+#' @param k : order of the higher order Wilcoxon sum-rank test statistic
 #' @param T.obs : observed value of the test statistic
 #'
 #'
-#' @return It returns the approximated *p*-value of the LMPI \eqn{T_k}
+#' @return A number, which is the approximated *p*-value of the higher order Wilcoxon sum-rank
 #' test statistic based on the asymptotic normal approximation
 #'
 asymptotic.pvalue.Tk <- function(m, n, k, T.obs) {

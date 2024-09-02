@@ -11,8 +11,7 @@ d_selection_simes(S_X, S_Y, S = NULL, alpha = 0.1, pvalue_only = FALSE)
 
 \item{S_Y}{: score vector of test observations}
 
-\item{S}{: set of selected indices in the test set on which compute the lower bound for the number of outliers.
-If S is missing, dthe global null hypothesis is used}
+\item{S}{: selection set in the index test set. If \code{NULL} the entire test set is selected}
 
 \item{alpha}{: significance level of the local test. Default value is set equal to 0.1.}
 
@@ -22,9 +21,10 @@ If S is missing, dthe global null hypothesis is used}
 A list:
 \itemize{
 \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
-the number of true discoveries in the selected set \eqn{S} in closed testing procedure using Simes' local test
-\item \code{S}: the selection set, i.e., the selected subset of the test indices
-\item \code{global.pvalue}: the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
+the number of true discoveries in closed testing procedure using the chosen local test
+\item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+\item \code{global.pvalue}: a number which is the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
+\item \code{selection.pvalue}: a number which is the \emph{p}-value for the selected null
 }
 }
 \description{

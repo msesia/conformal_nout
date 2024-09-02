@@ -23,7 +23,7 @@ d_G_cons(
 
 \item{S_Y}{: test score vector}
 
-\item{S}{: selection set in the index test set}
+\item{S}{: selection set in the index test set. If \code{NULL} the entire test set is selected}
 
 \item{g.hat}{: it can be either a character ("analytical") or a function denoting the outlier density.
 If g.hat=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.}
@@ -34,8 +34,7 @@ If g.hat=="analytical" the test statistics are computed analytically withuout Mo
 
 \item{pvalue_only}{: logical value. If TRUE, only the global test is performed}
 
-\item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic when
-local_test is either "higher" or "fisher"}
+\item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic}
 
 \item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3}
 
@@ -48,13 +47,14 @@ A list:
 \itemize{
 \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
 the number of true discoveries in closed testing procedure using the chosen local test
-\item \code{S}: the selection set, i.e., the selected subset of the test indices
-\item \code{global.pvalue}: the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
-\item \code{selection.pvalue}: \emph{p}-value for the selected null
+\item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+\item \code{global.pvalue}: a number which is the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
+\item \code{selection.pvalue}: a number which is the \emph{p}-value for the selected null. By default it is set equal to 1
 }
 }
 \description{
-d_G_cons
+It performs closed testing method with Shiraishi local test using a shortcut
+approximating the lower bound for the number of outliers when the outlier density is not monotone
 }
 \examples{
 g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)

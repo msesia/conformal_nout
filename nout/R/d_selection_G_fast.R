@@ -1,19 +1,24 @@
 
 #' d_selection_G
 #'
+#' @description  It performs closed testing method with Shiraishi local test using an exact shortcut
+#' valid when the outlier density is monotone, either increasing or decreasing.
+#' 
 #' @param S_X :  calibration score vector
 #' @param S_Y : test score vector
-#' @param S : selection set in the index test set
-#' @param k : order of the generalized Wilcoxon rank sum test. Classic Wilcoxon test corresponds to \eqn{k=1}
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
+#' @param k : order of the generalized Wilcoxon rank sum test. Classic Wilcoxon sum-rank test corresponds to \eqn{k=1}
 #' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
-#' If g.hat=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.
-#' If NULL it is estimated from the data
-#' @param monotonicity : character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is NULL
-#' @param prop.F  : proportion of inliers used to estimate the inliser distribution while estimating the outlier density.
+#' If g.hat=="analytical" the test statistics are computed analytically without Monte Carlo estimation.
+#' If \code{NULL}, the outlier density is estimated from the data
+#' @param monotonicity : character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}
+#' @param fit_method : character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}. 
+#' It can be either "beta_mix" or "mixmodel"
+#' @param prop.F  : proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
 #' Default value is 0.5
 #' @param alpha : significance level
-#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local_test is either "higher" or "fisher"
+#' @param pvalue_only : logical value. If TRUE, only the global test is performed
+#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param B_MC : number of replications to compute the Shiraishi test statistic
 #' @param seed : seed to ensure reproducible results
@@ -22,9 +27,9 @@
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
 #' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: the selection set, i.e., the selected subset of the test indices
-#' \item \code{global.pvalue}: the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: *p*-value for the selected null
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
 #' }
 #' @export
 #'
@@ -35,7 +40,7 @@
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
 #' res = d_selection_G(X, Y, S = c(1:7), g.hat = g2, monotonicity="increasing", B=100)
-d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NULL, prop.F=0.5, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
+d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NULL, fit_method="beta_mix", prop.F=0.5, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
   
   if(!is.null(monotonicity))
     stopifnot("Error: monotonicity must be either increasing, decreasing"= monotonicity%in%c("decreasing", "increasing"))
@@ -46,26 +51,13 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
   s = ifelse(is.null(S), n, length(S))
   S_Z = c(S_X, S_Y)
   
+  # If the outlier distribution is unknown it is estimated from the data
   if(is.null(g.hat)){
-    
-    ## # Compute the individual statistics for each test point using the input data
-    ## m1 = round(prop.F*m)
-    ## X1 = sample(S_X,m1)
-    ## X2 = setdiff(S_X,X1)
-    ## g.hat = estimate_g(X1=X1, X2=X2, Y=S_Y, constraint=monotonicity, ker="uniform")
-    ## stats_G = sapply(n:1, function(h) apply(replicate(B, g.hat(sort(stats::runif(m+h)))) , 1, mean))
-    
-    
-  } else if(is.character(g.hat)){
-    
-    if(g.hat=="analytical"){
-      stats_G = sapply(n:1, function(l){
-        sapply(1:(l+m), function(h) (k+1)*k_mom_beta(a=h, b=m+l-h+1, k=k))})
-    } else
-      cat("Error: g.hat must be either a density function or the string analytical.")
-    
-  } else {
-    stats_G = sapply(n:1, function(h) apply(replicate(B, g.hat(sort(stats::runif(m+h)))) , 1, mean))
+    monotone = ifelse(is.null(monotonicity), FALSE, TRUE)
+    m1 = round(prop.F*m)
+    S_X1 = sample(S_X,m1)
+    S_pooled = c(setdiff(S_X,X1), Y)
+    g.hat = estimate_g(S_X1, S_pooled, method=fit_method, monotone=monotone)$pdf
   }
   
   if(is.null(monotonicity))
@@ -90,7 +82,7 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 #' 
 #' @param S_X :  calibration score vector
 #' @param S_Y : test score vector
-#' @param S : selection set in the index test set
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
 #' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
 #' If g.hat=="analytical" the test statistics are computed analytically without Monte Carlo estimation.
 #' @param decr : logical value indicating whether the outlier distribution is decreasing (TRUE)
@@ -106,11 +98,11 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 #'
 #' @return A list:
 #' \itemize{
-#' \item \code{lower.bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
+#' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
 #' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: the selection set, i.e., the selected subset of the test indices
-#' \item \code{global.pvalue}: the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: *p*-value for the selected null
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
 #' }
 #'
 #' @export
@@ -286,17 +278,18 @@ d_G_monotone = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pval
 
 
 #' d_G_cons
-#'
+#' @description  It performs closed testing method with Shiraishi local test using a shortcut
+#' approximating the lower bound for the number of outliers when the outlier density is not monotone
+#' 
 #' @param S_X :  calibration score vector
 #' @param S_Y : test score vector
-#' @param S : selection set in the index test set
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
 #' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
 #' If g.hat=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.
 #' @param k : order of the LMPI test statistic to be specified when g.hat is "analytical"
 #' @param alpha : significance level
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
-#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local_test is either "higher" or "fisher"
+#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param B_MC : number of replications to compute the Shiraishi test statistic
 #' @param seed : seed to ensure reproducible results
@@ -305,9 +298,9 @@ d_G_monotone = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pval
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
 #' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: the selection set, i.e., the selected subset of the test indices
-#' \item \code{global.pvalue}: the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: *p*-value for the selected null
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
 #' }
 #'
 #' @export

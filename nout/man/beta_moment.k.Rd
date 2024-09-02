@@ -14,11 +14,8 @@ beta_moment.k(h, N, k)
 \item{k}{: order of moment}
 }
 \value{
-\eqn{k}the moment of a Beta(h, N-h+1) distribution
+A number which is the \eqn{k}th moment of a Beta(h, N-h+1) distribution
 }
 \description{
 beta_moment.k
-}
-\examples{
-mom = beta_moment.k(h=5,N=10,k=3)
 }

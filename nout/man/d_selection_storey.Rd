@@ -18,8 +18,7 @@ d_selection_storey(
 
 \item{S_Y}{: score vector of test observations}
 
-\item{S}{: set of selected indices in the test set on which compute the lower bound for the number of outliers.
-If S is missing, dthe global null hypothesis is used}
+\item{S}{: selection set in the index test set. If \code{NULL} the entire test set is selected}
 
 \item{alpha}{: significance level of the local test. Default value is set equal to 0.1}
 
@@ -28,14 +27,14 @@ If S is missing, dthe global null hypothesis is used}
 \item{pvalue_only}{: logical value. If TRUE, only the global test is performed}
 }
 \value{
-An integer which is the \eqn{(1 − \alpha)}-confidence lower bound for the
-number of true discoveries in closed testing procedure using Simes local
-test with Storey's estimator for the proportion of true null hypotheses applied to conformal \emph{p}-values.
-The selection set is trivial, i.e., we are interested in testing all the observations in the test set by default.
-Then, Storey estimator is computed as
-\deqn{\hat\pi_0 = \frac{1+\sum_{i=1}^n \mathbb{1}\{p_i>\lambda\}}{n(1-\lambda)}}
-where \eqn{n} is the test sample size, \eqn{\lambda\in(0,1)} is a tuning parameter
-and \eqn{p_i} is the \emph{p}-value corresponding to the \eqn{i}th hypothesis in the test set.
+A list:
+\itemize{
+\item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
+the number of true discoveries in closed testing procedure using the chosen local test
+\item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+\item \code{global.pvalue}: a number which is the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
+\item \code{selection.pvalue}: a number which is the \emph{p}-value for the selected null. By default it is set equal to 1
+}
 }
 \description{
 It returns the lower bound for the number of true discoveries in closed testing procedure
@@ -49,8 +48,5 @@ Sy = setdiff(Sxy, Sx)
 d_selection_storey(Sx, Sy)
 d_selection_storey(Sx, Sy, S=3)
 d_selection_storey(Sx, Sy, S=c(3, 7:13))
-d_selection_storey(Sx, Sy)
-
-
 
 }

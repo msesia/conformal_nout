@@ -5,17 +5,17 @@
 #'
 #' @param S_X : score vector of calibration observations
 #' @param S_Y : score vector of test observations
-#' @param S : set of selected indices in the test set on which compute the lower bound for the number of outliers.
-#' If S is missing, dthe global null hypothesis is used
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
 #' @param alpha : significance level of the local test. Default value is set equal to 0.1.
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
 #'
 #' @return A list:
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
-#' the number of true discoveries in the selected set \eqn{S} in closed testing procedure using Simes' local test
-#' \item \code{S}: the selection set, i.e., the selected subset of the test indices
-#' \item \code{global.pvalue}: the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
+#' the number of true discoveries in closed testing procedure using the chosen local test
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null
 #' }
 #'
 #'
@@ -78,21 +78,20 @@ d_selection_simes = function(S_X, S_Y, S=NULL, alpha = 0.1, pvalue_only=FALSE){
 #'
 #' @param S_X : score vector of calibration observations
 #' @param S_Y : score vector of test observations
-#' @param S : set of selected indices in the test set on which compute the lower bound for the number of outliers.
-#' If S is missing, dthe global null hypothesis is used
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
 #' @param alpha : significance level of the local test. Default value is set equal to 0.1
 #' @param lambda : parameter involved in the computation of Storey estimator. Default value is set equal to 0.5
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
 #'
 #'
-#' @return An integer which is the \eqn{(1 − \alpha)}-confidence lower bound for the
-#' number of true discoveries in closed testing procedure using Simes local
-#' test with Storey's estimator for the proportion of true null hypotheses applied to conformal *p*-values.
-#' The selection set is trivial, i.e., we are interested in testing all the observations in the test set by default.
-#' Then, Storey estimator is computed as
-#' \deqn{\hat\pi_0 = \frac{1+\sum_{i=1}^n \mathbb{1}\{p_i>\lambda\}}{n(1-\lambda)}}
-#' where \eqn{n} is the test sample size, \eqn{\lambda\in(0,1)} is a tuning parameter
-#' and \eqn{p_i} is the *p*-value corresponding to the \eqn{i}th hypothesis in the test set.
+#' @return A list:
+#' \itemize{
+#' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
+#' the number of true discoveries in closed testing procedure using the chosen local test
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
+#' }
 #'
 #' @export
 #'
@@ -104,9 +103,6 @@ d_selection_simes = function(S_X, S_Y, S=NULL, alpha = 0.1, pvalue_only=FALSE){
 #' d_selection_storey(Sx, Sy)
 #' d_selection_storey(Sx, Sy, S=3)
 #' d_selection_storey(Sx, Sy, S=c(3, 7:13))
-#' d_selection_storey(Sx, Sy)
-#'
-#'
 #'
 d_selection_storey = function(S_X, S_Y, S=NULL, alpha=0.1, lambda = 0.5, pvalue_only=FALSE){
 
@@ -186,7 +182,10 @@ d_selection_storey = function(S_X, S_Y, S=NULL, alpha=0.1, lambda = 0.5, pvalue_
     pval.global = hommel::localtest(hom)
  }
 
-  out = list("lower.bound" = d_S, "global.p.value" = pval.global, "S"=S, "selection.p.value" = pval.selection)
+  out = list("lower.bound" = d_S, 
+             "global.p.value" = pval.global, 
+             "S"=S, 
+             "selection.p.value" = pval.selection)
 
   return(out)
 

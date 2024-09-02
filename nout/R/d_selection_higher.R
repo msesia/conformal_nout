@@ -7,13 +7,12 @@
 #' 
 #' @param S_X :  calibration score vector
 #' @param S_Y : test score vector
-#' @param S : selection set in the index test set
-#' @param local_test : it can be either "wmw" for Wilcoxon rank sum test or "higher" for higher order Wilcoxon rank sum test
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
+#' @param local_test : it can be either "wmw" for Wilcoxon sum-rank test or "higher" for higher order Wilcoxon sum-rank test
 #' @param k : order of the generalized Wilcoxon rank sum test. Classic Wilcoxon test corresponds to \eqn{k=1}
 #' @param alpha : significance level
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
-#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local_test is either "higher" or "fisher"
+#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param critical_values : if not \code{NULL}, a vector of precomputed critical values obtained using
 #' the permutation distribution of the test statistic
@@ -21,11 +20,11 @@
 #'
 #' @return A list:
 #' \itemize{
-#' \item \code{lower.bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
+#' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
 #' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: the selection set, i.e., the selected subset of the test indices
-#' \item \code{global.pvalue}: the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: *p*-value for the selected null
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
 #' }
 #' @export
 #'

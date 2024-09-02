@@ -14,12 +14,8 @@ asymptotic.moments.Tk(m, n, k)
 \item{k}{: order of the LMPI test statistic}
 }
 \value{
-It returns the mean and the variance of the asymptotic distribution of \eqn{T_k}.
-For \eqn{k=1,2,3} the exact mean is given, i.e., the finite-sample mean,
-and the provided estimate of the variance is more accurate than the first order asymptotic approximation.
+A list with the mean and the variance of the asymptotic distribution of the higher order Wilcoxon sum-rank test statistic.
 }
 \description{
-It computes the mean and the variance of the asymptotic distribution of \eqn{T_k}.
-For \eqn{k=1,2,3} the exact mean is given, i.e., the finite-sample mean,
-and the provided estimate of the variance is more accurate than the first order asymptotic approximation.
+It computes the mean and the variance of the asymptotic distribution of the higher order Wilcoxon sum-rank test statistic.
 }

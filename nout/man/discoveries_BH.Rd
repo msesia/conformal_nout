@@ -19,7 +19,7 @@ by Benjamini-Hochberg procedure applied to conformal \emph{p}-values.
 The selection set is trivial, i.e., we are interested in testing all the observations in the test set by default.
 }
 \description{
-Applies Benjamini-Hochberg procedure to conformal \emph{p}-values.
+It applies Benjamini-Hochberg procedure to conformal \emph{p}-values.
 }
 \examples{
 set.seed(321)

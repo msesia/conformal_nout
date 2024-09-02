@@ -11,12 +11,12 @@ asymptotic.pvalue.Tk(m, n, k, T.obs)
 
 \item{n}{: test sample size}
 
-\item{k}{: order of the LMPI test statistic}
+\item{k}{: order of the higher order Wilcoxon sum-rank test statistic}
 
 \item{T.obs}{: observed value of the test statistic}
 }
 \value{
-It returns the approximated \emph{p}-value of the LMPI \eqn{T_k}
+A number, which is the approximated \emph{p}-value of the higher order Wilcoxon sum-rank
 test statistic based on the asymptotic normal approximation
 }
 \description{

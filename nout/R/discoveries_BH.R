@@ -1,7 +1,7 @@
 
 #' discoveries_BH
 #'
-#' @description Applies Benjamini-Hochberg procedure to conformal *p*-values.
+#' @description It applies Benjamini-Hochberg procedure to conformal *p*-values.
 #'
 #' @param S_X : score vector for the calibration set
 #' @param S_Y : score vector for the test set

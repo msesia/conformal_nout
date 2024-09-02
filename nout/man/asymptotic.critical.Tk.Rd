@@ -11,15 +11,15 @@ asymptotic.critical.Tk(m, n, k, alpha = 0.1)
 
 \item{n}{: test sample size}
 
-\item{k}{: order of the LMPI test statistic}
+\item{k}{: order of the higher order Wilcoxon sum-rank test statistic}
 
 \item{alpha}{: significance level. Default value is set equal to 0.1}
 }
 \value{
-It returns the \eqn{(1-\alpha)}-quantile of LMPI \eqn{T_k} test statistic
+A number, which is the \eqn{(1-\alpha)}-quantile of higher order Wilcoxon sum-rank test statistic
 based on asymptotic normal approximation.
 }
 \description{
-It computes the \eqn{(1-\alpha)}-quantile of LMPI \eqn{T_k} test statistic
-based on asymptotic normal approximation. For \eqn{k=1,2,3} the exact mean and a more accurate estimate are used.
+It computes the \eqn{(1-\alpha)}-quantile of the higher order Wilcoxon sum-rank \eqn{T_k} test statistic
+based on asymptotic normal approximation.
 }

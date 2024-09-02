@@ -10,10 +10,12 @@ find_d(
   local_test = "wmw",
   S = NULL,
   k = NULL,
-  monotone = FALSE,
+  monotonicity = NULL,
   g.hat = NULL,
+  fit_method = "beta_mix",
+  prop.F = 0.5,
+  pvalue_only = FALSE,
   alpha = 0.1,
-  prop.cal = 0.5,
   lambda = 0.5,
   n_perm = 0,
   B = 10^3,
@@ -28,25 +30,31 @@ find_d(
 \item{Y}{: test score vector}
 
 \item{local_test}{: local test to be used in the closed testing procedure.
-It can be either "wmw" for Wilcoxon rank sum test, "higher" for higher order Wilcoxon rank sum tests,
+It can be either "wmw" for Wilcoxon sum-rank test, "higher" for higher order Wilcoxon sum-rank tests,
 "fisher" for Fisher's combination test, "g" for the test by Shiraishi (1985), "simes" for Simes' test or
 "storey" for Simes' test using Storey's estimator for the proportion of true null hypotheses.}
 
 \item{S}{: selection set in the index test set}
 
-\item{k}{: positive integer indicating the order of generalized Wilcoxon rank sum test. Default value is NULL}
+\item{k}{: positive integer indicating the order of generalized Wilcoxon sum-rank test. Default value is \code{NULL}}
 
-\item{g.hat}{: it denotes the outlier density. If NULL it is estimated from the data}
+\item{monotonicity}{: character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}}
+
+\item{g.hat}{: it denotes the outlier density. If \code{NULL}, it is estimated from the data}
+
+\item{fit_method}{: character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}.
+It can be either "beta_mix" or "mixmodel"}
+
+\item{prop.F}{: proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
+Default value is 0.5}
+
+\item{pvalue_only}{: logical value. If TRUE, only the global test is performed}
 
 \item{alpha}{: significance level}
 
-\item{prop.cal}{: proportion of inliers used for calibration (the others are used to estimate the inlier distribution)
-Default value is 0.5}
-
 \item{lambda}{: parameter to be specified when computing Storey's estimator. Default value is 0.5}
 
-\item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic when
-local_test is either "higher" or "fisher"}
+\item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic}
 
 \item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3}
 
@@ -56,18 +64,15 @@ local_test is either "higher" or "fisher"}
 the permutation distribution of the test statistic}
 
 \item{seed}{: seed to ensure reproducible results}
-
-\item{monotonicity}{: logical value indicating if the outlier density function is monotone increasing or decreasing or neither.
-It must be specified when the local test is "g"}
 }
 \value{
 A list:
 \itemize{
 \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
 the number of true discoveries in closed testing procedure using the chosen local test
-\item \code{S}: the selection set, i.e., the selected subset of the test indices
-\item \code{global.pvalue}: the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
-\item \code{selection.pvalue}: \emph{p}-value for the selected null
+\item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+\item \code{global.pvalue}: a number which is the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
+\item \code{selection.pvalue}: a number which is the \emph{p}-value for the selected null. By default it is set equal to 1
 }
 }
 \description{
@@ -80,5 +85,6 @@ rg2 = function(rnull, k=2) max(rnull(k))
 X = runif(10)
 Y = replicate(10, rg2(rnull=runif))
 res = find_d(X, Y, local_test="higher", k=3, B=100)
-res = find_d(X, Y, local_test="g", g.hat = g2, monotone=FALSE,, B=100)
+res = find_d(X, Y, local_test="g", g.hat = g2, monotonicity="increasing", B=100)
+
 }

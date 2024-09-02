@@ -28,7 +28,6 @@
 #' discoveries_StoreyBH(Sx, Sy)
 #'
 #'
-#'
 discoveries_StoreyBH = function(S_X, S_Y, alpha = 0.1, lambda=0.5){
   m = length(S_Y)
   n = length(S_X)

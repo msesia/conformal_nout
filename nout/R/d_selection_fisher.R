@@ -1,12 +1,13 @@
 #' d_selection_fisher
-#'
+#' 
+#' @description  It performs closed testing method with Fisher's method as local test 
+#' 
 #' @param S_Y : test score vector
 #' @param S_X :  calibration score vector
-#' @param S : selection set in the index test set
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
 #' @param alpha : significance level
 #' @param pvalue_only : logical value. If TRUE, only the global test is performed
-#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local_test is either "higher" or "fisher"
+#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic
 #' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
 #' @param critical_values : if not \code{NULL}, a vector of precomputed critical values obtained using
 #' the permutation distribution of the test statistic
@@ -16,9 +17,9 @@
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
 #' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: the selection set, i.e., the selected subset of the test indices
-#' \item \code{global.pvalue}: the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: *p*-value for the selected null
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
 #' }
 #' @export
 #'
@@ -30,7 +31,7 @@
 #' Y = replicate(10, rg2(rnull=runif))
 #' res = d_selection_fisher(X, Y, B=100)
 #' res = d_selection_fisher(X, Y, S = c(1:8), B=100)
-d_selection_fisher = function(S_X, S_Y, S=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, critical_values=NULL, seed=123){
+d_selection_fisher = function(S_X, S_Y, S=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=0, B=10^3, critical_values=NULL, seed=123){
 
   n = as.double(length(S_Y))
   m = as.double(length(S_X))
