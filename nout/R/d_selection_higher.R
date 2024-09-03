@@ -62,7 +62,7 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=
       R = stat.MW(Z=S_Z, m=m)
       
       # Compute all critical values for (m,k) from k in {1,...,n}
-      crit =sapply(1:n, function(h) as.double(stats::qnorm(alpha, mean=m*h/2, sd = sqrt(m*h*(m+h+1)/12), lower.tail = F)))
+      crit = sapply(1:n, function(h) as.double(stats::qnorm(alpha, mean=m*h/2, sd = sqrt(m*h*(m+h+1)/12), lower.tail = F)))
       
       # Compute lower bound for S
       res = sumSome::sumStatsPar(g = R, S = S, alpha = alpha, cvs = crit)
@@ -80,7 +80,7 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=
       
     } else { # for higher order WMW tests use our shortcut
       ## Find d
-      Z = c(X,base::sort(S_Y, decreasing = F))
+      Z = c(S_X,base::sort(S_Y, decreasing = F))
       
       # Closed-testing shortcut: sort the test points based on their individual statistics
       # For each k in {1,...,n} consider the worst-case subset of test points with cardinality k

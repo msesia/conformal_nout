@@ -258,7 +258,7 @@ asymptotic.pvalue.G <- function(m, n, stats_G_vector, T.obs) {
   if(variance.TG>0) {
     p.value = stats::pnorm(q=T.obs, mean=mean.TG, sd = sqrt(variance.TG), lower.tail = F)
   } else {
-    p.value = ifelse(mean.TG >= T.obs, runif(1), 0)
+    p.value = ifelse(mean.TG >= T.obs, stats::runif(1), 0)
   }
 
   return(p.value)

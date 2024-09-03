@@ -9,7 +9,7 @@ d_G_monotone(
   S_Y,
   S = NULL,
   g.hat,
-  decr = F,
+  decr = FALSE,
   k = NULL,
   alpha = 0.1,
   pvalue_only = FALSE,
@@ -66,5 +66,5 @@ rg2 = function(rnull, k=2) max(rnull(k))
 m = 10; n=10;
 X = runif(m)
 Y = replicate(n, rg2(rnull=runif))
-res = d_G_monotone(X, Y, S=c(1:7), g.hat=g2, decr=F, B=100)
+res = d_G_monotone(X, Y, S=c(1:7), g.hat=g2, decr=FALSE, B=100)
 }

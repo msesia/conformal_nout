@@ -56,7 +56,7 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
     monotone = ifelse(is.null(monotonicity), FALSE, TRUE)
     m1 = round(prop.F*m)
     S_X1 = sample(S_X,m1)
-    S_pooled = c(setdiff(S_X,X1), Y)
+    S_pooled = c(setdiff(S_X, S_X1), S_Y)
     g.hat = estimate_g(S_X1, S_pooled, method=fit_method, monotone=monotone)$pdf
   }
   
@@ -112,8 +112,8 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 #' m = 10; n=10;
 #' X = runif(m)
 #' Y = replicate(n, rg2(rnull=runif))
-#' res = d_G_monotone(X, Y, S=c(1:7), g.hat=g2, decr=F, B=100)
-d_G_monotone = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=0, B=10^3, B_MC = 10^3, seed=123) {
+#' res = d_G_monotone(X, Y, S=c(1:7), g.hat=g2, decr=FALSE, B=100)
+d_G_monotone = function(S_X, S_Y, S=NULL, g.hat, decr=FALSE, k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=0, B=10^3, B_MC = 10^3, seed=123) {
   
   m = length(S_X)
   n = length(S_Y)
@@ -157,7 +157,7 @@ d_G_monotone = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pval
       stat_i = sum(a_i[R_wc])
       mu_i = i * mean(a_i)
       var_i = i * m * sum((a_i - mean(a_i))^2) / ((m + i) * ((m + i) - 1))
-      d = d + (stat_i > mu_i + qnorm(1 - alpha) * sqrt(var_i))
+      d = d + (stat_i > mu_i + stats::qnorm(1 - alpha) * sqrt(var_i))
       
       # compute global p-value
       if(i==n){
@@ -194,7 +194,7 @@ d_G_monotone = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pval
       }
       
       a_N = sapply((m + 1):(m + n), function(N) {
-        apply(replicate(B, g.hat(sort(runif(N)))), 1, mean)
+        apply(replicate(B, g.hat(sort(stats::runif(N)))), 1, mean)
       })
       
       d_S = 0
@@ -214,7 +214,7 @@ d_G_monotone = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pval
           stat_k <- sum(a_N[[k]][RR[(m + 1):(m + k)]])
           mu_k = k * mean(a_N[[k]])
           var_k = k * m * sum((a_N[[k]] - mean(a_N[[k]]))^2) / ((m + k) * ((m + k) - 1))
-          notrejected <- stat_k < mu_k + qnorm(1 - alpha) * sqrt(var_k)
+          notrejected <- stat_k < mu_k + stats::qnorm(1 - alpha) * sqrt(var_k)
           
           if (notrejected) { 
             break 

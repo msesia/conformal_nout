@@ -15,5 +15,5 @@ standardize_to_uniform(X1, X2)
 A list of two vectors corresponding to the scaled ranks of the two input vectors
 }
 \description{
-It rank the data and scale ranks to \link{0, 1}.
+It rank the data and scale ranks to \verb{[0, 1]}.
 }

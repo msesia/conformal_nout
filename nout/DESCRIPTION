@@ -20,9 +20,9 @@ Imports:
     stats,
     sumSome,
     Iso,
-    statip,
     mixmodel (>= 0.5),
-    fitdistrplus
+    fitdistrplus,
+    GoFKernel
 URL: https://github.com/msesia/conformal_nout
 BugReports: https://github.com/msesia/conformal_nout/issues
 Suggests: 

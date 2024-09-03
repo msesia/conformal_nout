@@ -6,7 +6,7 @@
 #' standardize_to_uniform
 #' 
 #' @description
-#' It rank the data and scale ranks to [0, 1].
+#' It rank the data and scale ranks to `[0, 1]`.
 #' 
 #' @param X1 : a vector
 #' @param X2 : a vector
@@ -42,11 +42,11 @@ make_density_monotone_increasing <- function(g) {
   g.hat.values <- list(x=x.grid, y=g(x.grid))
 
   ## Create a monotone interpolation function
-  iso_fit <- isoreg(g.hat.values$x, g.hat.values$y)
-  g.hat.u <- approxfun(iso_fit$x, iso_fit$yf, method = "linear", rule = 2)
+  iso_fit <- stats::isoreg(g.hat.values$x, g.hat.values$y)
+  g.hat.u <- stats::approxfun(iso_fit$x, iso_fit$yf, method = "linear", rule = 2)
 
   ## Normalize the density
-  integral <- integrate(g.hat.u, 0, 1, stop.on.error=FALSE)$value
+  integral <- stats::integrate(g.hat.u, 0, 1, stop.on.error=FALSE)$value
   g.mon <- function(x) g.hat.u(x) / pmax(1e-6, integral)
 
   return(g.mon)
@@ -71,14 +71,14 @@ make_density_monotone_decreasing <- function(g) {
   ## Create a decreasing monotone interpolation function
   # Reverse the order of y values and apply isoreg to ensure monotonicity
   reverse_y <- rev(g.hat.values$y)
-  iso_fit <- isoreg(g.hat.values$x, reverse_y)
+  iso_fit <- stats::isoreg(g.hat.values$x, reverse_y)
   decreasing_y <- rev(iso_fit$yf)
 
   # Create an interpolation function from the decreasing values
-  g.hat.u <- approxfun(g.hat.values$x, decreasing_y, method = "linear", rule = 2)
+  g.hat.u <- stats::approxfun(g.hat.values$x, decreasing_y, method = "linear", rule = 2)
 
   ## Normalize the density
-  integral <- integrate(g.hat.u, 0, 1, stop.on.error=FALSE)$value
+  integral <- stats::integrate(g.hat.u, 0, 1, stop.on.error=FALSE)$value
   g.mon <- function(x) g.hat.u(x) / pmax(1e-6, integral)
 
   return(g.mon)
@@ -137,11 +137,11 @@ create_cdf_interpolated <- function(pdf_func, lower_bound=0, upper_bound=1, grid
     ## Compute CDF values on the grid using numerical integration
     cdf_values <- numeric(grid_points)
     for (i in 1:grid_points) {
-        cdf_values[i] <- integrate(pdf_func, lower_bound, x_grid[i], stop.on.error=FALSE)$value
+        cdf_values[i] <- stats::integrate(pdf_func, lower_bound, x_grid[i], stop.on.error=FALSE)$value
     }
 
     ## Create interpolation function
-    cdf_func <- suppressWarnings(approxfun(c(lower_bound,x_grid,upper_bound), c(0,cdf_values,1), rule = 2))
+    cdf_func <- suppressWarnings(stats::approxfun(c(lower_bound,x_grid,upper_bound), c(0,cdf_values,1), rule = 2))
 
     return(cdf_func)
 }
@@ -159,21 +159,21 @@ hush <- function(code){
 #'
 #' @description
 #' Given a cumulative density function, it generates a specific number of samples 
-#' from the specified distribution via inverse transform sampling
+#' from the specified distribution via inverse transform sampling.
 #' 
-#' @param pdf_func : cumulative density function
-#' @param n_samples : number of samples to be generated
-#' @param lower_bound : lower bound of the density support 
-#' @param upper_bound : upper bound of the density support 
+#' @param cdf_function : cumulative density function.
+#' @param n_samples : number of samples to be generated.
+#' @param lower_bound : lower bound of the density support. 
+#' @param upper_bound : upper bound of the density support.
 #'
-#' @return A vector of samples from the desired distribution of the prespecified length
+#' @return A vector of samples from the desired distribution of the prespecified length.
 #'
 inverse_transform_sampling <- function(cdf_function, n_samples=1000, lower_bound=0, upper_bound=1) {
   ## Inverse transform sampling function
   iCDF <- GoFKernel::inverse(cdf_function, 0, 1)
 
   ## Generate random samples through inverse CDF transformation
-  u_samples <- runif(n_samples)
+  u_samples <- stats::runif(n_samples)
   samples <- sapply(u_samples, function(u) iCDF(u))
   return(samples)
 }
@@ -196,7 +196,7 @@ kernel_smoothed_pdf_function <- function(cdf_function, n_samples=1000) {
   samples <- inverse_transform_sampling(cdf_function)
 
   ## Kernel Density Estimation on the sampled values
-  density_est <- density(samples, bw=0.05, kernel="gaussian", from=0, to=1)
+  density_est <- stats::density(samples, bw=0.05, kernel="gaussian", from=0, to=1)
 
   ## Normalize the PDF
   integral_value <- sum(density_est$y) * diff(density_est$x[1:2])
@@ -204,7 +204,7 @@ kernel_smoothed_pdf_function <- function(cdf_function, n_samples=1000) {
 
   ## Create a function to return the normalized PDF
   normalized_pdf_function <- function(x) {
-    approx(density_est$x, normalized_pdf_values, xout = x)$y
+    stats::approx(density_est$x, normalized_pdf_values, xout = x)$y
   }
 
   return(list(pdf_function = normalized_pdf_function))
@@ -232,7 +232,7 @@ fit_mixmodel <- function(data) {
 
     CDF.values$y[1] = 0
     CDF.values$y[length(CDF.values$y)] = 1
-    CDF.hat <- splinefun(c(0, CDF.values$x, 1), c(0, CDF.values$y, 1), method = "monoH.FC")
+    CDF.hat <- stats::splinefun(c(0, CDF.values$x, 1), c(0, CDF.values$y, 1), method = "monoH.FC")
 
     ## Estimate PDF from CDF via kernel smoothing
     g.hat <- kernel_smoothed_pdf_function(CDF.hat)$pdf_function
@@ -271,10 +271,10 @@ fit_beta_mixture <- function(data, num_starts = 10) {
         if (alpha <= 0 || beta <= 0 || lambda <= 0 || lambda >= 1) return(-Inf)
 
         ## Density of Beta distribution
-        beta_density <- dbeta(data, shape1 = alpha, shape2 = beta)
+        beta_density <- stats::dbeta(data, shape1 = alpha, shape2 = beta)
 
         ## Density of Uniform distribution
-        uniform_density <- dunif(data, min = 0, max = 1)
+        uniform_density <- stats::dunif(data, min = 0, max = 1)
 
         ## Mixture density
         mixture_density <- lambda * uniform_density + (1 - lambda) * beta_density
@@ -299,10 +299,10 @@ fit_beta_mixture <- function(data, num_starts = 10) {
 
     for (i in 1:num_starts) {
         ## Random initial parameter guesses
-        initial_params <- c(runif(1, 0.5, 2), runif(1, 0.5, 2), runif(1, 0.01, 0.99))
+        initial_params <- c(stats::runif(1, 0.5, 2), stats::runif(1, 0.5, 2), stats::runif(1, 0.01, 0.99))
 
         ## Optimization to find the best parameters
-        fit <- optim(
+        fit <- stats::optim(
             par = initial_params,
             fn = log_likelihood,
             data = data,
@@ -349,7 +349,7 @@ fit_beta_mixture <- function(data, num_starts = 10) {
 estimate_g <- function(scores_reference, scores_pooled, method="betamix", monotone=FALSE) {
     ## Transform the reference scores to make them approximately uniform
     null.fit <- fitdistrplus::fitdist(as.numeric(scores_reference), "beta", start = list(shape1 = 0.999, shape2 = 0.999))
-    F.hat <- function(x) pbeta(x, null.fit$estimate[[1]], null.fit$estimate[[2]])
+    F.hat <- function(x) stats::pbeta(x, null.fit$estimate[[1]], null.fit$estimate[[2]])
     scores_pooled = F.hat(scores_pooled)
 
     monotonicity <- NULL
@@ -357,9 +357,9 @@ estimate_g <- function(scores_reference, scores_pooled, method="betamix", monoto
     if(method=="betamix") {
         ## Fit beta mixture model
         betafit <- fit_beta_mixture(scores_pooled)
-        g.hat <- function(x) dbeta(x, betafit$shape1, betafit$shape2)
+        g.hat <- function(x) stats::dbeta(x, betafit$shape1, betafit$shape2)
         g.hat.o <- g.hat
-        CDF.hat <- function(x) pbeta(x, betafit$shape1, betafit$shape2)
+        CDF.hat <- function(x) stats::pbeta(x, betafit$shape1, betafit$shape2)
     } else if (method=="mixmodel") {
         g.hat <- fit_mixmodel(scores_pooled)
     } else {
@@ -419,7 +419,7 @@ compute.global.pvalue.shirashi <- function(S_X, S_Y, g, num_mc=1000) {
     if(sigma>0) {
         p.value = stats::pnorm(q=T.obs, mean=n*mu, sd = sigma, lower.tail = F)
     } else {
-        p.value = ifelse(n*mu >= T.obs, runif(1), 0)
+        p.value = ifelse(n*mu >= T.obs, stats::runif(1), 0)
     }
 
     return(p.value)
