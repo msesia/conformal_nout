@@ -69,7 +69,7 @@ find_d = function(X, Y, local_test = "wmw", S=NULL, k=NULL, monotonicity=NULL, g
 
   } else if(local_test=="g"){
 
-    res = d_selection_G(X, Y, S=S, k=k, g.hat=g.hat, monotonicity=monotonicity, fit_method=fit_method, prop.cal=prop.cal, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
+    res = d_selection_G(X, Y, S=S, k=k, g.hat=g.hat, monotonicity=monotonicity, fit_method=fit_method, prop.F=prop.cal, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
 
   } else if(local_test=="simes"){
 
