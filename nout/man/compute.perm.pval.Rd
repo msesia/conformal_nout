@@ -10,27 +10,27 @@ compute.perm.pval(
   m,
   n,
   k = NULL,
-  stats_G_vector = NULL,
+  stats_G_vector,
   B = 10^3,
   seed = 123
 )
 }
 \arguments{
-\item{T.obs}{: observed value of the chosen test statistic}
+\item{T.obs}{: observed value of the chosen test statistic.}
 
-\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon test}
+\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon sum-rank test.}
 
-\item{m}{: calibration sample size}
+\item{m}{: calibration sample size.}
 
-\item{n}{: test sample size}
+\item{n}{: test sample size.}
 
-\item{k}{: order of the LMPI test statistic. If \code{NULL} it refers to Fisher test statistic}
+\item{k}{: order of the higher order Wilcoxon sum-rank test statistic.}
 
-\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations}
+\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985).}
 
-\item{B}{: number of permutations}
+\item{B}{: number of permutations.}
 
-\item{seed}{: seed to ensure reproducible results}
+\item{seed}{: seed to ensure reproducible results.}
 }
 \value{
 It returns the \emph{p}-value for the global null obtained via permutation using the chosen test statistic.

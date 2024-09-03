@@ -9,12 +9,12 @@ stat.MW(Z, m)
 \arguments{
 \item{Z}{: pooled score vector with the first \eqn{m} components corresponding
 to calibration observations and the last \eqn{n} components corresponding
-to test observations}
+to test observations.}
 
-\item{m}{: calibration sample size}
+\item{m}{: calibration sample size.}
 }
 \value{
-A rank vector
+A rank vector.
 }
 \description{
 It computes the ranks of the test observations in the

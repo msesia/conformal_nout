@@ -4,32 +4,32 @@
 #' @description  It performs closed testing method with Shiraishi local test using an exact shortcut
 #' valid when the outlier density is monotone, either increasing or decreasing.
 #' 
-#' @param S_X :  calibration score vector
-#' @param S_Y : test score vector
-#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
-#' @param k : order of the generalized Wilcoxon rank sum test. Classic Wilcoxon sum-rank test corresponds to \eqn{k=1}
+#' @param S_X :  calibration score vector.
+#' @param S_Y : test score vector.
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected.
+#' @param k : order of the generalized Wilcoxon sum-rank test. Classic Wilcoxon sum-rank test corresponds to \eqn{k=1}.
 #' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
 #' If g.hat=="analytical" the test statistics are computed analytically without Monte Carlo estimation.
-#' If \code{NULL}, the outlier density is estimated from the data
-#' @param monotonicity : character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}
+#' If \code{NULL}, the outlier density is estimated from the data.
+#' @param monotonicity : character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}.
 #' @param fit_method : character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}. 
-#' It can be either "beta_mix" or "mixmodel"
+#' It can be either "beta_mix" or "mixmodel".
 #' @param prop.F  : proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
-#' Default value is 0.5
-#' @param alpha : significance level
-#' @param pvalue_only : logical value. If TRUE, only the global test is performed
+#' Default value is 0.5.
+#' @param alpha : significance level.
+#' @param pvalue_only : logical value. If \code{TRUE}, only the global test is performed.
 #' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic
-#' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
-#' @param B_MC : number of replications to compute the Shiraishi test statistic
-#' @param seed : seed to ensure reproducible results
+#' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3.
+#' @param B_MC : number of replications to compute the Shiraishi test statistic.
+#' @param seed : seed to ensure reproducible results.
 #'
 #' @return A list:
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
-#' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
-#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
+#' the number of true discoveries in closed testing procedure using the chosen local test.
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set.
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null.
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1.
 #' }
 #' @export
 #'
@@ -80,29 +80,28 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 #' @description  It performs closed testing method with Shiraishi local test using an exact shortcut
 #' valid when the outlier density is monotone, either increasing or decreasing.
 #' 
-#' @param S_X :  calibration score vector
-#' @param S_Y : test score vector
-#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
+#' @param S_X :  calibration score vector.
+#' @param S_Y : test score vector.
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected.
 #' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
 #' If g.hat=="analytical" the test statistics are computed analytically without Monte Carlo estimation.
 #' @param decr : logical value indicating whether the outlier distribution is decreasing (TRUE)
-#' or increasing (FALSE)
-#' @param k : order of the LMPI test statistic to be specified when g.hat is "analytical"
-#' @param alpha : significance level
-#' @param pvalue_only : logical value. If TRUE, only the global test is performed
-#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic when
-#' local_test is either "higher" or "fisher"
-#' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
-#' @param B_MC : number of replications to compute the Shiraishi test statistic
-#' @param seed : seed to ensure reproducible results
+#' or increasing (FALSE).
+#' @param k : order of the LMPI test statistic to be specified when g.hat is "analytical".
+#' @param alpha : significance level.
+#' @param pvalue_only : logical value. If \code{TRUE}, only the global test is performed.
+#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic.
+#' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3.
+#' @param B_MC : number of replications to compute the Shiraishi test statistic.
+#' @param seed : seed to ensure reproducible results.
 #'
 #' @return A list:
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
-#' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
-#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
+#' the number of true discoveries in closed testing procedure using the chosen local test.
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set.
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null.
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1.
 #' }
 #'
 #' @export
@@ -279,28 +278,28 @@ d_G_monotone = function(S_X, S_Y, S=NULL, g.hat, decr=F, k=NULL, alpha=0.1, pval
 
 #' d_G_cons
 #' @description  It performs closed testing method with Shiraishi local test using a shortcut
-#' approximating the lower bound for the number of outliers when the outlier density is not monotone
+#' approximating the lower bound for the number of outliers when the outlier density is not monotone.
 #' 
-#' @param S_X :  calibration score vector
-#' @param S_Y : test score vector
-#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
+#' @param S_X :  calibration score vector.
+#' @param S_Y : test score vector.
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected.
 #' @param g.hat : it can be either a character ("analytical") or a function denoting the outlier density.
 #' If g.hat=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.
-#' @param k : order of the LMPI test statistic to be specified when g.hat is "analytical"
-#' @param alpha : significance level
-#' @param pvalue_only : logical value. If TRUE, only the global test is performed
-#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic
-#' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
-#' @param B_MC : number of replications to compute the Shiraishi test statistic
-#' @param seed : seed to ensure reproducible results
+#' @param k : order of the LMPI test statistic to be specified when g.hat is "analytical".
+#' @param alpha : significance level.
+#' @param pvalue_only : logical value. If \code{TRUE}, only the global test is performed.
+#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic.
+#' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3.
+#' @param B_MC : number of replications to compute the Shiraishi test statistic.
+#' @param seed : seed to ensure reproducible results.
 #'
 #' @return A list:
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
-#' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
-#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
+#' the number of true discoveries in closed testing procedure using the chosen local test.
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set.
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null.
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1.
 #' }
 #'
 #' @export

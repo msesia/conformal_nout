@@ -1,3 +1,18 @@
+# --------------------------------------------------------------- #
+#  Implementation of Shiraishi test with asymptotic distribution  #
+# --------------------------------------------------------------- #
+
+
+#' standardize_to_uniform
+#' 
+#' @description
+#' It rank the data and scale ranks to [0, 1].
+#' 
+#' @param X1 : a vector
+#' @param X2 : a vector
+#'
+#' @return A list of two vectors corresponding to the scaled ranks of the two input vectors
+#'
 standardize_to_uniform <- function(X1, X2) {
   # Rank the data and scale ranks to [0, 1]
   n1 <- length(X1)
@@ -9,7 +24,16 @@ standardize_to_uniform <- function(X1, X2) {
   return(list(X1=X1.s, X2=X2.s))
 }
 
-## Function to make density function monotone increasing
+
+#' make_density_monotone_increasing
+#'
+#' @description
+#' It makes a density function monotone increasing using Isotonic Regression
+#' 
+#' @param g : a density function
+#'
+#' @return A monotone increasing density function that is the output of Isotonic Regression
+#'
 make_density_monotone_increasing <- function(g) {
   tol = 1e-3
   x.grid <- seq(tol,1-tol,length.out=1000)
@@ -28,7 +52,15 @@ make_density_monotone_increasing <- function(g) {
   return(g.mon)
 }
 
-## Function to make density function monotone decreasing
+#' make_density_monotone_decreasing
+#'
+#' @description
+#' It makes a density function monotone decreasing using Isotonic Regression
+#' 
+#' @param g : a density function
+#'
+#' @return A monotone decreasing density function that is the output of Isotonic Regression
+#'
 make_density_monotone_decreasing <- function(g) {
   tol = 1e-3
   x.grid <- seq(tol, 1 - tol, length.out = 1000)
@@ -52,7 +84,18 @@ make_density_monotone_decreasing <- function(g) {
   return(g.mon)
 }
 
-## Function to choose between increasing and decreasing monotonicity
+
+
+#' choose_best_monotonic_density
+#'
+#' @description
+#' It chooses between increasing and decreasing monotonicity 
+#' 
+#' @param g : a density function
+#'
+#' @return A density function that is the output of Isotonic Regression and 
+#' is monotone decreasing or increasing based on the lower Residual Sum of Squares
+#'
 choose_best_monotonic_density <- function(g) {
   tol = 1e-3
   x.grid <- seq(tol, 1 - tol, length.out = 1000)
@@ -73,7 +116,19 @@ choose_best_monotonic_density <- function(g) {
   }
 }
 
-## Function to create CDF using interpolation
+
+#' create_cdf_interpolated
+#'
+#' @description
+#' It creates cumulative density function using linear interpolation within a grid of points 
+#' 
+#' @param pdf_func : density function
+#' @param lower_bound : lower bound of the density support 
+#' @param upper_bound : upper bound of the density support 
+#' @param grid_points : number of points where to compute the cumulative density function via integration of the density function
+#'
+#' @return A function which is the interpolated cumulative density function
+#'
 create_cdf_interpolated <- function(pdf_func, lower_bound=0, upper_bound=1, grid_points = 1000) {
     ## Generate a sequence of x values within the specified bounds
     tol = 1e-4
@@ -99,7 +154,20 @@ hush <- function(code){
     return(tmp)
 }
 
-## Inverse transform sampling function
+
+#' inverse_transform_sampling
+#'
+#' @description
+#' Given a cumulative density function, it generates a specific number of samples 
+#' from the specified distribution via inverse transform sampling
+#' 
+#' @param pdf_func : cumulative density function
+#' @param n_samples : number of samples to be generated
+#' @param lower_bound : lower bound of the density support 
+#' @param upper_bound : upper bound of the density support 
+#'
+#' @return A vector of samples from the desired distribution of the prespecified length
+#'
 inverse_transform_sampling <- function(cdf_function, n_samples=1000, lower_bound=0, upper_bound=1) {
   ## Inverse transform sampling function
   iCDF <- GoFKernel::inverse(cdf_function, 0, 1)
@@ -110,6 +178,19 @@ inverse_transform_sampling <- function(cdf_function, n_samples=1000, lower_bound
   return(samples)
 }
 
+
+
+
+#' kernel_smoothed_pdf_function
+#' 
+#' @description
+#' Given the cumulative density function, it returns a normalized Kernel Density Estimate of the density function
+#' 
+#' @param cdf_function : a cumulative density function
+#' @param n_samples : number of samples to be generated to estimate the density function via Kernel Density Estimation
+#'
+#' @return A function which is the normalized Kernel Density Estimate of the density function
+#' 
 kernel_smoothed_pdf_function <- function(cdf_function, n_samples=1000) {
   ## Generate random samples using the inverse transform sampling
   samples <- inverse_transform_sampling(cdf_function)
@@ -130,6 +211,17 @@ kernel_smoothed_pdf_function <- function(cdf_function, n_samples=1000) {
 }
 
 
+
+
+#' fit_mixmodel
+#'
+#' @description
+#' It estimates the CDF from a vector of unidimensional scores and then, from the estimated CDF, it returns the PDF estimated via kernel smoothing
+#' 
+#' @param data : vector of univariate scores
+#'
+#' @return A function which the PDF estimated via kernel smoothing from the score vector in input
+#' 
 fit_mixmodel <- function(data) {
 
     ## Fit mixture model and evaluate CDF values on a grid
@@ -148,14 +240,32 @@ fit_mixmodel <- function(data) {
 }
 
 
+
+
+#' fit_beta_mixture
+#' 
+#' @description
+#' It estimates the parameters of a mixture model of two distributions, 
+#' where the first one is a Standard Uniform and the second one is a Beta distribution 
+#' whose parameters are both unknown and also the mixing proportion is unknown. 
+#' All the parameters are optimized minimizing the negative log-likelihood,
+#' allowing for box constraints.
+#' 
+#' @param data : score vector
+#' @param num_starts : number of iterations for parameter optimization
+#'
+#' @return A list of three numbers that are, respectively, the estimates of 
+#' the first parameter (alpha) of a Beta distribution, of the second parameter (beta) of a Beta distribution and
+#' of the mixing proportion (lambda) of the mixture distribution.
+#' 
 fit_beta_mixture <- function(data, num_starts = 10) {
 
     ## Log-likelihood function
     log_likelihood <- function(params, data) {
         ## Extract parameters
-        alpha <- params[1]
-        beta <- params[2]
-        lambda <- params[3]
+        alpha <- params[1] # first parameter of Beta distribution
+        beta <- params[2] # first parameter of Beta distribution
+        lambda <- params[3] # mixing proportion
 
         ## Ensure parameters are in valid range
         if (alpha <= 0 || beta <= 0 || lambda <= 0 || lambda >= 1) return(-Inf)
@@ -216,6 +326,26 @@ fit_beta_mixture <- function(data, num_starts = 10) {
     return(list(shape1 = alpha_hat, shape2 = beta_hat, lambda = lambda_hat))
 }
 
+
+
+
+#' estimate_g
+#'
+#' @description
+#' Given a two-component mixture model where the first distribution is a Standard Uniform 
+#' and the second one is a Beta distribution, it estimates the parameter of the Beta distribution 
+#' and returns the PDF and the CDF.
+#' 
+#' @param scores_reference : calibration score vector of inliers.
+#' @param scores_pooled : pooled score vector of calibration and test scores.
+#' @param method : character value indicating the method to be used to estimate the PDF. 
+#' It can be either "betamix" or "mixmodel".
+#' @param monotone : logical value. If \code{TRUE} the estimated PDF via the specified method 
+#' is made monotone. The direction (increasing or decreasing) is automatically chosen from the data.
+#' 
+#' @return A list of three elements which are the estimated PDF and CDF and the monotonicity 
+#' used in the estimation process.
+#' 
 estimate_g <- function(scores_reference, scores_pooled, method="betamix", monotone=FALSE) {
     ## Transform the reference scores to make them approximately uniform
     null.fit <- fitdistrplus::fitdist(as.numeric(scores_reference), "beta", start = list(shape1 = 0.999, shape2 = 0.999))
@@ -249,6 +379,22 @@ estimate_g <- function(scores_reference, scores_pooled, method="betamix", monoto
     return(list(pdf = g.hat, cdf = CDF.hat, monotonicity=monotonicity))
 }
 
+
+
+
+#' compute.global.pvalue.shirashi
+#'
+#' @description
+#' Given the outlier density function and the calibration and test score vectors,
+#' it computes the global *p*-value for the Shiraishi test.
+#' 
+#' @param S_X : calibration score vector.
+#' @param S_Y : test score vector.
+#' @param g : outlier density.
+#' @param num_mc : number of Monte Carlo iterations.
+#'
+#' @return A number, the global *p*-value for the Shiraishi test.
+#' 
 compute.global.pvalue.shirashi <- function(S_X, S_Y, g, num_mc=1000) {
     m <- length(S_X)
     n <- length(S_Y)
@@ -279,6 +425,27 @@ compute.global.pvalue.shirashi <- function(S_X, S_Y, g, num_mc=1000) {
     return(p.value)
 }
 
+
+
+
+
+#' compute.global.pvalue.shirashi
+#'
+#' @description
+#' Given the calibration and test score vectors, it computes the global *p*-value 
+#' for the Shiraishi test after estimating the outlier density function.
+#' 
+#' @param S_X : calibration score vector.
+#' @param S_Y : test score vector.
+#' @param prop_cal : proportion of inlier observations used for estimating the inlier distribution.
+#' @param num_mc : number of Monte Carlo iterations.
+#' @param fit_method : character value indicating the method for estimating the PDF. 
+#' It can be either "betamix" or "mixmodel".
+#' @param monotone : logical value. If \code{TRUE} the estimated PDF via the specified method 
+#' is made monotone. The direction (increasing or decreasing) is automatically chosen from the data.
+#'
+#' @return A number, the global *p*-value for the Shiraishi test when the outlier density is estimated from the data.
+#' 
 compute.global.pvalue.shirashi.adaptive <- function(S_X, S_Y, prop_cal=0.5, num_mc=1000, fit_method="betamix", monotone=FALSE) {
 
     ## Split the reference scores and create pooled vector

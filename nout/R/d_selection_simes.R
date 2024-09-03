@@ -3,19 +3,19 @@
 #' @description It returns the lower bound for the number of true discoveries in closed testing procedure
 #' using Simes local test.
 #'
-#' @param S_X : score vector of calibration observations
-#' @param S_Y : score vector of test observations
-#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
+#' @param S_X : score vector of calibration observations.
+#' @param S_Y : score vector of test observations.
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected.
 #' @param alpha : significance level of the local test. Default value is set equal to 0.1.
-#' @param pvalue_only : logical value. If TRUE, only the global test is performed
+#' @param pvalue_only : logical value. If \code{TRUE}, only the global test is performed.
 #'
 #' @return A list:
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
-#' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
-#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null
+#' the number of true discoveries in closed testing procedure using the chosen local test.
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set.
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null.
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null.
 #' }
 #'
 #'
@@ -76,21 +76,21 @@ d_selection_simes = function(S_X, S_Y, S=NULL, alpha = 0.1, pvalue_only=FALSE){
 #' @description It returns the lower bound for the number of true discoveries in closed testing procedure
 #' using Simes local test with Storey estimator for the proportion of true null hypotheses.
 #'
-#' @param S_X : score vector of calibration observations
-#' @param S_Y : score vector of test observations
-#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected
-#' @param alpha : significance level of the local test. Default value is set equal to 0.1
-#' @param lambda : parameter involved in the computation of Storey estimator. Default value is set equal to 0.5
-#' @param pvalue_only : logical value. If TRUE, only the global test is performed
+#' @param S_X : score vector of calibration observations.
+#' @param S_Y : score vector of test observations.
+#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected.
+#' @param alpha : significance level of the local test. Default value is set equal to 0.1.
+#' @param lambda : parameter involved in the computation of Storey estimator. Default value is set equal to 0.5.
+#' @param pvalue_only : logical value. If \code{TRUE}, only the global test is performed.
 #'
 #'
 #' @return A list:
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
-#' the number of true discoveries in closed testing procedure using the chosen local test
-#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
-#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null
-#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1
+#' the number of true discoveries in closed testing procedure using the chosen local test.
+#' \item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set.
+#' \item \code{global.pvalue}: a number which is the global *p*-value, i.e., the *p*-value that closed testing procedure uses to reject the global null.
+#' \item \code{selection.pvalue}: a number which is the *p*-value for the selected null. By default it is set equal to 1.
 #' }
 #'
 #' @export

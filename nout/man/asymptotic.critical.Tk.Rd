@@ -7,13 +7,13 @@
 asymptotic.critical.Tk(m, n, k, alpha = 0.1)
 }
 \arguments{
-\item{m}{: calibration sample size}
+\item{m}{: calibration sample size.}
 
-\item{n}{: test sample size}
+\item{n}{: test sample size.}
 
-\item{k}{: order of the higher order Wilcoxon sum-rank test statistic}
+\item{k}{: order of the higher order Wilcoxon sum-rank test statistic.}
 
-\item{alpha}{: significance level. Default value is set equal to 0.1}
+\item{alpha}{: significance level. Default value is set equal to 0.1.}
 }
 \value{
 A number, which is the \eqn{(1-\alpha)}-quantile of higher order Wilcoxon sum-rank test statistic

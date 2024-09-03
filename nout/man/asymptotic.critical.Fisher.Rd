@@ -7,11 +7,11 @@
 asymptotic.critical.Fisher(m, n, alpha = 0.1)
 }
 \arguments{
-\item{m}{: calibration sample size}
+\item{m}{: calibration sample size.}
 
-\item{n}{: test sample size}
+\item{n}{: test sample size.}
 
-\item{alpha}{: significance level. Default value is set equal to 0.1}
+\item{alpha}{: significance level. Default value is set equal to 0.1.}
 }
 \value{
 It returns the \eqn{(1-\alpha)}-quantile of adjusted Fisher test statistic

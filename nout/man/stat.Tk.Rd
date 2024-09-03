@@ -9,11 +9,11 @@ stat.Tk(Z, m, k)
 \arguments{
 \item{Z}{: pooled score vector with the first \eqn{m} components corresponding
 to calibration observations and the last \eqn{n} components corresponding
-to test observations}
+to test observations.}
 
-\item{m}{: calibration sample size}
+\item{m}{: calibration sample size.}
 
-\item{k}{: order of the LMPI test statistic}
+\item{k}{: order of the LMPI test statistic.}
 }
 \value{
 Given the pooled score vector \eqn{Z=(X,Y)} where \eqn{X} is the calibration score
@@ -24,5 +24,5 @@ it returns
 \description{
 It computes the ranks of the test observations in the pooled
 vector of calibration and test scores. Then, component-wisely compute the power
-from \eqn{1} to \eqn{k} of the rank vector and component-wisely sum them
+from \eqn{1} to \eqn{k} of the rank vector and component-wisely sum them.
 }

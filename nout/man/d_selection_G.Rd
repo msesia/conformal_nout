@@ -22,46 +22,46 @@ d_selection_G(
 )
 }
 \arguments{
-\item{S_X}{:  calibration score vector}
+\item{S_X}{:  calibration score vector.}
 
-\item{S_Y}{: test score vector}
+\item{S_Y}{: test score vector.}
 
-\item{S}{: selection set in the index test set. If \code{NULL} the entire test set is selected}
+\item{S}{: selection set in the index test set. If \code{NULL} the entire test set is selected.}
 
-\item{k}{: order of the generalized Wilcoxon rank sum test. Classic Wilcoxon sum-rank test corresponds to \eqn{k=1}}
+\item{k}{: order of the generalized Wilcoxon sum-rank test. Classic Wilcoxon sum-rank test corresponds to \eqn{k=1}.}
 
 \item{g.hat}{: it can be either a character ("analytical") or a function denoting the outlier density.
 If g.hat=="analytical" the test statistics are computed analytically without Monte Carlo estimation.
-If \code{NULL}, the outlier density is estimated from the data}
+If \code{NULL}, the outlier density is estimated from the data.}
 
-\item{monotonicity}{: character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}}
+\item{monotonicity}{: character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}.}
 
 \item{fit_method}{: character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}.
-It can be either "beta_mix" or "mixmodel"}
+It can be either "beta_mix" or "mixmodel".}
 
 \item{prop.F}{: proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
-Default value is 0.5}
+Default value is 0.5.}
 
-\item{alpha}{: significance level}
+\item{alpha}{: significance level.}
 
-\item{pvalue_only}{: logical value. If TRUE, only the global test is performed}
+\item{pvalue_only}{: logical value. If \code{TRUE}, only the global test is performed.}
 
 \item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic}
 
-\item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3}
+\item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3.}
 
-\item{B_MC}{: number of replications to compute the Shiraishi test statistic}
+\item{B_MC}{: number of replications to compute the Shiraishi test statistic.}
 
-\item{seed}{: seed to ensure reproducible results}
+\item{seed}{: seed to ensure reproducible results.}
 }
 \value{
 A list:
 \itemize{
 \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
-the number of true discoveries in closed testing procedure using the chosen local test
-\item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
-\item \code{global.pvalue}: a number which is the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
-\item \code{selection.pvalue}: a number which is the \emph{p}-value for the selected null. By default it is set equal to 1
+the number of true discoveries in closed testing procedure using the chosen local test.
+\item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set.
+\item \code{global.pvalue}: a number which is the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null.
+\item \code{selection.pvalue}: a number which is the \emph{p}-value for the selected null. By default it is set equal to 1.
 }
 }
 \description{

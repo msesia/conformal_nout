@@ -10,7 +10,7 @@ compute.1critical.value(
   local_test = "wmw",
   alpha,
   k = NULL,
-  stats_G_vector = NULL,
+  stats_G_vector,
   n_perm = 0,
   B = 10^3,
   critical_values = NULL,
@@ -18,30 +18,30 @@ compute.1critical.value(
 )
 }
 \arguments{
-\item{m}{: calibration size}
+\item{m}{: calibration size.}
 
-\item{n}{: test size}
+\item{n}{: test size.}
 
-\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon test}
+\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon sum-rank test.}
 
-\item{alpha}{: significance level}
+\item{alpha}{: significance level.}
 
-\item{k}{: order of the LMPI test statistic. If \code{NULL} it refers to Fisher test statistic}
+\item{k}{: order of the higher order Wilcoxon sum-rank test statistic.}
 
-\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations}
+\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985).}
 
-\item{n_perm}{: if \eqn{min(m,n)\leq n_perm} critical values will be computed via permutation. Default value is 0}
+\item{n_perm}{: if \eqn{min(m,n)\leq n_perm} critical values will be computed via permutation. Default value is 0.}
 
-\item{B}{: number of permutation to compute critical values. Default value is 10^3}
+\item{B}{: number of permutation to compute critical values. Default value is 10^3.}
 
 \item{critical_values}{: if not \code{NULL}, a vector of precomputed critical values obtained using
-the permutation distribution of the test statistic}
+the permutation distribution of the test statistic.}
 
-\item{seed}{: seed to ensure reproducible results}
+\item{seed}{: seed to ensure reproducible results.}
 }
 \value{
-A ritical value for a test statistic chosen among LMPI \eqn{T_k}, Fisher or Shiraishi statistics
-at significance level \eqn{\alpha} with calibration size \eqn{m} fixed for each level of closed testing.
+A numeric value that is the critical value at significance level \eqn{\alpha} for a test statistic chosen among
+higher order Wilcoxon sum-rank, Fisher or Shiraishi statistics.
 }
 \description{
 It computes the critical value for a chosen test statistic

@@ -155,9 +155,9 @@ estimate_mixing_prop = function(X, Y, F_null, gridsize=4000){
 
 
 
-# --------------------------------------------------------------------------------------- #
-#  Implementation of the test proposed by Shiraishi (1985) with asymptotical distribution #
-# --------------------------------------------------------------------------------------- #
+# ------------------------------------------------------------------------------------- #
+#  Implementation of the test proposed by Shiraishi (1985) with asymptotic distribution #
+# ------------------------------------------------------------------------------------- #
 
 
 # Stima MC delle statististiche test per singoli test points
@@ -188,15 +188,8 @@ stats_G_j_MC = function(N, g, B){
 #' @param m : calibration size
 #' @param stats_G_vector : vector of Shiraishi (1985) test statistics for a fixed test sample size
 #'
-#' @return vector of Shiraishi test statistics given a pooled score vector
-#' @export
-#'
-#' @examples
-#' g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
-#' rg2 = function(rnull, k=2) max(rnull(k))
-#' stats_G = stats_G_j_MC(N=1000, g=g2, B=500)
-#' stat.G = function(Z=c(runif(50),replicate(rg2(runif), 50)), m=50,stats_G_vector=stats_G)
-#'
+#' @return vector of Shiraishi test statistics given a pooled score vector.
+#' 
 stat.G = function(Z,m,stats_G_vector){
 
   m = as.double(m)

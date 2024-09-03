@@ -16,25 +16,25 @@ perm.crit.T(
 )
 }
 \arguments{
-\item{m}{: calibration sample size}
+\item{m}{: calibration sample size.}
 
-\item{n}{: test sample size}
+\item{n}{: test sample size.}
 
-\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon test}
+\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon sum-rank test.}
 
-\item{k}{: order of the LMPI test statistic. If \code{NULL} it refers to Fisher test statistic}
+\item{k}{: order of the higher order Wilcoxon sum-rank test statistic.}
 
-\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations}
+\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985).}
 
-\item{alpha}{: significance level. Default value is set equal to 0.1}
+\item{alpha}{: significance level. Default value is set equal to 0.1.}
 
-\item{B}{: number of permutations}
+\item{B}{: number of permutations.}
 
-\item{seed}{: seed to ensure reproducible results}
+\item{seed}{: seed to ensure reproducible results.}
 }
 \value{
 It returns the \eqn{(1-\alpha)}-quantile of the chosen test statistic obtained via permutation.
 }
 \description{
-It computes permutation \eqn{(1-\alpha)}-quantile of a chosen test statistic.
+It computes the permuted \eqn{(1-\alpha)}-quantile of a chosen test statistic.
 }

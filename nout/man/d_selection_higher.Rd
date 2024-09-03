@@ -19,37 +19,37 @@ d_selection_higher(
 )
 }
 \arguments{
-\item{S_X}{:  calibration score vector}
+\item{S_X}{:  calibration score vector.}
 
-\item{S_Y}{: test score vector}
+\item{S_Y}{: test score vector.}
 
-\item{S}{: selection set in the index test set. If \code{NULL} the entire test set is selected}
+\item{S}{: selection set in the index test set. If \code{NULL} the entire test set is selected.}
 
-\item{local_test}{: it can be either "wmw" for Wilcoxon sum-rank test or "higher" for higher order Wilcoxon sum-rank test}
+\item{local_test}{: it can be either "wmw" for Wilcoxon sum-rank test or "higher" for higher order Wilcoxon sum-rank test.}
 
-\item{k}{: order of the generalized Wilcoxon rank sum test. Classic Wilcoxon test corresponds to \eqn{k=1}}
+\item{k}{: order of the generalized Wilcoxon rank sum test. Classic Wilcoxon test corresponds to \eqn{k=1}.}
 
-\item{alpha}{: significance level}
+\item{alpha}{: significance level.}
 
-\item{pvalue_only}{: logical value. If TRUE, only the global test is performed}
+\item{pvalue_only}{: logical value. If \code{TRUE}, only the global test is performed.}
 
-\item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic}
+\item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic.}
 
-\item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3}
+\item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3.}
 
 \item{critical_values}{: if not \code{NULL}, a vector of precomputed critical values obtained using
-the permutation distribution of the test statistic}
+the permutation distribution of the test statistic.}
 
-\item{seed}{: seed to ensure reproducible results}
+\item{seed}{: seed to ensure reproducible results.}
 }
 \value{
 A list:
 \itemize{
 \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
-the number of true discoveries in closed testing procedure using the chosen local test
-\item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set
-\item \code{global.pvalue}: a number which is the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null
-\item \code{selection.pvalue}: a number which is the \emph{p}-value for the selected null. By default it is set equal to 1
+the number of true discoveries in closed testing procedure using the chosen local test.
+\item \code{S}: a vector which is the selection set. If \code{NULL}, the selection set is the entire test set.
+\item \code{global.pvalue}: a number which is the global \emph{p}-value, i.e., the \emph{p}-value that closed testing procedure uses to reject the global null.
+\item \code{selection.pvalue}: a number which is the \emph{p}-value for the selected null. By default it is set equal to 1.
 }
 }
 \description{

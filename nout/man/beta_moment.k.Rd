@@ -7,14 +7,14 @@
 beta_moment.k(h, N, k)
 }
 \arguments{
-\item{h}{: an integer between \eqn{1} and \eqn{N}}
+\item{h}{: an integer between \eqn{1} and \eqn{N}.}
 
-\item{N}{: integer}
+\item{N}{: integer.}
 
-\item{k}{: order of moment}
+\item{k}{: order of moment.}
 }
 \value{
-A number which is the \eqn{k}th moment of a Beta(h, N-h+1) distribution
+A number which is the \eqn{k}th moment of a Beta(h, N-h+1) distribution.
 }
 \description{
 beta_moment.k

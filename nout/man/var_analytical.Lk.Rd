@@ -7,16 +7,16 @@
 var_analytical.Lk(N, k, n)
 }
 \arguments{
-\item{N}{: pooled sample size}
+\item{N}{: pooled sample size.}
 
-\item{k}{: an integer which is the order of the Lehmann's alternative distribution}
+\item{k}{: an integer which is the order of the Lehmann's alternative distribution.}
 
-\item{n}{: test sample size}
+\item{n}{: test sample size.}
 }
 \value{
-A number which is the asymptotic variance of Shiraishi test statistic under Lehmann's alternative of order k
+A number which is the asymptotic variance of Shiraishi test statistic under Lehmann's alternative of order k.
 }
 \description{
 It compute the analytical (not estimated through Monte Carlo simulation)
-asymptotic variance of the Shiraishi test statistic
+asymptotic variance of the Shiraishi test statistic.
 }

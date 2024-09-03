@@ -7,11 +7,11 @@
 asymptotic.pvalue.Fisher(m, n, T.obs)
 }
 \arguments{
-\item{m}{: calibration sample size}
+\item{m}{: calibration sample size.}
 
-\item{n}{: test sample size}
+\item{n}{: test sample size.}
 
-\item{T.obs}{: observed value of the test statistic}
+\item{T.obs}{: observed value of the test statistic.}
 }
 \value{
 It returns the approximated \emph{p}-value of the adjusted Fisher

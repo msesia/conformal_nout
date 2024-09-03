@@ -7,11 +7,11 @@
 asymptotic.moments.Tk(m, n, k)
 }
 \arguments{
-\item{m}{: calibration sample size}
+\item{m}{: calibration sample size.}
 
-\item{n}{: test sample size}
+\item{n}{: test sample size.}
 
-\item{k}{: order of the LMPI test statistic}
+\item{k}{: order of the LMPI test statistic.}
 }
 \value{
 A list with the mean and the variance of the asymptotic distribution of the higher order Wilcoxon sum-rank test statistic.

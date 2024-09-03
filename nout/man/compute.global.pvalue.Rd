@@ -10,36 +10,37 @@ compute.global.pvalue(
   n,
   local_test = "wmw",
   k = NULL,
-  stats_G_vector = NULL,
-  n_perm = 10,
+  stats_G_vector,
+  n_perm = 0,
   B = 100,
   seed = 321
 )
 }
 \arguments{
-\item{T.obs}{: observed value of the chosen test statistic}
+\item{T.obs}{: observed value of the chosen test statistic.}
 
-\item{m}{: calibration sample size}
+\item{m}{: calibration sample size.}
 
-\item{n}{: test sample size}
+\item{n}{: test sample size.}
 
-\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon test}
+\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon sum-rank test.}
 
-\item{k}{: order of the LMPI test statistic. If \code{NULL} it refers to Fisher test statistic}
+\item{k}{: order of the higher order Wilcoxon sum-rank  test statistic.}
 
-\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations}
+\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985).}
 
-\item{n_perm}{: if \eqn{min(m,n)\leq n_perm} the \emph{p}-value for the global null will be computed via permutation. Default value is 10}
+\item{n_perm}{: if \eqn{min(m,n)\leq n_perm} the \emph{p}-value for the global null will be computed via permutation. Default value is 0.}
 
-\item{B}{: number of permutations}
+\item{B}{: number of permutations.}
 
-\item{seed}{: seed to ensure reproducible results}
+\item{seed}{: seed to ensure reproducible results.}
 }
 \value{
-It returns the \emph{p}-value for the global null, according to the chosen test statistic.
-The \emph{p}-value is computed via permutation if either the calibration sample size or the test sample size
-is smaller than \code{n_perm}. Otherwise, it is computed using the asymptotic distribution.
+A number, the \emph{p}-value for the global null according to the chosen test statistic.
 }
 \description{
-It computes the \emph{p}-value for the global null according to the chosen test statistic
+It computes the \emph{p}-value for the global null according to the chosen
+test statistic. The \emph{p}-value is computed via permutation if either the calibration
+sample size or the test sample size is smaller than \code{n_perm}.
+Otherwise, it is computed using the asymptotic distribution.
 }

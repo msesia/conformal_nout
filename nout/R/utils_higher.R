@@ -1,7 +1,7 @@
 
-# ------------------------------------------------------------------------ #
-#  Implementation of generalized WMW tests with asymptotical distribution  #
-# ------------------------------------------------------------------------ #
+# ---------------------------------------------------------------------- #
+#  Implementation of generalized WMW tests with asymptotic distribution  #
+# ---------------------------------------------------------------------- #
 
 
 
@@ -9,13 +9,13 @@
 #'
 #' @description It computes the ranks of the test observations in the pooled
 #' vector of calibration and test scores. Then, component-wisely compute the power
-#' from \eqn{1} to \eqn{k} of the rank vector and component-wisely sum them
+#' from \eqn{1} to \eqn{k} of the rank vector and component-wisely sum them.
 #'
 #' @param Z : pooled score vector with the first \eqn{m} components corresponding
 #' to calibration observations and the last \eqn{n} components corresponding
-#' to test observations
-#' @param m : calibration sample size
-#' @param k : order of the LMPI test statistic
+#' to test observations.
+#' @param m : calibration sample size.
+#' @param k : order of the LMPI test statistic.
 #'
 #' @return Given the pooled score vector \eqn{Z=(X,Y)} where \eqn{X} is the calibration score
 #' vector and \eqn{Y} is the test score vector, for each observation in the test sample
@@ -53,10 +53,10 @@ stat.Tk <- function(Z, m, k) {
 #'
 #' @param Z : pooled score vector with the first \eqn{m} components corresponding
 #' to calibration observations and the last \eqn{n} components corresponding
-#' to test observations
-#' @param m : calibration sample size
+#' to test observations.
+#' @param m : calibration sample size.
 #'
-#' @return A rank vector
+#' @return A rank vector.
 #'
 #'
 stat.MW <- function(Z, m) {
@@ -78,11 +78,11 @@ stat.MW <- function(Z, m) {
 
 #' beta_moment.k
 #'
-#' @param h : an integer between \eqn{1} and \eqn{N}
-#' @param N : integer
-#' @param k : order of moment
+#' @param h : an integer between \eqn{1} and \eqn{N}.
+#' @param N : integer.
+#' @param k : order of moment.
 #'
-#' @return A number which is the \eqn{k}th moment of a Beta(h, N-h+1) distribution
+#' @return A number which is the \eqn{k}th moment of a Beta(h, N-h+1) distribution.
 #'
 beta_moment.k = function(h,N,k){
 
@@ -101,13 +101,13 @@ beta_moment.k = function(h,N,k){
 #' mean_analytical.Lk
 #'
 #' @description It compute the analytical (not estimated through Monte Carlo simulation) 
-#' asymptotic mean of the Shiraishi test statistic
+#' asymptotic mean of the Shiraishi test statistic.
 #' 
-#' @param N : pooled sample size
-#' @param k : an integer which is the order of the Lehmann's alternative distribution
-#' @param n : test sample size
+#' @param N : pooled sample size.
+#' @param k : an integer which is the order of the Lehmann's alternative distribution.
+#' @param n : test sample size.
 #'
-#' @return A number which is the asymptotic mean of Shiraishi test statistic under Lehmann's alternative of order k
+#' @return A number which is the asymptotic mean of Shiraishi test statistic under Lehmann's alternative of order k.
 #' 
 mean_analytical.Lk = function(N,k,n){
 
@@ -125,13 +125,13 @@ mean_analytical.Lk = function(N,k,n){
 #' var_analytical.Lk
 #'
 #' @description It compute the analytical (not estimated through Monte Carlo simulation) 
-#' asymptotic variance of the Shiraishi test statistic
+#' asymptotic variance of the Shiraishi test statistic.
 #' 
-#' @param N : pooled sample size
-#' @param k : an integer which is the order of the Lehmann's alternative distribution
-#' @param n : test sample size
+#' @param N : pooled sample size.
+#' @param k : an integer which is the order of the Lehmann's alternative distribution.
+#' @param n : test sample size.
 #'
-#' @return A number which is the asymptotic variance of Shiraishi test statistic under Lehmann's alternative of order k
+#' @return A number which is the asymptotic variance of Shiraishi test statistic under Lehmann's alternative of order k.
 #' 
 var_analytical.Lk = function(N,k,n){
 
@@ -157,9 +157,9 @@ var_analytical.Lk = function(N,k,n){
 #'
 #' @description It computes the mean and the variance of the asymptotic distribution of the higher order Wilcoxon sum-rank test statistic.
 #'
-#' @param m : calibration sample size
-#' @param n : test sample size
-#' @param k : order of the LMPI test statistic
+#' @param m : calibration sample size.
+#' @param n : test sample size.
+#' @param k : order of the LMPI test statistic.
 #'
 #' @return A list with the mean and the variance of the asymptotic distribution of the higher order Wilcoxon sum-rank test statistic.
 #' 
@@ -194,10 +194,10 @@ asymptotic.moments.Tk <- function(m, n, k) {
 #' @description It computes the \eqn{(1-\alpha)}-quantile of the higher order Wilcoxon sum-rank \eqn{T_k} test statistic
 #' based on asymptotic normal approximation.
 #' 
-#' @param m : calibration sample size
-#' @param n : test sample size
-#' @param k : order of the higher order Wilcoxon sum-rank test statistic
-#' @param alpha : significance level. Default value is set equal to 0.1
+#' @param m : calibration sample size.
+#' @param n : test sample size.
+#' @param k : order of the higher order Wilcoxon sum-rank test statistic.
+#' @param alpha : significance level. Default value is set equal to 0.1.
 #'
 #'
 #' @return A number, which is the \eqn{(1-\alpha)}-quantile of higher order Wilcoxon sum-rank test statistic
@@ -223,14 +223,14 @@ asymptotic.critical.Tk <- function(m, n, k, alpha=0.1) {
 #' @description It computes the approximated *p*-value of the LMPI \eqn{T_k}
 #' test statistic based on the asymptotic normal approximation.
 #'
-#' @param m : calibration sample size
-#' @param n : test sample size
-#' @param k : order of the higher order Wilcoxon sum-rank test statistic
-#' @param T.obs : observed value of the test statistic
+#' @param m : calibration sample size.
+#' @param n : test sample size.
+#' @param k : order of the higher order Wilcoxon sum-rank test statistic.
+#' @param T.obs : observed value of the test statistic.
 #'
 #'
 #' @return A number, which is the approximated *p*-value of the higher order Wilcoxon sum-rank
-#' test statistic based on the asymptotic normal approximation
+#' test statistic based on the asymptotic normal approximation.
 #'
 asymptotic.pvalue.Tk <- function(m, n, k, T.obs) {
 
