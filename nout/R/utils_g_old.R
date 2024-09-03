@@ -179,9 +179,9 @@ stats_G_j_MC = function(N, g, B){
 
 #' stat.G
 #'
-#' @param Z : pooled score vector
-#' @param m : calibration size
-#' @param stats_G_vector : vector of Shiraishi (1985) test statistics for a fixed test sample size
+#' @param Z : pooled score vector.
+#' @param m : calibration size.
+#' @param stats_G_vector : vector of Shiraishi (1985) test statistics for a fixed test sample size.
 #'
 #' @return vector of Shiraishi test statistics given a pooled score vector.
 #' 
@@ -243,12 +243,12 @@ varG = function(n, m, stats_G_vector){
 
 #' asymptotic.pvalue.G
 #'
-#' @param m : calibration size
-#' @param n : test size
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations
-#' @param T.obs : observed value of the test statistic
+#' @param m : calibration size.
+#' @param n : test size.
+#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985).
+#' @param T.obs : observed value of the test statistic.
 #'
-#' @return asymptotic *p*-value corresponding to the global null
+#' @return A numeric value that is the asymptotic *p*-value corresponding to the global null.
 
 asymptotic.pvalue.G <- function(m, n, stats_G_vector, T.obs) {
 
@@ -270,12 +270,12 @@ asymptotic.pvalue.G <- function(m, n, stats_G_vector, T.obs) {
 
 #' asymptotic.critical.G
 #'
-#' @param m : calibration size
-#' @param n : test size
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations
-#' @param alpha : significance level
+#' @param m : calibration size.
+#' @param n : test size.
+#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985).
+#' @param alpha : significance level.
 #'
-#' @return asymptotic critical value for the Shiraishi test statistic at level \eqn{\alpha}
+#' @return A numeric value that is the asymptotic critical value for the Shiraishi test statistic at level \eqn{\alpha}.
 
 asymptotic.critical.G <- function(m, n, stats_G_vector, alpha=0.1) {
 
@@ -290,13 +290,13 @@ asymptotic.critical.G <- function(m, n, stats_G_vector, alpha=0.1) {
 
 
 #' k_mom_beta
-#' @description This function computes the \eqn{k}th moment of a Beta(a,b)
+#' @description This function computes the \eqn{k}th moment of a Beta(a,b).
 #'
-#' @param a : first parameter of Beta distribution
-#' @param b : second parameter of Beta distribution
-#' @param k : order of the moment to be computed
+#' @param a : first parameter of Beta distribution.
+#' @param b : second parameter of Beta distribution.
+#' @param k : order of the moment to be computed.
 #'
-#' @return A real number
+#' @return A real number that is the \eqn{k}th moment of a Beta(a,b).
 k_mom_beta = function(a, b, k){
   den = a+b+(0:(k-1))
   num = a+(0:(k-1))

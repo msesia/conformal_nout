@@ -7,15 +7,15 @@
 k_mom_beta(a, b, k)
 }
 \arguments{
-\item{a}{: first parameter of Beta distribution}
+\item{a}{: first parameter of Beta distribution.}
 
-\item{b}{: second parameter of Beta distribution}
+\item{b}{: second parameter of Beta distribution.}
 
-\item{k}{: order of the moment to be computed}
+\item{k}{: order of the moment to be computed.}
 }
 \value{
-A real number
+A real number that is the \eqn{k}th moment of a Beta(a,b).
 }
 \description{
-This function computes the \eqn{k}th moment of a Beta(a,b)
+This function computes the \eqn{k}th moment of a Beta(a,b).
 }

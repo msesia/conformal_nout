@@ -7,11 +7,11 @@
 stat.G(Z, m, stats_G_vector)
 }
 \arguments{
-\item{Z}{: pooled score vector}
+\item{Z}{: pooled score vector.}
 
-\item{m}{: calibration size}
+\item{m}{: calibration size.}
 
-\item{stats_G_vector}{: vector of Shiraishi (1985) test statistics for a fixed test sample size}
+\item{stats_G_vector}{: vector of Shiraishi (1985) test statistics for a fixed test sample size.}
 }
 \value{
 vector of Shiraishi test statistics given a pooled score vector.

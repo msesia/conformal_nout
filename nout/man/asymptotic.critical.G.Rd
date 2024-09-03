@@ -7,16 +7,16 @@
 asymptotic.critical.G(m, n, stats_G_vector, alpha = 0.1)
 }
 \arguments{
-\item{m}{: calibration size}
+\item{m}{: calibration size.}
 
-\item{n}{: test size}
+\item{n}{: test size.}
 
-\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations}
+\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985).}
 
-\item{alpha}{: significance level}
+\item{alpha}{: significance level.}
 }
 \value{
-asymptotic critical value for the Shiraishi test statistic at level \eqn{\alpha}
+A numeric value that is the asymptotic critical value for the Shiraishi test statistic at level \eqn{\alpha}.
 }
 \description{
 asymptotic.critical.G
