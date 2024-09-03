@@ -164,16 +164,11 @@ estimate_mixing_prop = function(X, Y, F_null, gridsize=4000){
 
 #' stats_G_j_MC
 #'
-#' @param N : pooled score sample size
-#' @param g : outlier distribution density
-#' @param B : number of Monte Carlo repetitions used to estimate the test statistic
+#' @param N : pooled score sample size.
+#' @param g : outlier density.
+#' @param B : number of Monte Carlo repetitions used to estimate the test statistic.
 #'
 #' @return A vector of length N corresponding to the elementary statistics of Shiraishi test (1985).
-#' @export
-#'
-#' @examples
-#' g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
-#' stats_G = stats_G_j_MC(N=1000, g=g2, B=10^3)
 #'
 stats_G_j_MC = function(N, g, B){
   aN_j = apply(replicate(B, sapply(X=sort(stats::runif(N)), FUN=g)), 1, mean)
@@ -213,17 +208,10 @@ calc.stat.G = function(Z,m,stats_G_vector){
 
 #' meanG
 #'
-#' @param n : test size
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations
+#' @param n : test size.
+#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985).
 #'
-#' @return A numeric value corresponding to the mean of the asymptotic distribution of Shiraishi test (1985)
-#' @export
-#'
-#' @examples
-#' n = 500
-#' g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
-#' stats_G = stats_G_j_MC(N=1000, g=g2, B=10^3)
-#' mu = meanG(n=n, stats_G_vector = stats_G)
+#' @return A numeric value corresponding to the mean of the asymptotic distribution of Shiraishi test (1985).
 #'
 meanG = function(n, stats_G_vector){
 
@@ -235,17 +223,11 @@ meanG = function(n, stats_G_vector){
 
 #' varG
 #'
-#' @param n : test size
-#' @param m : calibration size
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985). If NULL it will be computed in d_t using B_MC iterations
+#' @param n : test size.
+#' @param m : calibration size.
+#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985).
 #'
-#' @return A numeric value corresponding to the variance of the asymptotic distribution of Shiraishi test (1985)
-#' @export
-#'
-#' @examples
-#' g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
-#' stats_G = stats_G_j_MC(N=1000, g=g2, B=10^3)
-#' Var = varG(n=500, m=500, stats_G_vector = stats_G)
+#' @return A numeric value corresponding to the variance of the asymptotic distribution of Shiraishi test (1985).
 #'
 varG = function(n, m, stats_G_vector){
 

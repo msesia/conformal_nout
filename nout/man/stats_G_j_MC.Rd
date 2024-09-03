@@ -7,20 +7,15 @@
 stats_G_j_MC(N, g, B)
 }
 \arguments{
-\item{N}{: pooled score sample size}
+\item{N}{: pooled score sample size.}
 
-\item{g}{: outlier distribution density}
+\item{g}{: outlier density.}
 
-\item{B}{: number of Monte Carlo repetitions used to estimate the test statistic}
+\item{B}{: number of Monte Carlo repetitions used to estimate the test statistic.}
 }
 \value{
 A vector of length N corresponding to the elementary statistics of Shiraishi test (1985).
 }
 \description{
 stats_G_j_MC
-}
-\examples{
-g2 = function(x, k=2) ifelse(x<1 & x>0, k*x^(k-1), 0)
-stats_G = stats_G_j_MC(N=1000, g=g2, B=10^3)
-
 }
