@@ -264,7 +264,7 @@ def estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw", selected
             k = int(method.replace("wmw-K", ""))
             tmp = nout.d_selection_higher(scores_cal, scores_test, S=selected, local_test="higher", k=k, alpha=alpha, n_perm=n_perm, B=B, critical_values=critical_values)
         elif method == "lmp":
-            tmp = nout.d_selection_G2(scores_cal, scores_test, S=selected, monotone=True, fit_method="betamix", prop_cal=0.5, alpha=alpha, n_perm=n_perm, B=B, B_MC=10^4)
+            tmp = nout.d_selection_G(scores_cal, scores_test, S=selected, monotone=True, fit_method="betamix", prop_cal=0.5, alpha=alpha, n_perm=n_perm, B=B, B_MC=10^4)
         elif method == "fisher":
             tmp = nout.d_selection_fisher(scores_cal, scores_test, S=selected, n_perm = 0)
         else:
