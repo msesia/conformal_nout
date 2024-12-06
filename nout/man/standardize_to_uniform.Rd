@@ -7,9 +7,9 @@
 standardize_to_uniform(X1, X2)
 }
 \arguments{
-\item{X1}{: a vector}
+\item{X1}{a vector}
 
-\item{X2}{: a vector}
+\item{X2}{a vector}
 }
 \value{
 A list of two vectors corresponding to the scaled ranks of the two input vectors

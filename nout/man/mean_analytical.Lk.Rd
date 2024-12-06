@@ -7,11 +7,11 @@
 mean_analytical.Lk(N, k, n)
 }
 \arguments{
-\item{N}{: pooled sample size.}
+\item{N}{pooled sample size.}
 
-\item{k}{: an integer which is the order of the Lehmann's alternative distribution.}
+\item{k}{an integer which is the order of the Lehmann's alternative distribution.}
 
-\item{n}{: test sample size.}
+\item{n}{test sample size.}
 }
 \value{
 A number which is the asymptotic mean of Shiraishi test statistic under Lehmann's alternative of order k.

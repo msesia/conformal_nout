@@ -19,28 +19,28 @@ d_G_cons(
 )
 }
 \arguments{
-\item{S_X}{:  calibration score vector.}
+\item{S_X}{calibration score vector.}
 
-\item{S_Y}{: test score vector.}
+\item{S_Y}{test score vector.}
 
-\item{S}{: selection set in the index test set. If \code{NULL} the entire test set is selected.}
+\item{S}{selection set in the index test set. If \code{NULL} the entire test set is selected.}
 
-\item{g.hat}{: it can be either a character ("analytical") or a function denoting the outlier density.
-If g.hat=="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.}
+\item{g.hat}{it can be either a character ("analytical") or a function denoting the outlier density.
+If g.hat="analytical" the test statistics are computed analytically withuout Monte Carlo estimation.}
 
-\item{k}{: order of the LMPI test statistic to be specified when g.hat is "analytical".}
+\item{k}{order of the LMPI test statistic to be specified when g.hat is "analytical".}
 
-\item{alpha}{: significance level.}
+\item{alpha}{significance level.}
 
-\item{pvalue_only}{: logical value. If \code{TRUE}, only the global test is performed.}
+\item{pvalue_only}{logical value. If \code{TRUE}, only the global test is performed.}
 
-\item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic.}
+\item{n_perm}{minimum test sample size needed to use the asymptotic distribution of the test statistic.}
 
-\item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3.}
+\item{B}{number of replications to compute critical values and global \emph{p}-value. Default value is 10^3.}
 
-\item{B_MC}{: number of replications to compute the Shiraishi test statistic.}
+\item{B_MC}{number of replications to compute the Shiraishi test statistic.}
 
-\item{seed}{: seed to ensure reproducible results.}
+\item{seed}{seed to ensure reproducible results.}
 }
 \value{
 A list:

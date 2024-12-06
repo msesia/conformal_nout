@@ -7,13 +7,13 @@
 asymptotic.pvalue.G(m, n, stats_G_vector, T.obs)
 }
 \arguments{
-\item{m}{: calibration size.}
+\item{m}{calibration size.}
 
-\item{n}{: test size.}
+\item{n}{test size.}
 
-\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985).}
+\item{stats_G_vector}{vector of elementary test statistics to perform the test in Shiraishi (1985).}
 
-\item{T.obs}{: observed value of the test statistic.}
+\item{T.obs}{observed value of the test statistic.}
 }
 \value{
 A numeric value that is the asymptotic \emph{p}-value corresponding to the global null.

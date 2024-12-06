@@ -7,11 +7,11 @@
 stat.Fisher(Z, m)
 }
 \arguments{
-\item{Z}{: pooled score vector with the first \eqn{m} components corresponding
+\item{Z}{pooled score vector with the first \eqn{m} components corresponding
 to the calibration observations and the last \eqn{n} components corresponding
 to the calibration observations.}
 
-\item{m}{: calibration sample size.}
+\item{m}{calibration sample size.}
 }
 \value{
 Given the pooled score vector \eqn{Z=(X,Y)} where \eqn{X} is the calibration score

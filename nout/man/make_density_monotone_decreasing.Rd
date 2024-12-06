@@ -7,7 +7,7 @@
 make_density_monotone_decreasing(g)
 }
 \arguments{
-\item{g}{: a density function}
+\item{g}{a density function}
 }
 \value{
 A monotone decreasing density function that is the output of Isotonic Regression

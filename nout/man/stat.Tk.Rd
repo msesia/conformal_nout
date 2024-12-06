@@ -7,13 +7,13 @@
 stat.Tk(Z, m, k)
 }
 \arguments{
-\item{Z}{: pooled score vector with the first \eqn{m} components corresponding
+\item{Z}{pooled score vector with the first \eqn{m} components corresponding
 to calibration observations and the last \eqn{n} components corresponding
 to test observations.}
 
-\item{m}{: calibration sample size.}
+\item{m}{calibration sample size.}
 
-\item{k}{: order of the LMPI test statistic.}
+\item{k}{order of the LMPI test statistic.}
 }
 \value{
 Given the pooled score vector \eqn{Z=(X,Y)} where \eqn{X} is the calibration score

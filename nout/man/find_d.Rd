@@ -25,45 +25,45 @@ find_d(
 )
 }
 \arguments{
-\item{X}{: calibration score vector}
+\item{X}{calibration score vector}
 
-\item{Y}{: test score vector}
+\item{Y}{test score vector}
 
-\item{local_test}{: local test to be used in the closed testing procedure.
+\item{local_test}{local test to be used in the closed testing procedure.
 It can be either "wmw" for Wilcoxon sum-rank test, "higher" for higher order Wilcoxon sum-rank tests,
 "fisher" for Fisher's combination test, "g" for the test by Shiraishi (1985), "simes" for Simes' test or
 "storey" for Simes' test using Storey's estimator for the proportion of true null hypotheses.}
 
-\item{S}{: selection set in the index test set}
+\item{S}{selection set in the index test set}
 
-\item{k}{: positive integer indicating the order of generalized Wilcoxon sum-rank test. Default value is \code{NULL}}
+\item{k}{positive integer indicating the order of generalized Wilcoxon sum-rank test. Default value is \code{NULL}}
 
-\item{monotonicity}{: character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}}
+\item{monotonicity}{character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}}
 
-\item{g.hat}{: it denotes the outlier density. If \code{NULL}, it is estimated from the data}
+\item{g.hat}{it denotes the outlier density. If \code{NULL}, it is estimated from the data}
 
-\item{fit_method}{: character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}.
+\item{fit_method}{character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}.
 It can be either "beta_mix" or "mixmodel"}
 
-\item{prop.F}{: proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
+\item{prop.F}{proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
 Default value is 0.5}
 
-\item{pvalue_only}{: logical value. If TRUE, only the global test is performed}
+\item{pvalue_only}{logical value. If TRUE, only the global test is performed}
 
-\item{alpha}{: significance level}
+\item{alpha}{significance level}
 
-\item{lambda}{: parameter to be specified when computing Storey's estimator. Default value is 0.5}
+\item{lambda}{parameter to be specified when computing Storey's estimator. Default value is 0.5}
 
-\item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic}
+\item{n_perm}{minimum test sample size needed to use the asymptotic distribution of the test statistic}
 
-\item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3}
+\item{B}{number of replications to compute critical values and global \emph{p}-value. Default value is 10^3}
 
-\item{B_MC}{: number of replications to compute the Shiraishi test statistic}
+\item{B_MC}{number of replications to compute the Shiraishi test statistic}
 
-\item{critical_values}{: if not \code{NULL}, a vector of precomputed critical values obtained using
+\item{critical_values}{if not \code{NULL}, a vector of precomputed critical values obtained using
 the permutation distribution of the test statistic}
 
-\item{seed}{: seed to ensure reproducible results}
+\item{seed}{seed to ensure reproducible results}
 }
 \value{
 A list:

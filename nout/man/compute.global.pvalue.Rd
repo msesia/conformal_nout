@@ -17,23 +17,23 @@ compute.global.pvalue(
 )
 }
 \arguments{
-\item{T.obs}{: observed value of the chosen test statistic.}
+\item{T.obs}{observed value of the chosen test statistic.}
 
-\item{m}{: calibration sample size.}
+\item{m}{calibration sample size.}
 
-\item{n}{: test sample size.}
+\item{n}{test sample size.}
 
-\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon sum-rank test.}
+\item{local_test}{local test to be used in the closed testing procedure. Default value is Wilcoxon sum-rank test.}
 
-\item{k}{: order of the higher order Wilcoxon sum-rank  test statistic.}
+\item{k}{order of the higher order Wilcoxon sum-rank  test statistic.}
 
-\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985).}
+\item{stats_G_vector}{vector of elementary test statistics to perform the test in Shiraishi (1985).}
 
-\item{n_perm}{: if \eqn{min(m,n)\leq n_perm} the \emph{p}-value for the global null will be computed via permutation. Default value is 0.}
+\item{n_perm}{if \eqn{min(m,n)\leq n_perm} the \emph{p}-value for the global null will be computed via permutation. Default value is 0.}
 
-\item{B}{: number of permutations.}
+\item{B}{number of permutations.}
 
-\item{seed}{: seed to ensure reproducible results.}
+\item{seed}{seed to ensure reproducible results.}
 }
 \value{
 A number, the \emph{p}-value for the global null according to the chosen test statistic.

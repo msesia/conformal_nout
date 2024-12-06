@@ -7,9 +7,9 @@
 kernel_smoothed_pdf_function(cdf_function, n_samples = 1000)
 }
 \arguments{
-\item{cdf_function}{: a cumulative density function}
+\item{cdf_function}{a cumulative density function}
 
-\item{n_samples}{: number of samples to be generated to estimate the density function via Kernel Density Estimation}
+\item{n_samples}{number of samples to be generated to estimate the density function via Kernel Density Estimation}
 }
 \value{
 A function which is the normalized Kernel Density Estimate of the density function

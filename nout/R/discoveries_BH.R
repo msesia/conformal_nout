@@ -3,9 +3,9 @@
 #'
 #' @description It applies Benjamini-Hochberg procedure to conformal *p*-values.
 #'
-#' @param S_X : score vector for the calibration set
-#' @param S_Y : score vector for the test set
-#' @param alpha : significance level. Default level is set equal to 0.1
+#' @param S_X  score vector for the calibration set
+#' @param S_Y  score vector for the test set
+#' @param alpha  significance level. Default level is set equal to 0.1
 #'
 #' @return A vector corresponding to indices of test observations which are rejected
 #' by Benjamini-Hochberg procedure applied to conformal *p*-values.

@@ -14,18 +14,18 @@ compute.global.pvalue.shirashi.adaptive(
 )
 }
 \arguments{
-\item{S_X}{: calibration score vector.}
+\item{S_X}{calibration score vector.}
 
-\item{S_Y}{: test score vector.}
+\item{S_Y}{test score vector.}
 
-\item{prop_cal}{: proportion of inlier observations used for estimating the inlier distribution.}
+\item{prop_cal}{proportion of inlier observations used for estimating the inlier distribution.}
 
-\item{num_mc}{: number of Monte Carlo iterations.}
+\item{num_mc}{number of Monte Carlo iterations.}
 
-\item{fit_method}{: character value indicating the method for estimating the PDF.
+\item{fit_method}{character value indicating the method for estimating the PDF.
 It can be either "betamix" or "mixmodel".}
 
-\item{monotone}{: logical value. If \code{TRUE} the estimated PDF via the specified method
+\item{monotone}{logical value. If \code{TRUE} the estimated PDF via the specified method
 is made monotone. The direction (increasing or decreasing) is automatically chosen from the data.}
 }
 \value{

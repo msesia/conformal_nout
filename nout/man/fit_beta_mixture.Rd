@@ -7,9 +7,9 @@
 fit_beta_mixture(data, num_starts = 10)
 }
 \arguments{
-\item{data}{: score vector}
+\item{data}{score vector}
 
-\item{num_starts}{: number of iterations for parameter optimization}
+\item{num_starts}{number of iterations for parameter optimization}
 }
 \value{
 A list of three numbers that are, respectively, the estimates of

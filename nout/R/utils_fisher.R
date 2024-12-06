@@ -9,10 +9,10 @@
 #' @description It computes the inverse of conformal *p*-values for each observations in the test set.
 #' Then, they are transformed applying the logarithmic function.
 #'
-#' @param Z : pooled score vector with the first \eqn{m} components corresponding
+#' @param Z  pooled score vector with the first \eqn{m} components corresponding
 #' to the calibration observations and the last \eqn{n} components corresponding
 #' to the calibration observations.
-#' @param m : calibration sample size.
+#' @param m  calibration sample size.
 #'
 #'
 #' @return Given the pooled score vector \eqn{Z=(X,Y)} where \eqn{X} is the calibration score
@@ -38,9 +38,9 @@ stat.Fisher <- function(Z, m) {
 #' @description It computes the \eqn{(1-\alpha)}-quantile of the adjusted Fisher test statistic
 #' based on asymptotic Chi-squared approximation.
 
-#' @param m : calibration sample size.
-#' @param n : test sample size.
-#' @param alpha : significance level. Default value is set equal to 0.1.
+#' @param m  calibration sample size.
+#' @param n  test sample size.
+#' @param alpha  significance level. Default value is set equal to 0.1.
 #'
 #'
 #' @return It returns the \eqn{(1-\alpha)}-quantile of adjusted Fisher test statistic
@@ -62,9 +62,9 @@ asymptotic.critical.Fisher <- function(m, n, alpha=0.1) {
 #' @description It computes the approximated *p*-value of the adjusted Fisher
 #' test statistic based on the asymptotic Chi-squared approximation.
 #'
-#' @param m : calibration sample size.
-#' @param n : test sample size.
-#' @param T.obs : observed value of the test statistic.
+#' @param m  calibration sample size.
+#' @param n  test sample size.
+#' @param T.obs  observed value of the test statistic.
 #'
 #'
 #' @return It returns the approximated *p*-value of the adjusted Fisher

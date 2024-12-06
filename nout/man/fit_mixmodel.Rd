@@ -7,7 +7,7 @@
 fit_mixmodel(data)
 }
 \arguments{
-\item{data}{: vector of univariate scores}
+\item{data}{vector of univariate scores}
 }
 \value{
 A function which the PDF estimated via kernel smoothing from the score vector in input

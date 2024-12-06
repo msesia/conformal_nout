@@ -18,26 +18,26 @@ compute.1critical.value(
 )
 }
 \arguments{
-\item{m}{: calibration size.}
+\item{m}{calibration size.}
 
-\item{n}{: test size.}
+\item{n}{test size.}
 
-\item{local_test}{: local test to be used in the closed testing procedure. Default value is Wilcoxon sum-rank test.}
+\item{local_test}{local test to be used in the closed testing procedure. Default value is Wilcoxon sum-rank test.}
 
-\item{alpha}{: significance level.}
+\item{alpha}{significance level.}
 
-\item{k}{: order of the higher order Wilcoxon sum-rank test statistic.}
+\item{k}{order of the higher order Wilcoxon sum-rank test statistic.}
 
-\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985).}
+\item{stats_G_vector}{vector of elementary test statistics to perform the test in Shiraishi (1985).}
 
-\item{n_perm}{: if \eqn{min(m,n)\leq n_perm} critical values will be computed via permutation. Default value is 0.}
+\item{n_perm}{if \eqn{min(m,n)\leq n_perm} critical values will be computed via permutation. Default value is 0.}
 
-\item{B}{: number of permutation to compute critical values. Default value is 10^3.}
+\item{B}{number of permutation to compute critical values. Default value is 10^3.}
 
-\item{critical_values}{: if not \code{NULL}, a vector of precomputed critical values obtained using
+\item{critical_values}{if not \code{NULL}, a vector of precomputed critical values obtained using
 the permutation distribution of the test statistic.}
 
-\item{seed}{: seed to ensure reproducible results.}
+\item{seed}{seed to ensure reproducible results.}
 }
 \value{
 A numeric value that is the critical value at significance level \eqn{\alpha} for a test statistic chosen among

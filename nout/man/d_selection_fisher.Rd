@@ -17,24 +17,24 @@ d_selection_fisher(
 )
 }
 \arguments{
-\item{S_X}{:  calibration score vector.}
+\item{S_X}{calibration score vector.}
 
-\item{S_Y}{: test score vector.}
+\item{S_Y}{test score vector.}
 
-\item{S}{: selection set in the index test set. If \code{NULL} the entire test set is selected.}
+\item{S}{selection set in the index test set. If \code{NULL} the entire test set is selected.}
 
-\item{alpha}{: significance level.}
+\item{alpha}{significance level.}
 
-\item{pvalue_only}{: logical value. If \code{TRUE}, only the global test is performed.}
+\item{pvalue_only}{logical value. If \code{TRUE}, only the global test is performed.}
 
-\item{n_perm}{: minimum test sample size needed to use the asymptotic distribution of the test statistic.}
+\item{n_perm}{minimum test sample size needed to use the asymptotic distribution of the test statistic.}
 
-\item{B}{: number of replications to compute critical values and global \emph{p}-value. Default value is 10^3.}
+\item{B}{number of replications to compute critical values and global \emph{p}-value. Default value is 10^3.}
 
-\item{critical_values}{: if not \code{NULL}, a vector of precomputed critical values obtained using
+\item{critical_values}{if not \code{NULL}, a vector of precomputed critical values obtained using
 the permutation distribution of the test statistic.}
 
-\item{seed}{: seed to ensure reproducible results.}
+\item{seed}{seed to ensure reproducible results.}
 }
 \value{
 A list:

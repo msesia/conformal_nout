@@ -1,17 +1,17 @@
 #' d_selection_fisher
-#' 
+#'
 #' @description  It performs closed testing method with Fisher's method as local test.
-#' 
-#' @param S_Y : test score vector.
-#' @param S_X :  calibration score vector.
-#' @param S : selection set in the index test set. If \code{NULL} the entire test set is selected.
-#' @param alpha : significance level.
-#' @param pvalue_only : logical value. If \code{TRUE}, only the global test is performed.
-#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic.
-#' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3.
-#' @param critical_values : if not \code{NULL}, a vector of precomputed critical values obtained using
+#'
+#' @param S_Y  test score vector.
+#' @param S_X   calibration score vector.
+#' @param S  selection set in the index test set. If \code{NULL} the entire test set is selected.
+#' @param alpha  significance level.
+#' @param pvalue_only  logical value. If \code{TRUE}, only the global test is performed.
+#' @param n_perm  minimum test sample size needed to use the asymptotic distribution of the test statistic.
+#' @param B  number of replications to compute critical values and global *p*-value. Default value is 10^3.
+#' @param critical_values  if not \code{NULL}, a vector of precomputed critical values obtained using
 #' the permutation distribution of the test statistic.
-#' @param seed : seed to ensure reproducible results.
+#' @param seed  seed to ensure reproducible results.
 #'
 #' @return A list:
 #' \itemize{

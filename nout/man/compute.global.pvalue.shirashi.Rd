@@ -7,13 +7,13 @@
 compute.global.pvalue.shirashi(S_X, S_Y, g, num_mc = 1000)
 }
 \arguments{
-\item{S_X}{: calibration score vector.}
+\item{S_X}{calibration score vector.}
 
-\item{S_Y}{: test score vector.}
+\item{S_Y}{test score vector.}
 
-\item{g}{: outlier density.}
+\item{g}{outlier density.}
 
-\item{num_mc}{: number of Monte Carlo iterations.}
+\item{num_mc}{number of Monte Carlo iterations.}
 }
 \value{
 A number, the global \emph{p}-value for the Shiraishi test.

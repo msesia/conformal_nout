@@ -7,9 +7,9 @@
 meanG(n, stats_G_vector)
 }
 \arguments{
-\item{n}{: test size.}
+\item{n}{test size.}
 
-\item{stats_G_vector}{: vector of elementary test statistics to perform the test in Shiraishi (1985).}
+\item{stats_G_vector}{vector of elementary test statistics to perform the test in Shiraishi (1985).}
 }
 \value{
 A numeric value corresponding to the mean of the asymptotic distribution of Shiraishi test (1985).

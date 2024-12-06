@@ -7,11 +7,11 @@
 d_ttest(S_Y, S_X, alpha = 0.1)
 }
 \arguments{
-\item{S_Y}{: score vector of test observations}
+\item{S_Y}{score vector of test observations}
 
-\item{S_X}{: score vector of calibration observations}
+\item{S_X}{score vector of calibration observations}
 
-\item{alpha}{: significance level of the local test. Default value is set equal to 0.1.}
+\item{alpha}{significance level of the local test. Default value is set equal to 0.1.}
 }
 \value{
 An integer which is the \eqn{(1 − \alpha)}-confidence lower bound for the

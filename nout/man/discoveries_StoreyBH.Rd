@@ -7,13 +7,13 @@
 discoveries_StoreyBH(S_X, S_Y, alpha = 0.1, lambda = 0.5)
 }
 \arguments{
-\item{S_X}{: score vector for the calibration set}
+\item{S_X}{score vector for the calibration set}
 
-\item{S_Y}{: score vector for the test set}
+\item{S_Y}{score vector for the test set}
 
-\item{alpha}{: significance level. Default level is set equal to 0.1}
+\item{alpha}{significance level. Default level is set equal to 0.1}
 
-\item{lambda}{: parameter involved in the computation of Storey estimator. Default value is set equal to 0.5}
+\item{lambda}{parameter involved in the computation of Storey estimator. Default value is set equal to 0.5}
 }
 \value{
 A vector corresponding to indices of test observations which are rejected

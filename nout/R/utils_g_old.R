@@ -117,7 +117,7 @@ estimate_mixing_prop = function(X, Y, F_null, gridsize=4000){
 ##                            null_density=stats::dunif, prop.out=pi.not)
 ##   } else {
 ##     # TODO: check this
-      
+
 ##     stopifnot("Error: constraint must be either increasing, decreasing"= constraint%in%c("decreasing", "increasing"))
 
 ##     # pooled = c(X2,Y)
@@ -164,9 +164,9 @@ estimate_mixing_prop = function(X, Y, F_null, gridsize=4000){
 
 #' stats_G_j_MC
 #'
-#' @param N : pooled score sample size.
-#' @param g : outlier density.
-#' @param B : number of Monte Carlo repetitions used to estimate the test statistic.
+#' @param N  pooled score sample size.
+#' @param g  outlier density.
+#' @param B  number of Monte Carlo repetitions used to estimate the test statistic.
 #'
 #' @return A vector of length N corresponding to the elementary statistics of Shiraishi test (1985).
 #'
@@ -179,12 +179,12 @@ stats_G_j_MC = function(N, g, B){
 
 #' stat.G
 #'
-#' @param Z : pooled score vector.
-#' @param m : calibration size.
-#' @param stats_G_vector : vector of Shiraishi (1985) test statistics for a fixed test sample size.
+#' @param Z  pooled score vector.
+#' @param m  calibration size.
+#' @param stats_G_vector  vector of Shiraishi (1985) test statistics for a fixed test sample size.
 #'
 #' @return vector of Shiraishi test statistics given a pooled score vector.
-#' 
+#'
 stat.G = function(Z,m,stats_G_vector){
 
   m = as.double(m)
@@ -208,8 +208,8 @@ calc.stat.G = function(Z,m,stats_G_vector){
 
 #' meanG
 #'
-#' @param n : test size.
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985).
+#' @param n  test size.
+#' @param stats_G_vector  vector of elementary test statistics to perform the test in Shiraishi (1985).
 #'
 #' @return A numeric value corresponding to the mean of the asymptotic distribution of Shiraishi test (1985).
 #'
@@ -223,9 +223,9 @@ meanG = function(n, stats_G_vector){
 
 #' varG
 #'
-#' @param n : test size.
-#' @param m : calibration size.
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985).
+#' @param n  test size.
+#' @param m  calibration size.
+#' @param stats_G_vector  vector of elementary test statistics to perform the test in Shiraishi (1985).
 #'
 #' @return A numeric value corresponding to the variance of the asymptotic distribution of Shiraishi test (1985).
 #'
@@ -243,10 +243,10 @@ varG = function(n, m, stats_G_vector){
 
 #' asymptotic.pvalue.G
 #'
-#' @param m : calibration size.
-#' @param n : test size.
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985).
-#' @param T.obs : observed value of the test statistic.
+#' @param m  calibration size.
+#' @param n  test size.
+#' @param stats_G_vector  vector of elementary test statistics to perform the test in Shiraishi (1985).
+#' @param T.obs  observed value of the test statistic.
 #'
 #' @return A numeric value that is the asymptotic *p*-value corresponding to the global null.
 
@@ -270,10 +270,10 @@ asymptotic.pvalue.G <- function(m, n, stats_G_vector, T.obs) {
 
 #' asymptotic.critical.G
 #'
-#' @param m : calibration size.
-#' @param n : test size.
-#' @param stats_G_vector : vector of elementary test statistics to perform the test in Shiraishi (1985).
-#' @param alpha : significance level.
+#' @param m  calibration size.
+#' @param n  test size.
+#' @param stats_G_vector  vector of elementary test statistics to perform the test in Shiraishi (1985).
+#' @param alpha  significance level.
 #'
 #' @return A numeric value that is the asymptotic critical value for the Shiraishi test statistic at level \eqn{\alpha}.
 
@@ -292,9 +292,9 @@ asymptotic.critical.G <- function(m, n, stats_G_vector, alpha=0.1) {
 #' k_mom_beta
 #' @description This function computes the \eqn{k}th moment of a Beta(a,b).
 #'
-#' @param a : first parameter of Beta distribution.
-#' @param b : second parameter of Beta distribution.
-#' @param k : order of the moment to be computed.
+#' @param a  first parameter of Beta distribution.
+#' @param b  second parameter of Beta distribution.
+#' @param k  order of the moment to be computed.
 #'
 #' @return A real number that is the \eqn{k}th moment of a Beta(a,b).
 k_mom_beta = function(a, b, k){

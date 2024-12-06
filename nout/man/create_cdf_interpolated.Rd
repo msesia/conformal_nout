@@ -12,13 +12,13 @@ create_cdf_interpolated(
 )
 }
 \arguments{
-\item{pdf_func}{: density function}
+\item{pdf_func}{density function}
 
-\item{lower_bound}{: lower bound of the density support}
+\item{lower_bound}{lower bound of the density support}
 
-\item{upper_bound}{: upper bound of the density support}
+\item{upper_bound}{upper bound of the density support}
 
-\item{grid_points}{: number of points where to compute the cumulative density function via integration of the density function}
+\item{grid_points}{number of points where to compute the cumulative density function via integration of the density function}
 }
 \value{
 A function which is the interpolated cumulative density function

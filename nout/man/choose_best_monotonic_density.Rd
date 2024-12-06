@@ -7,7 +7,7 @@
 choose_best_monotonic_density(g)
 }
 \arguments{
-\item{g}{: a density function}
+\item{g}{a density function}
 }
 \value{
 A density function that is the output of Isotonic Regression and

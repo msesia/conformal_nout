@@ -4,10 +4,10 @@
 #' @description Applies Benjamini-Hochberg procedure to conformal *p*-values using
 #' Storey estimator for the proportion of true null hypotheses.
 #'
-#' @param S_X : score vector for the calibration set
-#' @param S_Y : score vector for the test set
-#' @param alpha : significance level. Default level is set equal to 0.1
-#' @param lambda : parameter involved in the computation of Storey estimator. Default value is set equal to 0.5
+#' @param S_X  score vector for the calibration set
+#' @param S_Y  score vector for the test set
+#' @param alpha  significance level. Default level is set equal to 0.1
+#' @param lambda  parameter involved in the computation of Storey estimator. Default value is set equal to 0.5
 #'
 #' @return A vector corresponding to indices of test observations which are rejected
 #' by Benjamini-Hochberg procedure applied to conformal *p*-values and using Storey

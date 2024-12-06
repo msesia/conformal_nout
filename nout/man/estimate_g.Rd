@@ -12,14 +12,14 @@ estimate_g(
 )
 }
 \arguments{
-\item{scores_reference}{: calibration score vector of inliers.}
+\item{scores_reference}{calibration score vector of inliers.}
 
-\item{scores_pooled}{: pooled score vector of calibration and test scores.}
+\item{scores_pooled}{pooled score vector of calibration and test scores.}
 
-\item{method}{: character value indicating the method to be used to estimate the PDF.
+\item{method}{character value indicating the method to be used to estimate the PDF.
 It can be either "betamix" or "mixmodel".}
 
-\item{monotone}{: logical value. If \code{TRUE} the estimated PDF via the specified method
+\item{monotone}{logical value. If \code{TRUE} the estimated PDF via the specified method
 is made monotone. The direction (increasing or decreasing) is automatically chosen from the data.}
 }
 \value{

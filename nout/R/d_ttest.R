@@ -4,9 +4,9 @@
 #' @description It returns a confidence lower bound for the number of true discoveries provided
 #' by closed testing procedure using Dunnett t-test as local test.
 #'
-#' @param S_Y : score vector of test observations
-#' @param S_X : score vector of calibration observations
-#' @param alpha : significance level of the local test. Default value is set equal to 0.1.
+#' @param S_Y  score vector of test observations
+#' @param S_X  score vector of calibration observations
+#' @param alpha  significance level of the local test. Default value is set equal to 0.1.
 #'
 #' @return An integer which is the \eqn{(1 − \alpha)}-confidence lower bound for the
 #' number of true discoveries using step-down Dunnett test procedure, which is

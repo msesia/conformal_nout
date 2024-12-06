@@ -1,29 +1,29 @@
 #' find_d
 #'
-#' @param X : calibration score vector
-#' @param Y : test score vector
-#' @param local_test : local test to be used in the closed testing procedure.
+#' @param X  calibration score vector
+#' @param Y  test score vector
+#' @param local_test  local test to be used in the closed testing procedure.
 #' It can be either "wmw" for Wilcoxon sum-rank test, "higher" for higher order Wilcoxon sum-rank tests,
 #' "fisher" for Fisher's combination test, "g" for the test by Shiraishi (1985), "simes" for Simes' test or
 #' "storey" for Simes' test using Storey's estimator for the proportion of true null hypotheses.
-#' @param S : selection set in the index test set
-#' @param k : positive integer indicating the order of generalized Wilcoxon sum-rank test. Default value is \code{NULL}
-#' @param monotonicity : character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}
-#' @param g.hat : it denotes the outlier density. If \code{NULL}, it is estimated from the data
-#' @param fit_method : character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}. 
+#' @param S  selection set in the index test set
+#' @param k  positive integer indicating the order of generalized Wilcoxon sum-rank test. Default value is \code{NULL}
+#' @param monotonicity  character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}
+#' @param g.hat  it denotes the outlier density. If \code{NULL}, it is estimated from the data
+#' @param fit_method  character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}.
 #' It can be either "beta_mix" or "mixmodel"
-#' @param prop.F  : proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
+#' @param prop.F   proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
 #' Default value is 0.5
-#' @param pvalue_only : logical value. If TRUE, only the global test is performed
-#' @param alpha : significance level
-#' @param lambda : parameter to be specified when computing Storey's estimator. Default value is 0.5
-#' @param n_perm : minimum test sample size needed to use the asymptotic distribution of the test statistic
-#' @param B : number of replications to compute critical values and global *p*-value. Default value is 10^3
-#' @param B_MC : number of replications to compute the Shiraishi test statistic
-#' @param critical_values : if not \code{NULL}, a vector of precomputed critical values obtained using
+#' @param pvalue_only  logical value. If TRUE, only the global test is performed
+#' @param alpha  significance level
+#' @param lambda  parameter to be specified when computing Storey's estimator. Default value is 0.5
+#' @param n_perm  minimum test sample size needed to use the asymptotic distribution of the test statistic
+#' @param B  number of replications to compute critical values and global *p*-value. Default value is 10^3
+#' @param B_MC  number of replications to compute the Shiraishi test statistic
+#' @param critical_values  if not \code{NULL}, a vector of precomputed critical values obtained using
 #' the permutation distribution of the test statistic
-#' @param seed : seed to ensure reproducible results
-#' 
+#' @param seed  seed to ensure reproducible results
+#'
 #' @return A list:
 #' \itemize{
 #' \item \code{lower_bound}: an integer which is the \eqn{(1 − \alpha)}-confidence lower bound for
@@ -45,7 +45,7 @@
 #' Y = replicate(10, rg2(rnull=runif))
 #' res = find_d(X, Y, local_test="higher", k=3, B=100)
 #' res = find_d(X, Y, local_test="g", g.hat = g2, monotonicity="increasing", B=100)
-#' 
+#'
 find_d = function(X, Y, local_test = "wmw", S=NULL, k=NULL, monotonicity=NULL, g.hat=NULL, fit_method="beta_mix", prop.F=0.5, pvalue_only=FALSE, alpha=0.1, lambda=0.5, n_perm=0, B=10^3, B_MC=10^3, critical_values=NULL, seed=123){
 
   local_test = tolower(local_test)

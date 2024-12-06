@@ -12,13 +12,13 @@ inverse_transform_sampling(
 )
 }
 \arguments{
-\item{cdf_function}{: cumulative density function.}
+\item{cdf_function}{cumulative density function.}
 
-\item{n_samples}{: number of samples to be generated.}
+\item{n_samples}{number of samples to be generated.}
 
-\item{lower_bound}{: lower bound of the density support.}
+\item{lower_bound}{lower bound of the density support.}
 
-\item{upper_bound}{: upper bound of the density support.}
+\item{upper_bound}{upper bound of the density support.}
 }
 \value{
 A vector of samples from the desired distribution of the prespecified length.
