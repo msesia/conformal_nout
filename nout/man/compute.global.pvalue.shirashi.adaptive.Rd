@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_g.R
 \name{compute.global.pvalue.shirashi.adaptive}
 \alias{compute.global.pvalue.shirashi.adaptive}
-\title{compute.global.pvalue.shirashi}
+\title{compute.global.pvalue.shirashi.adaptive}
 \usage{
 compute.global.pvalue.shirashi.adaptive(
   S_X,

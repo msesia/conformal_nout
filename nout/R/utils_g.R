@@ -429,7 +429,7 @@ compute.global.pvalue.shirashi <- function(S_X, S_Y, g, num_mc=1000) {
 
 
 
-#' compute.global.pvalue.shirashi
+#' compute.global.pvalue.shirashi.adaptive
 #'
 #' @description
 #' Given the calibration and test score vectors, it computes the global *p*-value
