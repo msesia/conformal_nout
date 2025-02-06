@@ -40,7 +40,7 @@
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
 #' res = d_selection_G(X, Y, S = c(1:7), g.hat = g2, monotonicity="increasing", B=100)
-d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NULL, fit_method="beta_mix", prop.F=0.5, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
+d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NULL, fit_method="betamix", prop.F=0.5, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
 
   if(!is.null(monotonicity))
     stopifnot("Error: monotonicity must be either increasing, decreasing"= monotonicity%in%c("decreasing", "increasing"))
@@ -58,12 +58,20 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
     S_X1 = sample(S_X,m1)
     S_pooled = c(setdiff(S_X, S_X1), S_Y)
     g.hat = estimate_g(S_X1, S_pooled, method=fit_method, monotone=monotone)$pdf
-  }
+
+    if(is.null(monotonicity))
+      res = d_G_cons(S_X=S_X2, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
+    else
+      res = d_G_monotone(S_X=S_X2, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
+
+  } else {
 
   if(is.null(monotonicity))
     res = d_G_cons(S_X=S_X, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
   else
     res = d_G_monotone(S_X=S_X, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
+
+  }
 
   return(res)
 
