@@ -11,7 +11,7 @@ d_selection_G(
   k = NULL,
   g.hat = NULL,
   monotonicity = NULL,
-  fit_method = "beta_mix",
+  fit_method = "betamix",
   prop.F = 0.5,
   alpha = 0.1,
   pvalue_only = FALSE,

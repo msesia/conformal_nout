@@ -56,7 +56,8 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
     monotone = ifelse(is.null(monotonicity), FALSE, TRUE)
     m1 = round(prop.F*m)
     S_X1 = sample(S_X,m1)
-    S_pooled = c(setdiff(S_X, S_X1), S_Y)
+    S_X2 = setdiff(S_X, S_X1)
+    S_pooled = c(S_X2, S_Y)
     g.hat = estimate_g(S_X1, S_pooled, method=fit_method, monotone=monotone)$pdf
 
     if(is.null(monotonicity))
