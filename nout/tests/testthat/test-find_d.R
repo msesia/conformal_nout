@@ -5,6 +5,6 @@
 #   Y = replicate(10, rg2(rnull=runif))
 #   res = find_d(X, Y, B=100)
 #   res = find_d(X, Y, local.test="higher", k=3, B=100, B_MC=100)
-#   res = find_d(X, Y, local.test="g", g.hat = g2, S=c(1:70), B_MC=100, monotonicity="increasing", B=100)
+#   res = find_d(X, Y, local.test="g", g.hat = g2, S=c(1:70), B_MC=100, monotone=TRUE, B=100)
 #
 # })

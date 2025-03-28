@@ -10,9 +10,9 @@ d_selection_G(
   S = NULL,
   k = NULL,
   g.hat = NULL,
-  monotonicity = NULL,
+  monotone = NULL,
   fit_method = "betamix",
-  prop.F = 0.5,
+  prop_cal = 0.5,
   alpha = 0.1,
   pvalue_only = FALSE,
   n_perm = 10,
@@ -34,12 +34,12 @@ d_selection_G(
 If g.hat="analytical" the test statistics are computed analytically without Monte Carlo estimation.
 If \code{NULL}, the outlier density is estimated from the data.}
 
-\item{monotonicity}{character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}.}
+\item{monotone}{Boolean indicating if the outlier density function is monotone (\code{TRUE}) or not (\code{FALSE}). Default value is \code{NULL}.}
 
 \item{fit_method}{character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}.
 It can be either "beta_mix" or "mixmodel".}
 
-\item{prop.F}{proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
+\item{prop_cal}{proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
 Default value is 0.5.}
 
 \item{alpha}{significance level.}
@@ -74,5 +74,5 @@ rg2 = function(rnull, k=2) max(rnull(k))
 
 X = runif(10)
 Y = replicate(10, rg2(rnull=runif))
-res = d_selection_G(X, Y, S = c(1:7), g.hat = g2, monotonicity="increasing", B=100)
+res = d_selection_G(X, Y, S = c(1:7), g.hat = g2, monotone=TRUE, B=100)
 }

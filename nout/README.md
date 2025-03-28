@@ -115,13 +115,13 @@ res4
 #> [1] 1
 
 # Confidence lower-bound for the number of outliers using Closed Testing with local oracle Shiraishi test
-res5 = d_selection_G(X, Y, g.hat = g2, monotonicity="increasing", B=100, alpha=0.1)
+res5 = d_selection_G(X, Y, g.hat = g2, monotone=TRUE, B=100, alpha=0.1)
 res5
 #> $lower.bound
 #> [1] 7
 #> 
 #> $global.pvalue
-#> [1] 0.005535044
+#> [1] 0.005510923
 #> 
 #> $S
 #> NULL
@@ -147,10 +147,10 @@ resS1
 #> [1] 0.3174603
 #> 
 #> $S
-#>  [1] 19 17  6  1 10 12  7 18 20  8  9  3 15  5  4 11
+#>  [1]  6  3  8 11  1 20 15 10 13 14  2  5 16 12  7 17
 #> 
 #> $selection.p.value
-#> [1] 0.3174603
+#> [1] 0.3373016
 
 # Confidence lower-bound for the number of outliers using Closed Testing with local Fisher's method
 resS2 = d_selection_fisher(X, Y, S=S, B=100, n_perm=0, alpha=0.1)
@@ -162,7 +162,7 @@ resS2
 #> [1] 0.05081268
 #> 
 #> $S
-#>  [1] 19 17  6  1 10 12  7 18 20  8  9  3 15  5  4 11
+#>  [1]  6  3  8 11  1 20 15 10 13 14  2  5 16 12  7 17
 #> 
 #> $selection.p.value
 #> [1] 1
@@ -171,13 +171,13 @@ resS2
 resS3 = d_selection_higher(X, Y, S=S, local_test="WMW", n_perm=0, B=100, alpha=0.1)
 resS3
 #> $lower.bound
-#> [1] 4
+#> [1] 5
 #> 
 #> $global.pvalue
-#> [1] 0.01520037
+#> [1] 0.006510641
 #> 
 #> $S
-#>  [1] 19 17  6  1 10 12  7 18 20  8  9  3 15  5  4 11
+#>  [1]  6  3  8 11  1 20 15 10 13 14  2  5 16 12  7 17
 #> 
 #> $selection.p.value
 #> [1] 1
@@ -187,28 +187,28 @@ resS3
 resS4 = d_selection_higher(X, Y, S=S, local_test="higher", k=2, n_perm=0, B=100, alpha=0.1)
 resS4
 #> $lower.bound
-#> [1] 4
+#> [1] 5
 #> 
 #> $global.pvalue
 #> [1] 0.04111738
 #> 
 #> $S
-#>  [1] 19 17  6  1 10 12  7 18 20  8  9  3 15  5  4 11
+#>  [1]  6  3  8 11  1 20 15 10 13 14  2  5 16 12  7 17
 #> 
 #> $selection.p.value
 #> [1] 1
 
 # Confidence lower-bound for the number of outliers using Closed Testing with local oracle Shiraishi test
-resS5 = d_selection_G(X, Y, S=S, g.hat = g2, monotonicity="increasing", B=100, alpha=0.1)
+resS5 = d_selection_G(X, Y, S=S, g.hat = g2, monotone=TRUE, B=100, alpha=0.1)
 resS5
 #> $lower.bound
-#> [1] 4
+#> [1] 5
 #> 
 #> $global.pvalue
-#> [1] 0.00546798
+#> [1] 0.005483834
 #> 
 #> $S
-#>  [1] 19 17  6  1 10 12  7 18 20  8  9  3 15  5  4 11
+#>  [1]  6  3  8 11  1 20 15 10 13 14  2  5 16 12  7 17
 #> 
 #> $selection.p.value
 #> [1] 1

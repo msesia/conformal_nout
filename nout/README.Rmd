@@ -75,7 +75,7 @@ res4 = d_selection_higher(X, Y, local_test="higher", k=2, n_perm=0, B=100, alpha
 res4
 
 # Confidence lower-bound for the number of outliers using Closed Testing with local oracle Shiraishi test
-res5 = d_selection_G(X, Y, g.hat = g2, monotonicity="increasing", B=100, alpha=0.1)
+res5 = d_selection_G(X, Y, g.hat = g2, monotone=TRUE, B=100, alpha=0.1)
 res5
 
 ```
@@ -106,7 +106,7 @@ resS4 = d_selection_higher(X, Y, S=S, local_test="higher", k=2, n_perm=0, B=100,
 resS4
 
 # Confidence lower-bound for the number of outliers using Closed Testing with local oracle Shiraishi test
-resS5 = d_selection_G(X, Y, S=S, g.hat = g2, monotonicity="increasing", B=100, alpha=0.1)
+resS5 = d_selection_G(X, Y, S=S, g.hat = g2, monotone=TRUE, B=100, alpha=0.1)
 resS5
 
 ```
