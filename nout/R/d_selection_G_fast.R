@@ -42,8 +42,15 @@
 #' res = d_selection_G(X, Y, S = c(1:7), g.hat = g2, monotone="increasing", B=100)
 d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotone=NULL, fit_method="betamix", prop_cal=0.5, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
 
-  if(!is.null(monotone))
-    stopifnot("Error: monotone must be either increasing, decreasing"= monotone%in%c("decreasing", "increasing"))
+  if(!is.null(monotone)){
+    monotone=toupper(monotone)
+    if(monotone=="F" || monotone==F)
+      monotone = FALSE
+    if(monotone=="T" || monotone==T)
+      monotone = TRUE
+    stopifnot("Error: monotone must be logical value." = is.logical(monotone), length(monotone) == 1)  }
+    
+    
 
   n = as.double(length(S_Y))
   m = as.double(length(S_X))
