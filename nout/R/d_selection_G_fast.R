@@ -11,10 +11,10 @@
 #' @param g.hat  it can be either a character ("analytical") or a function denoting the outlier density.
 #' If g.hat="analytical" the test statistics are computed analytically without Monte Carlo estimation.
 #' If \code{NULL}, the outlier density is estimated from the data.
-#' @param monotonicity  character indicating if the outlier density function is monotone increasing or decreasing or neither. Default value is \code{NULL}.
+#' @param monotone Boolean indicating if the outlier density function is monotone (\code{TRUE}) or not (\code{FALSE}). Default value is \code{NULL}.
 #' @param fit_method  character value indicating the method to approximate the outlier distribution when argument \code{g.hat} is \code{NULL}.
 #' It can be either "beta_mix" or "mixmodel".
-#' @param prop.F   proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
+#' @param prop_cal   proportion of inliers used to estimate the inlier distribution in the process of estimating the outlier density.
 #' Default value is 0.5.
 #' @param alpha  significance level.
 #' @param pvalue_only  logical value. If \code{TRUE}, only the global test is performed.
@@ -39,11 +39,11 @@
 #'
 #' X = runif(10)
 #' Y = replicate(10, rg2(rnull=runif))
-#' res = d_selection_G(X, Y, S = c(1:7), g.hat = g2, monotonicity="increasing", B=100)
-d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NULL, fit_method="betamix", prop.F=0.5, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
+#' res = d_selection_G(X, Y, S = c(1:7), g.hat = g2, monotone="increasing", B=100)
+d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotone=NULL, fit_method="betamix", prop_cal=0.5, alpha=0.1, pvalue_only=FALSE, n_perm=10, B=10^3, B_MC=10^3, seed=123){
 
-  if(!is.null(monotonicity))
-    stopifnot("Error: monotonicity must be either increasing, decreasing"= monotonicity%in%c("decreasing", "increasing"))
+  if(!is.null(monotone))
+    stopifnot("Error: monotone must be either increasing, decreasing"= monotone%in%c("decreasing", "increasing"))
 
   n = as.double(length(S_Y))
   m = as.double(length(S_X))
@@ -53,23 +53,25 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotonicity=NUL
 
   # If the outlier distribution is unknown it is estimated from the data
   if(is.null(g.hat)){
-    monotone = ifelse(is.null(monotonicity), FALSE, TRUE)
-    m1 = round(prop.F*m)
+    # monotone2 = ifelse(is.null(monotone), FALSE, TRUE)
+    m1 = round(prop_cal*m)
     S_X1 = sample(S_X,m1)
     S_X2 = setdiff(S_X, S_X1)
     S_pooled = c(S_X2, S_Y)
     g.hat = estimate_g(S_X1, S_pooled, method=fit_method, monotone=monotone)$pdf
 
-    if(is.null(monotonicity))
+    if(is.null(monotone))
       res = d_G_cons(S_X=S_X2, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
     else
+      # Default for d_G_monotone is monotonicity increasing.
       res = d_G_monotone(S_X=S_X2, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
 
   } else {
 
-  if(is.null(monotonicity))
+  if(is.null(monotone))
     res = d_G_cons(S_X=S_X, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
   else
+    # Default for d_G_monotone is monotonicity increasing.
     res = d_G_monotone(S_X=S_X, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
 
   }
