@@ -346,7 +346,12 @@ fit_beta_mixture <- function(data, num_starts = 10) {
 #' @return A list of three elements which are the estimated PDF and CDF and the monotonicity
 #' used in the estimation process.
 #'
-estimate_g <- function(scores_reference, scores_pooled, method="betamix", monotone=FALSE) {
+estimate_g <- function(scores_reference, scores_pooled, method="mixmodel", monotone=FALSE) {
+    
+    # scores_std = standardize_to_uniform(scores_reference, scores_pooled)
+    # scores_reference = scores_std[[1]]
+    # scores_pooled = scores_std[[2]]
+    
     ## Transform the reference scores to make them approximately uniform
     null.fit <- fitdistrplus::fitdist(as.numeric(scores_reference), "beta", start = list(shape1 = 0.999, shape2 = 0.999))
     F.hat <- function(x) stats::pbeta(x, null.fit$estimate[[1]], null.fit$estimate[[2]])
