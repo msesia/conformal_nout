@@ -346,7 +346,7 @@ fit_beta_mixture <- function(data, num_starts = 10) {
 #' @return A list of three elements which are the estimated PDF and CDF and the monotonicity
 #' used in the estimation process.
 #'
-estimate_g <- function(scores_reference, scores_pooled, method="betamix", monotone=FALSE) {
+estimate_g <- function(scores_reference, scores_pooled, method="mixmodel", monotone=FALSE) {
   
   # if(min(scores_reference) < 0 || max(scores_reference)>1 || min(scores_pooled) < 0 || max(scores_pooled)>1){
   #   scores_std = standardize_to_uniform(scores_reference, scores_pooled)
