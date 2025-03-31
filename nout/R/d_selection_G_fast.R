@@ -60,12 +60,12 @@ d_selection_G <- function(S_X, S_Y, S=NULL, k=NULL, g.hat=NULL, monotone=NULL, f
 
   # If the outlier distribution is unknown it is estimated from the data
   if(is.null(g.hat)){
-    # monotone2 = ifelse(is.null(monotone), FALSE, TRUE)
+    monotone2 = ifelse(is.null(monotone), FALSE, TRUE)
     m1 = round(prop_cal*m)
     S_X1 = sample(S_X,m1)
     S_X2 = setdiff(S_X, S_X1)
     S_pooled = c(S_X2, S_Y)
-    g.hat = estimate_g(S_X1, S_pooled, method=fit_method, monotone=monotone)$pdf
+    g.hat = estimate_g(S_X1, S_pooled, method=fit_method, monotone=monotone2)$pdf
 
     if(is.null(monotone))
       res = d_G_cons(S_X=S_X2, S_Y=S_Y, S=S, g.hat=g.hat, k=k, alpha=alpha, pvalue_only=pvalue_only, n_perm=n_perm, B=B, B_MC=B_MC, seed=seed)
