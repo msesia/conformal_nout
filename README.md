@@ -13,7 +13,69 @@ Folder *methods* contains Python functions to define models, generate
 scores and find the lower bound for the number of outliers via Closed
 Testing with different local tests.
 
-Folder *nout* contains the R package and instructions for download.
+Folder *nout* contains the R package `nout` and instructions for
+download.
+
+# How to run the code
+
+## From the Anaconda terminal
+
+One way to run the code is using the Anaconda terminal, which can be
+open using the Anaconda Navigator app
+([download](https://www.anaconda.com/download)). Then, launch a Jupyter
+Notebook and open the terminal, setting the folder *experiments* as the
+working directory. Run the code from the terminal using the following
+command:
+
+`python experiment.py SETUP DATA N_TRAIN N_CAL N_TEST P A PURITY CLASSIFIER TUNE_SIZE ALPHA SELECTION SEED"`,
+
+where:
+
+- SETUP: setup number to be chosen (or added) from file
+  `submit_experiment.sh`.
+
+- DATA: dataset name. It can be a list.
+
+- N_TRAIN: training sample size. It can be a list.
+
+- N_CAL: calibration sample size. It can be a list.
+
+- N_TEST: test sample size. It can be a list.
+
+- P: number of feature when generating simulated data. It can be a list.
+
+- A: amplitude parameter controlling how “different” the outliers are
+  from inliers. Each model uses it differently (see file `models.py` for
+  more details). It can be a list.
+
+- PURITY: proportion of inliers in the test set. It can be a list.
+
+- CLASSIFIER: classifiers names. It can be a list. Choose *auto* for
+  automatic selection among one-class classifiers and binary
+  classifiers; *occ-auto* for automatic selection among one-class
+  classifiers; *bc-auto* for automatic selection among binary
+  classifiers. Ssee file `experiments.py` for the full list of available
+  classifiers).
+
+- TUNE_SIZE: portion of the calibration data used for the automatic
+  selection of the classifier and the local test. It can be a list.
+
+- ALPHA: significance level.
+
+- SELECTION: type of selection. It can be a list. Choose *none* for no
+  selection and *top-q* for selecting the conformity scores
+  corresponding to the largest q%-quantile with q=1,2,5,20,50.
+
+- SEED: list of set seed for independent replications of the experiment.
+
+## From GitBash terminal
+
+Another way to run the code is using the GitBash terminal as follows:
+
+1.  Open the GitBash terminal in the folder *experiments*.
+2.  Modify the file `submit_experiment.sh` with the desired setup, e.g.,
+    `SETUP=0`.
+3.  Run from the terminal the command `./submit_experiment.sh`.
 
 ## References
 
