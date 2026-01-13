@@ -35,7 +35,7 @@
 #' Y = replicate(10, rg2(rnull=runif))
 #' res1 = d_selection_higher(X, Y, local_test="WMW", n_perm=0, B=100)
 #' res2 = d_selection_higher(X, Y, local_test="higher", k=2, S = c(1:7), n_perm=0, B=100)
-d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=0, B=10^3, critical_values=NULL, seed=123){
+d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=0.1, pvalue_only=FALSE, n_perm=0, B=10^3, critical_values=NULL, seed=123) {
 
   local_test=tolower(local_test)
   stopifnot(local_test %in% c("wmw", "higher"))
@@ -53,22 +53,21 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=
 
   Z = c(S_X, base::sort(S_Y, decreasing = F))
 
-  if(!pvalue_only){
+  if(!pvalue_only) {
 
-    if(local_test=="wmw"){ # Use Mann-Whitney test statistic (ranks computed in the calibration set only) and Tian et al.(2023) shortcut
+    if(local_test=="wmw") { # Use Mann-Whitney test statistic (ranks computed in the calibration set only) and Tian et al.(2023) shortcut
 
       # Compute individual statistics for each test point
       S_Z = c(S_X, S_Y)
       R = stat.MW(Z=S_Z, m=m)
-
       # Compute all critical values for (m,k) from k in {1,...,n}
       crit = sapply(1:n, function(h) as.double(stats::qnorm(alpha, mean=m*h/2, sd = sqrt(m*h*(m+h+1)/12), lower.tail = F)))
 
       # Compute lower bound for S
-      res = sumSome::sumStatsPar(g = R, S = S, alpha = alpha, cvs = crit)
+      res = sumSome::sumStatsPar(g = R, S = as.integer(S), alpha = alpha, cvs = crit)
 
       ## Compute p-value for the global null
-      if(is.null(S)){
+      if(is.null(S)) {
         R.S = R[1:n]
       } else {
         R.S = R[S]
@@ -77,7 +76,7 @@ d_selection_higher = function(S_X, S_Y, S=NULL, local_test="wmw", k=NULL, alpha=
 
       pval.global = stats::pnorm(q=T.global.S, mean=m*s/2, sd = sqrt(m*s*(m+s+1)/12), lower.tail = F)
       d_S = res$TD
-
+        
     } else { # for higher order WMW tests use our shortcut
       ## Find d
       Z = c(S_X,base::sort(S_Y, decreasing = F))
