@@ -33,7 +33,7 @@ Folder *nout* contains the R package `nout` and instructions for download.
 
 One way to run the code is using the Anaconda terminal, which can be open using the Anaconda Navigator app ([download](https://www.anaconda.com/download)). Then, launch a Jupyter Notebook and open the terminal, setting the folder *experiments* as the working directory. Run the code from the terminal using the following command:
 
-`python experiment.py SETUP DATA N_TRAIN N_CAL N_TEST P A PURITY CLASSIFIER TUNE_SIZE ALPHA SELECTION SEED"`,
+`python experiment.py SETUP DATA N_TRAIN N_CAL N_TEST P A PURITY CLASSIFIER TUNE_SIZE ALPHA SELECTION SEED`,
 
 where:
 
@@ -53,7 +53,7 @@ where:
  
  * PURITY: proportion of inliers in the test set. It can be a list.
  
- * CLASSIFIER: classifiers names. It can be a list. Choose *auto* for automatic selection among one-class classifiers and binary classifiers; *occ-auto* for automatic selection among one-class classifiers; *bc-auto* for automatic selection among binary classifiers. Ssee file `experiments.py` for the full list of available classifiers). 
+ * CLASSIFIER: classifiers names. It can be a list. Choose *auto* for automatic selection among one-class classifiers and binary classifiers; *occ-auto* for automatic selection among one-class classifiers; *bc-auto* for automatic selection among binary classifiers. See file `experiments.py` for the full list of available classifiers). 
  
  * TUNE_SIZE: portion of the calibration data used for the automatic selection of the classifier and the local test. It can be a list.
  
