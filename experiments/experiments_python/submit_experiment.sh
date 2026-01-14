@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Parameters
-SETUP=1001
+SETUP=1
 
 if [[ $SETUP == 0 ]]; then
   DATA_LIST=("adversarial")
@@ -273,7 +273,7 @@ for SEED in $SEED_LIST; do
                           # Submit order to slurm scheduler (on cluster0
 #                          $ORD
                           # Run command now
-                          ./$SCRIPT
+#                          ./$SCRIPT
                         fi
                       done
                     done

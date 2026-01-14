@@ -20,11 +20,14 @@ This repository contains the code accompanying the paper
 
 It provides implementations of ACODE (Automatic Conformal Outlier Detection and Enumeration), closed-testing procedures based on rank tests, and all simulation and real-data experiments reported in the paper. The repository includes:
 
-- An R package (`nout/`) implementing local testing procedures with closed testing shortcuts.
-- Python and R scripts (`experiments/`) used to conduct the experimental studies and data analyses.
-- Core Python utilities (`methods/`) for data generation, ACODE implementation, and interfacing with the R package for closed testing.
+- An R package (`nout/`) implementing ACODE and closed-testing procedures.
+- Python and R scripts (`experiments/`) used to run the simulation studies and real-data analyses.
+- Core Python utilities (`methods/`) for data generation, conformal scoring, ACODE orchestration, and interfacing with the R package for closed testing via `rpy2`.
+- Precomputed critical value tables (`tables/`) for commonly used local tests (Fisher, Wilcoxon–Mann–Whitney, and Shiraishi tests against Lehmann alternatives), used to accelerate small-sample calculations where asymptotic approximations may be unreliable.
 - Dataset preparation scripts and experiment configuration files.
 - A `data/` folder containing the datasets used in the experiments.
+
+The sections below describe how the repository is organized and how to run the experiments.
 
 The sections below describe how the repository is organized and how to run the experiments.
 

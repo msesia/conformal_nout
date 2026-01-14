@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 import os, sys
-sys.path.append("../methods")
+sys.path.append("../../methods")
 
 from models import GaussianMixture, ConcentricCircles, ConcentricCirclesMixture, BinomialModel, AdversarialModel
 import conformal
