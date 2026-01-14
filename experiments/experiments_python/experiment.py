@@ -38,7 +38,7 @@ if True: # Input parameters
         print("Error: incorrect number of parameters.")
         quit()
 
-    setup = int(sys.argv[1])
+    setup = sys.argv[1]
     data_name = sys.argv[2]
     n_train = int(sys.argv[3])
     n_cal = int(sys.argv[4])
@@ -53,19 +53,19 @@ if True: # Input parameters
     random_state = int(sys.argv[13])
 
 else: # Default parameters
-    setup = 1
-    data_name = "circles"
-    n_train = 1000
-    n_cal = 1000
-    n_test = 1000
-    p = 100
-    a = 0.9
-    prop_out = 0.5
-    classifier = "auto"
-    tune_size = 0.25
+    setup = 1100
+    data_name = "lhco"
+    n_train = 10000
+    n_cal = 2000
+    n_test = 2000
+    p = 0
+    a = 0
+    prop_out = 0.25
+    classifier = "bc-auto"
+    tune_size = 0.5
     alpha = 0.1
-    selection_method = "none"
-    random_state = 2022
+    selection_method = "top-100"
+    random_state = 1
 
 
 # Fixed experiment parameters
@@ -105,37 +105,26 @@ table_fisher = load_table(tables_fisher_path, alpha)
 
 # Candidate values of K for WMW local test
 #method_candidates = ["wmw-K2", "wmw-K3", "wmw-K4", "fisher", "simes", "storey_simes"]
-method_candidates = ["wmw-K2", "lmp", "fisher", "simes", "storey_simes"]
+if selection_method == "none":
+    method_candidates = ["wmw", "lmp", "fisher", "simes", "storey_simes"]
+else:
+    method_candidates = ["wmw", "fisher", "simes", "storey_simes"]
+
 
 #########################
 # Data-generating model #
 #########################
 
 if data_name=="lhco":
-    data_path_local = "/media/msesia/Samsung1/data/physics/"
-    data_path_cluster = "/project/sesia_1123/lhco/"
-    if os.path.isdir(data_path_local):
-        data_path = data_path_local
-    elif os.path.isdir(data_path_cluster):
-        data_path = data_path_cluster
-
+    data_path = "../../data/"
     # Load everything into memory
     df_raw = pd.read_hdf(data_path + "events_anomalydetection_v2.features.h5")
     X_raw = np.array(df_raw.iloc[:,0:14])
     Y_raw = np.array(df_raw.iloc[:,14]).astype(int)
 
 else:
-
-    data_path_local = "/media/msesia/Samsung1/data/"
-    data_path_local_2 = "../../data/"
-    data_path_cluster = "/project/sesia_1123/data/outliers/"
-    if os.path.isdir(data_path_local):
-        data_path = data_path_local
-    elif os.path.isdir(data_path_local_2):
-        data_path = data_path_local_2
-    elif os.path.isdir(data_path_cluster):
-        data_path = data_path_cluster
-    else:
+    data_path = "../../data/"
+    if not os.path.isdir(data_path):
         print("Error! Data directory not found.")
         exit(-1)
 
@@ -185,18 +174,6 @@ else:
 
         X_raw = np.concatenate([X_raw_1, X_raw_2], axis=0)
         Y_raw = np.concatenate([Y_raw_1, Y_raw_2], axis=0)
-
-    # elif data_name=="lhco":
-    #     data_path_local = "/media/msesia/Samsung/data/physics/events_anomalydetection_v2.features.h5"
-    #     data_path_cluster = "/project/sesia_1123/lhco/events_anomalydetection_v2.features.h5"
-    #     if os.path.isdir(data_path_local):
-    #         data_path = data_path_local
-    #     elif os.path.isdir(data_path_cluster):
-    #         data_path = data_path_cluster
-
-    #     n_tot = 10 * (n_train + n_cal + n_test)
-    #     from sklearn.datasets import make_moons
-    #     X_raw, Y_raw = make_moons(n_samples=n_tot, shuffle=True, noise=0.2, random_state=2024)
 
     else:
         print("Error! Unknown data")
@@ -317,23 +294,30 @@ def run_experiment(dataset, random_state):
 
     # Calculate confidence lower bound for the number of true outliers in closed testing procedure using Wilcoxon-Mann-Whitney local test
     # applied to conformal p-values.
-    lb_wmw_2, pval_wmw_2 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw-K2", n_perm=n_perm, B=B_perm, selected=selected, table_t2=table_t2)
-
-    lb_wmw_3, pval_wmw_3 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw-K3", n_perm=n_perm, B=B_perm,
-                                                           selected=selected, table_t3=table_t3)
-    lb_wmw_4, pval_wmw_4 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw-K4", n_perm=n_perm, B=B_perm,
-                                                           selected=selected, table_t4=table_t4)
-    lb_lmp, pval_lmp = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="lmp", n_perm=n_perm, B=B_perm,
-                                                       selected=selected)
+    lb_wmw_2, pval_wmw_2 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw", n_perm=n_perm, B=B_perm, selected=selected, table_t2=table_t2)
     lb_auto, pval_auto = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method=sel_method, n_perm=n_perm, B=B_perm,
                                                          selected=selected,
                                                          table_t2=table_t2, table_t3=table_t3, table_t4=table_t4, table_fisher=table_fisher)
+    if selected is None:
+        lb_wmw_3, pval_wmw_3 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw-K3", n_perm=n_perm, B=B_perm,
+                                                           selected=selected, table_t3=table_t3)
+        lb_wmw_4, pval_wmw_4 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw-K4", n_perm=n_perm, B=B_perm,
+                                                           selected=selected, table_t4=table_t4)
+        lb_lmp, pval_lmp = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="lmp", n_perm=n_perm, B=B_perm,
+                                                           selected=selected)
+    else: # Method with selection is currently slow
+        lb_wmw_3, pval_wmw_3 = None, None
+        lb_wmw_4, pval_wmw_4 = None, None
+        lb_lmp, pval_lmp = None, None
+        
 
-    print("WMW-2 lower bound: {:d}.".format(lb_wmw_2))
-    print("WMW-3 lower bound: {:d}.".format(lb_wmw_3))
-    print("WMW-4 lower bound: {:d}.".format(lb_wmw_4))
-    print("LMP lower bound: {:d}.".format(lb_lmp))
-    print("Automatic lower bound: {:d}.".format(lb_auto))
+    def fmt_int(x):
+        return "None" if x is None else f"{x:d}"
+    print("WMW-2 lower bound: {}.".format(fmt_int(lb_wmw_2)))
+    print("WMW-3 lower bound: {}.".format(fmt_int(lb_wmw_3)))
+    print("WMW-4 lower bound: {}.".format(fmt_int(lb_wmw_4)))
+    print("LMP lower bound: {}.".format(fmt_int(lb_lmp)))
+    print("Automatic lower bound: {}.".format(fmt_int(lb_auto)))
 
     # Calculate confidence lower bound for the number of true outliers using other methods
     lb_simes, pval_simes = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="simes", selected=selected)

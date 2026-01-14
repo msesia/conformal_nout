@@ -14,11 +14,11 @@ plot.data.setup.4 <- TRUE
 plot.data.2 <- TRUE
 plot.lehmann <- FALSE
 plot.lehmann.new <- FALSE
-plot.lhco_1 <- FALSE
+plot.lhco_1 <- TRUE
 plot.lhco_selection <- TRUE
 
 load_data <- function(setup) {
-    idir <- sprintf("results_hpc/setup%d", setup)
+    idir <- sprintf("results_hpc/setup%s", setup)
     ifile.list <- list.files(idir)
     results <- do.call("rbind", lapply(ifile.list, function(ifile) {
         df <- read_delim(sprintf("%s/%s", idir, ifile), delim=",", col_types=cols(), guess_max=2)
@@ -26,29 +26,93 @@ load_data <- function(setup) {
     return(results)
 }
 
-init_settings <- function(idx.exclude=NULL, names_ACODE=FALSE) {
-    cbPalette <<- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#6e57d2", "red")
-    method.values <<- c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_wmw_k2", "lb_wmw_k3", "lb_lmp", "lb_auto") # "lb_wmw_k3", "lb_wmw_k4",
-    if(names_ACODE) {
-        method.labels <<- c("ACODE (Simes)", "ACODE (Storey-Simes)", "ACODE (Fisher)", "ACODE (WMW)", "ACODE (LMP, Lehmann k=3)", "ACODE (LMP,G-hat)", "ACODE (Adaptive)")
-    } else {
-        method.labels <<- c("Simes", "Storey-Simes", "Fisher", "WMW", "LMPI (Lehmann, k=3)", "LMPI (G-hat)", "Adaptive") #"WMW (k=3)",
-    }
-    classifier.values <<- c("occ-auto", "bc-auto", "auto")
-    classifier.labels <<- c("One-Class", "Binary", "Automatic")
-    color.scale <<- cbPalette[c(1,1,4,3,6,7,8)]
-    shape.scale <<- c(2,6,3,1,0,9,8)
-    alpha.scale <<- c(0.75,0.75,0.75,0.75,0.75,0.75,1)
-    data.values <<- c("pendigits", "creditcard", "cover", "shuttle", "mammography", "aloi")
-    data.labels <<- c("Pendigits", "Creditcard", "Covertype", "Shuttle", "Mammography", "ALOI")
-    if(length(idx.exclude)>0) {
-        ## Exclude Storey-simes
-        method.values <<- method.values[-idx.exclude]
-        method.labels <<- method.labels[-idx.exclude]
-        color.scale <<- color.scale[-idx.exclude]
-        shape.scale <<- shape.scale[-idx.exclude]
-        alpha.scale <<- alpha.scale[-idx.exclude]
-    }
+init_settings <- function(idx.exclude=NULL, names_ACODE=FALSE, present_methods=NULL) {
+  cbPalette <<- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#6e57d2", "red", "#DEB887")
+
+  method.values <<- c(
+    "lb_simes", "lb_storey_simes", "lb_fisher",
+    "lb_wmw_k2", "lb_wmw_k3",
+    "lb_lmp", "lb_auto", "disc_bh"
+  )
+
+  if (names_ACODE) {
+    method.labels <<- c(
+      "ACODE (Simes)", "ACODE (Storey-Simes)", "ACODE (Fisher)",
+      "ACODE (WMW)", "ACODE (WMW, k=3)",
+      "ACODE (LMP,G-hat)", "ACODE (Adaptive)",
+      "BH (identification)"
+    )
+  } else {
+    method.labels <<- c(
+      "Simes", "Storey-Simes", "Fisher",
+      "WMW", "LMPR (Lehmann, k=3)",
+      "LMPR (G-hat)", "Adaptive",
+      "BH (identification)"
+    )
+  }
+
+  classifier.values <<- c("occ-auto", "bc-auto", "auto")
+  classifier.labels <<- c("One-Class", "Binary", "Automatic")
+
+  data.values <<- c("pendigits", "creditcard", "cover", "shuttle", "mammography", "aloi")
+  data.labels <<- c("Pendigits", "Creditcard", "Covertype", "Shuttle", "Mammography", "ALOI")
+
+  # --- Robust: define named aesthetics by method ---
+  color.by.method <- c(
+    lb_simes        = cbPalette[1],
+    lb_storey_simes = cbPalette[1],
+    lb_fisher       = cbPalette[4],
+    lb_wmw_k2       = cbPalette[3],
+    lb_wmw_k3       = cbPalette[6],
+    lb_lmp          = cbPalette[7],
+    lb_auto         = cbPalette[8],
+    disc_bh         = cbPalette[9]
+  )
+
+  shape.by.method <- c(
+    lb_simes        = 2,
+    lb_storey_simes = 6,
+    lb_fisher       = 3,
+    lb_wmw_k2       = 1,
+    lb_wmw_k3       = 0,
+    lb_lmp          = 9,
+    lb_auto         = 8,
+    disc_bh         = 5
+  )
+
+  alpha.by.method <- c(
+    lb_simes        = 0.75,
+    lb_storey_simes = 0.75,
+    lb_fisher       = 0.75,
+    lb_wmw_k2       = 0.75,
+    lb_wmw_k3       = 0.75,
+    lb_lmp          = 0.75,
+    lb_auto         = 1,
+    disc_bh         = 0.75
+  )
+
+  # Optional: keep only methods actually present in the data (if you pass them in)
+  if (!is.null(present_methods)) {
+    keep <- method.values %in% present_methods
+    method.values <<- method.values[keep]
+    method.labels <<- method.labels[keep]
+  }
+
+  # Apply idx.exclude (position-based, as before)
+  if (!is.null(idx.exclude) && length(idx.exclude) > 0) {
+    method.values <<- method.values[-idx.exclude]
+    method.labels <<- method.labels[-idx.exclude]
+  }
+
+  # Build scales by matching method.values (robust to missing levels)
+  color.scale <<- unname(color.by.method[method.values])
+  shape.scale <<- unname(shape.by.method[method.values])
+  alpha.scale <<- unname(alpha.by.method[method.values])
+
+  # Defensive check: catch typos / unmapped methods early
+  if (any(is.na(color.scale))) stop("Missing color mapping for: ", paste(method.values[is.na(color.scale)], collapse=", "))
+  if (any(is.na(shape.scale))) stop("Missing shape mapping for: ", paste(method.values[is.na(shape.scale)], collapse=", "))
+  if (any(is.na(alpha.scale))) stop("Missing alpha mapping for: ", paste(method.values[is.na(alpha.scale)], collapse=", "))
 }
 
 if(plot.synthetic.0) {
@@ -153,13 +217,13 @@ if(plot.synthetic.0) {
         x.max <- max(df$n_out)
         ## Plot
         data.ref.pow <- tibble(n_out=c(0, max(df$n_out)), metric="Power (global null)", Value=c(0.1,0.1), Method="Adaptive") %>%
-            mutate(metric = factor(metric, levels=c("Power (global null)", "Lower Bound")))            
+            mutate(metric = factor(metric, levels=c("Power (global null)", "Lower Bound")))
         data.ref.lb <- tibble(n_out=c(0, max(df$n_out)), metric="Lower Bound", Value=c(0, max(df$n_out)), Method="Adaptive")  %>%
-        mutate(metric = factor(metric, levels=c("Power (global null)", "Lower Bound")))            
+        mutate(metric = factor(metric, levels=c("Power (global null)", "Lower Bound")))
         data.lim.pow <- tibble(n_out=c(0, 0), metric="Power (global null)", Value=c(0,1), Method="Adaptive")  %>%
-        mutate(metric = factor(metric, levels=c("Power (global null)", "Lower Bound")))            
+        mutate(metric = factor(metric, levels=c("Power (global null)", "Lower Bound")))
         data.lim.lb <- tibble(n_out=c(0, 0), metric="Lower Bound", Value=c(0, max(df$n_out)), Method="Adaptive")  %>%
-        mutate(metric = factor(metric, levels=c("Power (global null)", "Lower Bound")))            
+        mutate(metric = factor(metric, levels=c("Power (global null)", "Lower Bound")))
         pp <- df %>%
             mutate(metric = factor(metric, levels=c("Power (global null)", "Lower Bound"))) %>%
             ggplot(aes(x=n_out, y=Value, color=Method, shape=Method, alpha=Method)) +
@@ -185,7 +249,7 @@ if(plot.synthetic.0) {
     }
 
     results <- load_data(0)
-   
+
     make_plot_lower_bound_proportion(0, plot.quantile=0.9, reload=TRUE)
     ##make_plot_power_proportion(0, plot.quantile=0.9, reload=TRUE)
 
@@ -196,13 +260,18 @@ if(plot.synthetic.0) {
 
 if(plot.synthetic.1_2) {
 
-    make_plot_lower_bound_proportion <- function(setup, reload=FALSE, plot.quantile=0.5) {
-        init_settings(idx.exclude=c(6))
+    make_plot_lower_bound_proportion <- function(setup, reload=FALSE, plot.quantile=0.5, include_BH=FALSE) {
+        if (include_BH) {
+            present_methods = c("disc_bh", "lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2")
+        } else {
+            present_methods = c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2")
+        }
+        init_settings(present_methods = present_methods)
         if(reload) {
             results <- load_data(setup)
         }
         summary <- results %>%
-            pivot_longer(c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2", "lb_wmw_k3"),
+            pivot_longer(all_of(present_methods),
                          names_to="method", values_to="lower_bound") %>%
             group_by(Data, p, Signal, n_train, n_cal, n_test, prop_out, n_out, Alpha, Classifier, method) %>%
             summarise(LB=quantile(lower_bound, plot.quantile), LB.se=sd(lower_bound)/sqrt(n()))
@@ -226,31 +295,78 @@ if(plot.synthetic.1_2) {
             xlim(0,x.max) +
             ylim(0,x.max) +
             theme_bw() +
-            guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests"))            
-        plot.file.1 <- sprintf("figures/synthetic%d_lower_bound_q%s.pdf", setup, plot.quantile)
+            guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests"))
+        if (include_BH) {
+            plot.file.1 <- sprintf("figures/synthetic%d_lower_bound_q%s_bh.pdf", setup, plot.quantile)
+        } else {
+            plot.file.1 <- sprintf("figures/synthetic%d_lower_bound_q%s.pdf", setup, plot.quantile)
+        }
         ggsave(pp, file=plot.file.1, height=2.25, width=7.5, units="in")
     }
 
     make_plot_lower_bound_proportion(1, plot.quantile=0.5, reload=TRUE)
+    make_plot_lower_bound_proportion(1, plot.quantile=0.5, reload=TRUE, include_BH=TRUE)
     make_plot_lower_bound_proportion(2, plot.quantile=0.5, reload=TRUE)
+    make_plot_lower_bound_proportion(2, plot.quantile=0.5, reload=TRUE, include_BH=TRUE)
 
     make_plot_lower_bound_proportion(1, plot.quantile=0.9, reload=TRUE)
     make_plot_lower_bound_proportion(2, plot.quantile=0.9, reload=TRUE)
 
-}
-
-if(plot.synthetic.1_2_selection) {
-
-    make_plot_lower_bound_proportion_sel <- function(setup, reload=FALSE) {
+    make_plot_lower_bound_tuning <- function(setup, reload=FALSE, plot.quantile=0.5) {
         init_settings(idx.exclude=c(6))
         if(reload) {
             results <- load_data(setup)
         }
         summary <- results %>%
+            mutate(tune_size,
+                   `True number of outliers`=n_out) %>%
             pivot_longer(c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2", "lb_wmw_k3"),
                          names_to="method", values_to="lower_bound") %>%
+            group_by(Data, p, Signal, n_train, n_cal, n_test, tune_size, prop_out, `True number of outliers`, Alpha, Classifier, method) %>%
+            summarise(LB=quantile(lower_bound, plot.quantile), LB.se=sd(lower_bound)/sqrt(n()))
+        df <- summary %>%
+            filter(method %in% method.values) %>%
+            mutate(Method = factor(method, method.values, method.labels)) %>%
+            mutate(Classifier = factor(Classifier, classifier.values, classifier.labels))
+        x.max <- max(df$`True number of outliers`)
+        pp <- df %>%
+            ggplot(aes(x=tune_size, y=LB, color=Method, shape=Method, alpha=Method)) +
+            geom_point() +
+            geom_line() +
+            geom_errorbar(aes(ymin=(LB-2*LB.se), ymax=(LB+2*LB.se)), width=0.01, alpha=0.5) +
+            facet_grid(Classifier~`True number of outliers`, labeller="label_both") +
+            scale_color_manual(values=color.scale) +
+            scale_shape_manual(values=shape.scale) +
+            scale_alpha_manual(values=alpha.scale) +
+            xlab("Proportion of calibration samples used for tuning") +
+            ylab("90% lower bound") +
+            scale_x_continuous(trans='log10', limits=c(0.01,1)) +
+            ##xlim(0,x.max) +
+            ##ylim(0,x.max) +
+            theme_bw() +
+            guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests")) +
+            theme(panel.spacing.x = unit(3, "mm"))
+        plot.file.1 <- sprintf("figures/synthetic%s_lower_bound_q%s_tuning.pdf", setup, plot.quantile)
+        ggsave(pp, file=plot.file.1, height=5, width=8.5, units="in")
+    }
+
+    make_plot_lower_bound_tuning("1t", plot.quantile=0.5, reload=TRUE)
+
+}
+
+if(plot.synthetic.1_2_selection) {
+
+    make_plot_lower_bound_proportion_sel <- function(setup, plot.quantile=0.5, reload=FALSE) {
+        present_methods = c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2")
+        init_settings(present_methods = present_methods)
+        if(reload) {
+            results <- load_data(setup)
+        }
+        summary <- results %>%
+            pivot_longer(all_of(present_methods),
+                         names_to="method", values_to="lower_bound") %>%
             group_by(Data, p, Signal, n_train, n_cal, n_test, prop_out, n_out, selection, selected_num, Alpha, Classifier, method) %>%
-            summarise(LB=median(lower_bound), LB.se=sd(lower_bound)/sqrt(n()))
+            summarise(LB=quantile(lower_bound, plot.quantile), LB.se=sd(lower_bound)/sqrt(n()))
         df <- summary %>%
             filter(prop_out %in% c(0,0.2,0.5)) %>%
             filter(method %in% method.values) %>%
@@ -260,9 +376,9 @@ if(plot.synthetic.1_2_selection) {
         df.ref <- results %>%
             filter(prop_out %in% c(0,0.2,0.5)) %>%
             group_by(Data, p, Signal, n_train, n_cal, n_test, prop_out, n_out, selection, selected_num, Alpha, Classifier) %>%
-            summarise(LB=median(n_out_sel)) %>%
+            summarise(LB=mean(n_out_sel)) %>%
             mutate(N_out = sprintf("%d outliers", prop_out*n_test))
-        df.ghost <- tibble(prop_out = c(0,0), selected_num=c(0,0), n_test=c(1000,1000), LB=c(0,1)) %>%
+        df.ghost <- tibble(prop_out = c(0,0), selected_num=c(0,0), n_test=c(1000,1000), LB=c(0,100)) %>%
             mutate(N_out = sprintf("%d outliers", prop_out*n_test))
         x.min <- min(df$selected_num/df$n_test)
         x.max <- max(df$selected_num/df$n_test)
@@ -282,14 +398,16 @@ if(plot.synthetic.1_2_selection) {
     scale_x_continuous(trans='log10', limits=c(0.01,1)) +
             theme_bw() +
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-            guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests"))                
-        plot.file.1 <- sprintf("figures/synthetic%d_lower_bound_sel.pdf", setup)
+            guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests"))
+        plot.file.1 <- sprintf("figures/synthetic%d_lower_bound_sel_q%s.pdf", setup, plot.quantile)
         ggsave(pp, file=plot.file.1, height=2.25, width=7, units="in")
     }
 
-    make_plot_lower_bound_proportion_sel(1001, reload=TRUE)
+    make_plot_lower_bound_proportion_sel(1001, plot.quantile=0.5, reload=TRUE)
+    make_plot_lower_bound_proportion_sel(1001, plot.quantile=0.9, reload=TRUE)
 
-    make_plot_lower_bound_proportion_sel(1002, reload=TRUE)
+    make_plot_lower_bound_proportion_sel(1002, plot.quantile=0.5, reload=TRUE)
+    make_plot_lower_bound_proportion_sel(1002, plot.quantile=0.9, reload=TRUE)
 
 }
 
@@ -327,7 +445,7 @@ if(plot.synthetic.3) {
 #            ylim(NA,0.5) +
             theme_bw() +
     theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-            guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests"))                
+            guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests"))
         plot.file.1 <- sprintf("figures/synthetic3_p%d_n%d_s%.2f_lower_bound.pdf", plot.p, plot.n_train, plot.signal)
         ggsave(pp, file=plot.file.1, height=2.25, width=7, units="in")
     }
@@ -386,7 +504,7 @@ if(plot.data.setup.4) {
             xlim(0,x.max) +
             theme_bw() +
             guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests"))
-        pp        
+        pp
         if(save.plot) {
             plot.file.1 <- sprintf("figures/setup4_%s_%d_%d_%d.pdf", plot.data, plot.n_train, plot.n_cal, plot.n_test)
             ggsave(pp, file=plot.file.1, height=3.5, width=7, units="in")
@@ -508,12 +626,13 @@ if(plot.data.1) {
 if(plot.data.selection) {
 
     make_plot_lower_bound_data_sel <- function(setup, plot.quantile=0.5, reload=FALSE) {
-        init_settings(idx.exclude=c(6))
+        present_methods = c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2")
+        init_settings(present_methods = present_methods)
         if(reload) {
             results <- load_data(setup)
         }
         summary <- results %>%
-            pivot_longer(c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2", "lb_wmw_k3"), names_to="method", values_to="lower_bound") %>% # , "lb_wmw_k4"
+            pivot_longer(all_of(present_methods), names_to="method", values_to="lower_bound") %>% # , "lb_wmw_k4"
             group_by(Data, p, Signal, n_train, n_cal, n_test, prop_out, n_out, selection, selected_num, Alpha, Classifier, method) %>%
             summarise(LB=quantile(lower_bound, plot.quantile), LB.se=sd(lower_bound)/sqrt(n()))
         df <- summary %>%
@@ -526,7 +645,7 @@ if(plot.data.selection) {
         df.ref <- results %>%
             filter(prop_out %in% c(0,0.2,0.5)) %>%
             group_by(Data, p, Signal, n_train, n_cal, n_test, prop_out, n_out, selection, selected_num, Alpha, Classifier) %>%
-            summarise(LB=median(n_out_sel)) %>%
+            summarise(LB=mean(n_out_sel)) %>%
             mutate(N_out = sprintf("%d outliers", prop_out*n_test)) %>%
             mutate(Data = factor(Data, data.values, data.labels))
         df.ghost <- tibble(prop_out = c(0,0), selected_num=c(0,0), n_test=c(1000,1000), LB=c(0,1)) %>%
@@ -962,7 +1081,7 @@ for(plot.prop_out in c(0.2)) {
 if(plot.lhco_1) {
 
     make_plot_lower_bound_lhco <- function(reload=FALSE, plot.n_train, plot.n_cal, include.BH=FALSE,  plot.classifier="auto",
-                                           plot.simple=FALSE, plot.naive=FALSE, save.plot=True, alpha=0.1) {
+                                           plot.simple=FALSE, plot.naive=FALSE, save.plot=True, alpha=0.1, n_test=2000, max_out=0.5) {
         if(plot.simple) {
             init_settings(idx.exclude=c(2,5,6))
         } else {
@@ -972,10 +1091,10 @@ if(plot.lhco_1) {
             results <- load_data(100)
         }
         pow.str <- "Power (global null)"
-##        key.values <- c("Median", "Quantile.90", pow.str)
-        key.values <- c("Median", pow.str)
-##        key.labels <- c("Lower bound (median)", "Lower bound (90th quant.)", pow.str)
-        key.labels <- c("Lower bound", pow.str)
+#        key.values <- c("Median", pow.str)
+#        key.labels <- c("Lower bound", pow.str)
+        key.values <- c("Median", "Quantile.90", pow.str)
+        key.labels <- c("Lower bound (median)", "Lower bound (90th quant.)", pow.str)
         disc.str <- "Discoveries (10% FDR)"
         df.lb <- results %>%
             filter(n_train == plot.n_train, n_cal == plot.n_cal, Classifier==plot.classifier) %>%
@@ -1039,7 +1158,7 @@ if(plot.lhco_1) {
         }
         df <- rbind(df.pow, df.lb) %>%
             filter(Key %in% key.values) %>%
-            mutate(Key = factor(Key, key.values, key.labels))            
+            mutate(Key = factor(Key, key.values, key.labels))
         df.fdr.lb <- results %>%
             filter(n_train == plot.n_train, n_cal == plot.n_cal, Classifier==plot.classifier) %>%
             pivot_longer(c("disc_bh"), names_to="method", values_to="discoveries") %>%
@@ -1060,13 +1179,13 @@ if(plot.lhco_1) {
         df.fdr <- rbind(df.fdr.pow, df.fdr.lb) %>%
             filter(Key %in% key.values) %>%
             mutate(Key = factor(Key, key.values, key.labels))
-        df.range <- tibble(Key=c(pow.str, pow.str, "Median", "Median", "Quantile.90", "Quantile.90"), Value=c(0,1,0,1500,0,1500),
-                           n_out=c(0,1500,0,1500,0,1500), method="lb_auto") %>%
+        df.range <- tibble(Key=c(pow.str, pow.str, "Median", "Median", "Quantile.90", "Quantile.90"), Value=c(0,1,0,n_test*max_out,0,n_test*max_out),
+                           n_out=c(0,n_test*max_out,0,n_test*max_out,0,n_test*max_out), method="lb_auto") %>%
             mutate(Method = factor(method, method.values.tmp, method.labels.tmp), Target="Closed testing") %>%
             filter(Key %in% key.values) %>%
             mutate(Key = factor(Key, key.values, key.labels))
         df.ref <- tibble(Key=c(pow.str, pow.str, "Median", "Median", "Quantile.90", "Quantile.90"),
-                         Value=c(0.1,0.1,0,1500,0,1500), n_out=c(0,1500,0,1500,0,1500), method="lb_auto", Target="Closed testing") %>%
+                         Value=c(0.1,0.1,0,n_test*max_out,0,n_test*max_out), n_out=c(0,n_test*max_out,0,n_test*max_out,0,n_test*max_out), method="lb_auto", Target="Closed testing") %>%
             mutate(Method = factor(method, method.values.tmp, method.labels.tmp)) %>%
             filter(Key %in% key.values) %>%
             mutate(Key = factor(Key, key.values, key.labels))
@@ -1075,7 +1194,7 @@ if(plot.lhco_1) {
                 ggplot(aes(x=n_out, y=Value, color=Method, shape=Method, alpha=Method, linetype=Target)) +
                 geom_point() +
                 geom_line() +
-##                geom_errorbar(aes(ymin=(Value-2*SE), ymax=(Value+2*SE)), width=0.1, alpha=0.5) +
+                geom_errorbar(aes(ymin=(Value-2*SE), ymax=(Value+2*SE)), width=0.1, alpha=0.5) +
                 geom_point(data=df.range, aes(x=n_out, y=Value, color=Method, shape=Method), alpha=0) +
                 geom_line(data=df.ref, aes(x=n_out, y=Value), linetype=2, color="black", alpha=1) +
                 geom_line(data=df.fdr, aes(x=n_out, y=Value, linetype=Target), color="black", alpha=1) +
@@ -1093,7 +1212,7 @@ if(plot.lhco_1) {
                 ggplot(aes(x=n_out, y=Value, color=Method, shape=Method, alpha=Method, linetype=Target)) +
                 geom_point() +
                 geom_line() +
-                ##geom_errorbar(aes(ymin=(Value-2*SE), ymax=(Value+2*SE)), width=0.1, alpha=0.5) +
+                geom_errorbar(aes(ymin=(Value-2*SE), ymax=(Value+2*SE)), width=0.1, alpha=0.5) +
                 geom_point(data=df.range, aes(x=n_out, y=Value, color=Method, shape=Method), alpha=0) +
                 geom_line(data=df.ref, aes(x=n_out, y=Value), linetype=2, color="black", alpha=1) +
                                         #                geom_line(data=df.fdr, aes(x=n_out, y=Value, linetype=Target), color="black", alpha=1) +
@@ -1109,7 +1228,7 @@ if(plot.lhco_1) {
         }
         if(save.plot) {
             plot.file.1 <- sprintf("figures/lhco_nt%d_lb_BH_%s_simple%s.pdf", plot.n_train, include.BH, plot.simple)
-            ggsave(pp, file=plot.file.1, height=2.25, width=6, units="in")
+            ggsave(pp, file=plot.file.1, height=2.25, width=8, units="in")
         } else {
             print(pp)
         }
@@ -1127,7 +1246,7 @@ if(plot.lhco_1) {
                                         #                   Value = ifelse(Key==pow.str, sprintf("\\color{%s}{%.2f (%.2f)}", Color, Value, SE),
                                         #                                  sprintf("\\color{%s}{%4d (%d)}", Color, round(Value), round(SE)))) %>%
                        Value = ifelse(Key==pow.str, sprintf("%.2f (%.2f)", Value, SE),
-                                      sprintf("%4d (%d)", round(Value), round(SE)))) %>%               
+                                      sprintf("%4d (%d)", round(Value), round(SE)))) %>%
 #                mutate(Key = factor(Key, key.values, key.labels)) %>%
                 select(`Outliers`, Key, Value, Method) %>%
                 pivot_wider(names_from = c(Method), values_from = Value, names_sort=TRUE) %>%
@@ -1150,8 +1269,9 @@ if(plot.lhco_1) {
     make_plot_lower_bound_lhco(reload=FALSE, plot.n_train=10000, plot.n_cal=2000, include.BH=TRUE, plot.classifier="auto", plot.simple=FALSE, plot.naive=TRUE, save.plot=TRUE)
     make_plot_lower_bound_lhco(reload=FALSE, plot.n_train=10000, plot.n_cal=2000, include.BH=TRUE, plot.classifier="auto", plot.simple=TRUE, plot.naive=TRUE, save.plot=TRUE)
 
-    make_plot_lower_bound_lhco(reload=FALSE, plot.n_train=100000, plot.n_cal=2000, include.BH=TRUE, plot.classifier="bc-abc", plot.simple=FALSE, plot.naive=TRUE, save.plot=TRUE)
+    make_plot_lower_bound_lhco(reload=FALSE, plot.n_train=10000, plot.n_cal=2000, include.BH=TRUE, plot.classifier="bc-abc", plot.simple=FALSE, plot.naive=TRUE, save.plot=TRUE)
 
+    make_plot_lower_bound_lhco(reload=FALSE, plot.n_train=10000, plot.n_cal=2000, include.BH=TRUE, plot.classifier="auto", plot.simple=TRUE, plot.naive=FALSE, save.plot=FALSE)
 
     #make_plot_lower_bound_lhco(reload=FALSE, plot.n_train=100000, plot.n_cal=2000, include.BH=FALSE, save.plot=TRUE)
     #make_plot_lower_bound_lhco(reload=FALSE, plot.n_train=10000, plot.n_cal=2000, include.BH=TRUE, save.plot=TRUE)
@@ -1188,7 +1308,7 @@ if(plot.lehmann.new) {
         df <- summary %>%
             filter(Method %in% method.values) %>%
             mutate(Method = factor(Method, method.values, method.labels)) %>%
-            mutate(Dimensions = sprintf("m=%d, n=%d", m, n), Dimensions=factor(Dimensions, dimensions.values)) %>%            
+            mutate(Dimensions = sprintf("m=%d, n=%d", m, n), Dimensions=factor(Dimensions, dimensions.values)) %>%
             mutate(Alterantive = sprintf("Lehmann's alternative, k=%d", k-1))
         pp <- df %>%
             ggplot(aes(x=theta, y=Power, color=Method, shape=Method)) +
@@ -1225,23 +1345,23 @@ if(plot.lehmann.new) {
                 ungroup() %>%
                 mutate(Power.str = sprintf("%.4f (%.4f)", Power, 2*Power.SE),
                        Power.str = ifelse(Power==Max, sprintf("\\textbf{%s}", Power.str), Power.str)) %>%
-                select(k, `Proportion of outliers`, Method, Power.str) %>%       
+                select(k, `Proportion of outliers`, Method, Power.str) %>%
                 pivot_wider(names_from = c(Method), values_from = Power.str, names_sort=TRUE) %>%
                 arrange(k, `Proportion of outliers`)
             tab <- df.tab %>%
                 select(-k) %>%
-                kable(format="latex", booktabs=TRUE, align = 'c', escape=FALSE) %>%                
+                kable(format="latex", booktabs=TRUE, align = 'c', escape=FALSE) %>%
                 pack_rows("Lehmann's alternative with k=1", start_row = 1, end_row = cumsum(table(df.tab$k))[1]) %>%
                 pack_rows("Lehmann's alternative with k=2", start_row = cumsum(table(df.tab$k))[1]+1, end_row = cumsum(table(df.tab$k))[2]) %>%
                 pack_rows("Lehmann's alternative with k=3", start_row = cumsum(table(df.tab$k))[2]+1, end_row = cumsum(table(df.tab$k))[3]) %>%
                 column_spec(c(1), width = "5em") %>%
-                add_header_above(c(" "=1, "Testing procedure" = 6))                
+                add_header_above(c(" "=1, "Testing procedure" = 6))
             writeLines(tab, sprintf("tables/lehmann_short%s_m%d_n%d.tex", short.table, plot.m, plot.n))
         }
     }
 
     plot.lehmann.new(reload=FALSE)
-            
+
 
     plot.lehmann.new.calibration <- function(reload=FALSE) {
         if(reload){
@@ -1258,7 +1378,7 @@ if(plot.lehmann.new) {
         df <- summary %>%
             filter(Method %in% method.values) %>%
             mutate(Method = factor(Method, method.values, method.labels)) %>%
-            mutate(Dimensions = sprintf("m=%d, n=%d", m, n), Dimensions=factor(Dimensions, dimensions.values)) %>%            
+            mutate(Dimensions = sprintf("m=%d, n=%d", m, n), Dimensions=factor(Dimensions, dimensions.values)) %>%
             mutate(Alterantive = sprintf("Lehmann's alternative, k=%d", k-1))
         pp <- df %>%
             ggplot(aes(x=m, y=Power, color=Method, shape=Method)) +
@@ -1293,17 +1413,17 @@ if(plot.lehmann.new) {
                 ungroup() %>%
                 mutate(Power.str = sprintf("%.4f (%.4f)", Power, 2*Power.SE),
                        Power.str = ifelse(Power==Max, sprintf("\\textbf{%s}", Power.str), Power.str)) %>%
-                select(k, `Calibration size`, Method, Power.str) %>%       
+                select(k, `Calibration size`, Method, Power.str) %>%
                 pivot_wider(names_from = c(Method), values_from = Power.str, names_sort=TRUE) %>%
-                arrange(k, `Calibration size`)           
+                arrange(k, `Calibration size`)
             tab <- df.tab %>%
                 select(-k) %>%
-                kable(format="latex", booktabs=TRUE, align = 'c', escape=FALSE) %>%                
+                kable(format="latex", booktabs=TRUE, align = 'c', escape=FALSE) %>%
                 pack_rows("Lehmann's alternative with k=1", start_row = 1, end_row = cumsum(table(df.tab$k))[1]) %>%
                 pack_rows("Lehmann's alternative with k=2", start_row = cumsum(table(df.tab$k))[1]+1, end_row = cumsum(table(df.tab$k))[2]) %>%
                 pack_rows("Lehmann's alternative with k=3", start_row = cumsum(table(df.tab$k))[2]+1, end_row = cumsum(table(df.tab$k))[3]) %>%
                 column_spec(c(1), width = "5em") %>%
-                add_header_above(c(" "=1, "Testing procedure" = 6))                
+                add_header_above(c(" "=1, "Testing procedure" = 6))
             writeLines(tab, sprintf("tables/lehmann_short%s_cal.tex", short.table))
         }
     }
@@ -1311,7 +1431,7 @@ if(plot.lehmann.new) {
     results <- load_data_la(92)
     plot.lehmann.new.calibration(reload=FALSE)
 
-    
+
 }
 
 if(plot.lehmann) {
@@ -1393,7 +1513,7 @@ if(plot.lehmann) {
             print(pp)
         }
     }
-    
+
     results <- load_data(1000)
 
     for(plot.data in c("uniform", "exponential", "normal")) {
@@ -1402,7 +1522,7 @@ if(plot.lehmann) {
             make_plot_power_lehmann(plot.data, plot.n_cal=n.plot, plot.n_test=n.plot, reload=FALSE, save.plot=TRUE)
         }
     }
-    
+
 }
 
 
@@ -1410,22 +1530,24 @@ if(plot.lhco_selection) {
 
     make_plot_lower_bound_lhco_sel <- function(setup, plot.n_train, reload=FALSE, plot.quantile=0.5, plot.simple=FALSE, plot.naive=FALSE) {
         if(plot.simple) {
-            init_settings(idx.exclude=c(2,4,6))
+            present_methods = c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2")
+            init_settings(present_methods = present_methods)
         } else {
-            init_settings(idx.exclude=c(6))
+            present_methods = c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2")
+            init_settings(present_methods = present_methods)
         }
         if(reload) {
             results <- load_data(setup)
         }
         summary <- results %>%
             filter(n_train == plot.n_train) %>%
-            pivot_longer(c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2", "lb_wmw_k3"), names_to="method", values_to="lower_bound") %>%
+            pivot_longer(all_of(present_methods), names_to="method", values_to="lower_bound") %>%
             group_by(Data, p, Signal, n_train, n_cal, n_test, prop_out, n_out, selection, selected_num, Alpha, Classifier, method) %>%
             summarise(LB=quantile(lower_bound, plot.quantile), LB.se=sd(lower_bound)/sqrt(n()), N=n())
         if(plot.naive) {
             summary.naive <- results %>%
                 filter(n_train == plot.n_train) %>%
-                pivot_longer(c("lb_simes", "lb_storey_simes", "lb_fisher", "lb_auto", "lb_wmw_k2", "lb_wmw_k3"), names_to="method", values_to="lower_bound") %>%
+                pivot_longer(all_of(present_methods), names_to="method", values_to="lower_bound") %>%
                 group_by(Data, p, Signal, n_train, n_cal, n_test, prop_out, n_out, selection, selected_num, Alpha, seed, Seed, Repetition) %>%
                 summarise(Method="greedy", method="greedy", Classifier="greedy", lower_bound=max(lower_bound)) %>%
                 group_by(Data, p, Signal, n_train, n_cal, n_test, prop_out, n_out, selection, selected_num, Alpha, Classifier, method) %>%
@@ -1443,8 +1565,8 @@ if(plot.lhco_selection) {
             shape.scale.tmp <- shape.scale
             alpha.scale.tmp <- alpha.scale
         }
-        prop.out.values <- c(0.05,0.1,0.15)
-        N_out.values <- paste(10000*prop.out.values, "outliers")
+        prop.out.values <- c(0.1,0.15,0.25)
+        N_out.values <- paste(2000*prop.out.values, "outliers")
         df <- summary %>%
             filter(prop_out %in% prop.out.values) %>%
             filter(method %in% method.values.tmp) %>%
@@ -1457,11 +1579,11 @@ if(plot.lhco_selection) {
             filter(n_train == plot.n_train) %>%
             filter(prop_out %in% prop.out.values) %>%
             group_by(Data, p, Signal, n_train, n_cal, n_test, prop_out, n_out, selection, selected_num, Alpha, Classifier) %>%
-            summarise(LB=quantile(n_out_sel, plot.quantile)) %>%
+            summarise(LB=mean(n_out_sel)) %>%
             mutate(N_out = sprintf("%d outliers", prop_out*n_test)) %>%
             mutate(N_out = factor(N_out, N_out.values, N_out.values)) %>%
             mutate(Data = factor(Data, data.values, data.labels))
-        df.ghost <- tibble(prop_out = c(0.05,0.05), selected_num=c(0,0), n_test=c(10000,10000), LB=c(0,1)) %>%
+        df.ghost <- tibble(prop_out = c(0.1,0.1), selected_num=c(0,0), n_test=c(2000,2000), LB=c(0,1)) %>%
             mutate(N_out = sprintf("%d outliers", prop_out*n_test)) %>%
             mutate(N_out = factor(N_out, N_out.values, N_out.values))
         x.min <- min(df$selected_num/df$n_test)
@@ -1481,8 +1603,8 @@ if(plot.lhco_selection) {
             ylab("90% lower bound") +
             scale_x_continuous(trans='log10', limits=c(0.01,1)) +
             theme_bw() +
-            theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) + 
-            guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests"))          
+            theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+            guides(linetype = "none", color=guide_legend(title="Local tests"), shape=guide_legend(title="Local tests"), alpha=guide_legend(title="Local tests"))
         plot.file.1 <- sprintf("figures/lhco%d_nt%d_lower_bound_sel_simple%s_q%s.pdf", setup, plot.n_train, plot.simple, plot.quantile)
         ggsave(pp, file=plot.file.1, height=2.25, width=7, units="in")
     }
@@ -1492,6 +1614,7 @@ if(plot.lhco_selection) {
 
     make_plot_lower_bound_lhco_sel(1100, plot.n_train=10000, plot.simple=FALSE, plot.quantile=0.5, reload=FALSE)
     make_plot_lower_bound_lhco_sel(1100, plot.n_train=10000, plot.simple=FALSE, plot.quantile=0.9, reload=FALSE)
+
     make_plot_lower_bound_lhco_sel(1100, plot.n_train=100000, plot.simple=FALSE, plot.quantile=0.5, reload=FALSE)
     make_plot_lower_bound_lhco_sel(1100, plot.n_train=100000, plot.simple=FALSE, plot.quantile=0.9, reload=FALSE)
 
@@ -1527,7 +1650,7 @@ if(plot.lhco_2) {
         if(plot.simple) {
             init_settings_local(idx.exclude=c(2,4,5,6))
         } else {
-            init_settings_local(idx.exclude=NULL)            
+            init_settings_local(idx.exclude=NULL)
         }
         if(reload){
             results <- load_data(100)
@@ -1600,7 +1723,7 @@ if(plot.lhco_2) {
         }
         df <- rbind(df.pow, df.lb) %>%
             filter(Key %in% key.values) %>%
-            mutate(Key = factor(Key, key.values, key.labels))            
+            mutate(Key = factor(Key, key.values, key.labels))
         df.fdr.lb <- results %>%
             filter(n_train == plot.n_train, n_cal == plot.n_cal, Classifier==plot.classifier) %>%
             pivot_longer(c("disc_bh"), names_to="method", values_to="discoveries") %>%
@@ -1621,13 +1744,13 @@ if(plot.lhco_2) {
         df.fdr <- rbind(df.fdr.pow, df.fdr.lb) %>%
             filter(Key %in% key.values) %>%
             mutate(Key = factor(Key, key.values, key.labels))
-        df.range <- tibble(Key=c(pow.str, pow.str, "Median", "Median", "Quantile.90", "Quantile.90"), Value=c(0,1,0,1500,0,1500),
-                           n_out=c(0,1500,0,1500,0,1500), method="lb_auto") %>%
+        df.range <- tibble(Key=c(pow.str, pow.str, "Median", "Median", "Quantile.90", "Quantile.90"), Value=c(0,1,0,n_test*0.15,0,n_test*0.15),
+                           n_out=c(0,n_test*0.15,0,n_test*0.15,0,n_test*0.15), method="lb_auto") %>%
             mutate(Method = factor(method, method.values.tmp, method.labels.tmp), Target="Closed testing") %>%
             filter(Key %in% key.values) %>%
             mutate(Key = factor(Key, key.values, key.labels))
         df.ref <- tibble(Key=c(pow.str, pow.str, "Median", "Median", "Quantile.90", "Quantile.90"),
-                         Value=c(0.1,0.1,0,1500,0,1500), n_out=c(0,1500,0,1500,0,1500), method="lb_auto", Target="Closed testing") %>%
+                         Value=c(0.1,0.1,0,n_test*0.15,0,n_test*0.15), n_out=c(0,n_test*0.15,0,n_test*0.15,0,n_test*0.15), method="lb_auto", Target="Closed testing") %>%
             mutate(Method = factor(method, method.values.tmp, method.labels.tmp)) %>%
             filter(Key %in% key.values) %>%
             mutate(Key = factor(Key, key.values, key.labels))

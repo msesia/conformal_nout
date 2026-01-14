@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Parameters
-SETUP=0
+SETUP=1001
 
 if [[ $SETUP == 0 ]]; then
   DATA_LIST=("adversarial")
@@ -29,6 +29,22 @@ elif [[ $SETUP == 1 ]]; then
   CLASSIFIER_LIST=("occ-auto" "bc-auto" "auto")
   ALPHA_LIST=(0.1)
   TUNE_SIZE_LIST=(0.25)
+  SELECTION_LIST=("none")
+  SEED_LIST=$(seq 1 10)
+  MEMO=5G
+
+elif [[ $SETUP == 1t ]]; then
+  DATA_LIST=("circles-mixed")
+  N_TRAIN_LIST=(1000)
+  N_CAL_LIST=(1000)
+  N_TEST_LIST=(1000)
+  P_LIST=(1000)
+  A_LIST=(0.7)
+  PURITY_LIST=(0.1 0.2 0.5)
+  CLASSIFIER_LIST=("occ-auto" "bc-auto" "auto")
+  ALPHA_LIST=(0.1)
+  TUNE_SIZE_LIST=(0.01 0.02 0.05 0.1 0.2 0.5 0.75 0.99)
+  ##TUNE_SIZE_LIST=(0.99)
   SELECTION_LIST=("none")
   SEED_LIST=$(seq 1 10)
   MEMO=5G
@@ -112,32 +128,17 @@ elif [[ $SETUP == 100 ]]; then
   DATA_LIST=("lhco")
   N_TRAIN_LIST=(10000) # 100000
   N_CAL_LIST=(2000)
-  N_TEST_LIST=(1000)
+  N_TEST_LIST=(2000)
   P_LIST=(0)
   A_LIST=(0.0)
   PURITY_LIST=(0.0 0.02 0.05 0.1 0.15)
-  CLASSIFIER_LIST=("auto" "bc-abc") # Do not run auto with 
+  CLASSIFIER_LIST=("auto" "occ-if" "occ-svm" "occ-lof" "bc-mlp" "bc-rf" "bc-abc")
   ALPHA_LIST=(0.1)
   TUNE_SIZE_LIST=(0.5)
   SELECTION_LIST=("none")
   SEED_LIST=$(seq 1 10)
   MEMO=5G
 
-
-# elif [[ $SETUP == 1001 ]]; then
-#   DATA_LIST=("circles-mixed")
-#   N_TRAIN_LIST=(1000)
-#   N_CAL_LIST=(2000)
-#   N_TEST_LIST=(1000)
-#   P_LIST=(1000)
-#   A_LIST=(0.7)
-#   PURITY_LIST=(0.0 0.2 0.5)
-#   CLASSIFIER_LIST=("occ-svm") # Note: use fixed model, otherwise the selection may be inconsistent
-#   ALPHA_LIST=(0.1)
-#   TUNE_SIZE_LIST=(0.5)
-#   SELECTION_LIST=("top-1" "top-2" "top-5" "top-10" "top-20" "top-50" "none") # Log scale
-#   SEED_LIST=$(seq 1 10)
-#   MEMO=5G
 
 elif [[ $SETUP == 1001 ]]; then
   DATA_LIST=("circles-mixed")
@@ -146,13 +147,28 @@ elif [[ $SETUP == 1001 ]]; then
   N_TEST_LIST=(1000)
   P_LIST=(1000)
   A_LIST=(0.7)
-  PURITY_LIST=(0.2)
+  PURITY_LIST=(0.0 0.2 0.5)
   CLASSIFIER_LIST=("occ-svm") # Note: use fixed model, otherwise the selection may be inconsistent
   ALPHA_LIST=(0.1)
   TUNE_SIZE_LIST=(0.5)
-  SELECTION_LIST=("top-50") # Log scale
+  SELECTION_LIST=("top-1" "top-2" "top-5" "top-10" "top-20" "top-50" "top-100") # Log scale
   SEED_LIST=$(seq 1 1)
   MEMO=5G
+
+# elif [[ $SETUP == 1001 ]]; then
+#   DATA_LIST=("circles-mixed")
+#   N_TRAIN_LIST=(1000)
+#   N_CAL_LIST=(2000)
+#   N_TEST_LIST=(1000)
+#   P_LIST=(1000)
+#   A_LIST=(0.7)
+#   PURITY_LIST=(0.2)
+#   CLASSIFIER_LIST=("occ-svm") # Note: use fixed model, otherwise the selection may be inconsistent
+#   ALPHA_LIST=(0.1)
+#   TUNE_SIZE_LIST=(0.5)
+#   SELECTION_LIST=("top-50") # Log scale
+#   SEED_LIST=$(seq 1 1)
+#   MEMO=5G
 
 elif [[ $SETUP == 1002 ]]; then
   DATA_LIST=("binomial")
@@ -186,30 +202,28 @@ elif [[ $SETUP == 1005 ]]; then
 
 elif [[ $SETUP == 1100 ]]; then
   DATA_LIST=("lhco")
-  N_TRAIN_LIST=(10000 100000)
+  N_TRAIN_LIST=(10000 100000) # 100000)
   N_CAL_LIST=(2000)
-  N_TEST_LIST=(10000)
+  N_TEST_LIST=(2000)
   P_LIST=(0)
   A_LIST=(0.0)
-  PURITY_LIST=(0.05 0.1 0.15)
+  PURITY_LIST=(0.1 0.15 0.25)
   CLASSIFIER_LIST=("bc-abc")
   ALPHA_LIST=(0.1)
   TUNE_SIZE_LIST=(0.5)
-  SELECTION_LIST=("top-1" "top-2" "top-5" "top-10" "top-20" "top-50" "none") # Log scale
-  SEED_LIST=$(seq 1 1)
+  SELECTION_LIST=("top-1" "top-2" "top-5" "top-10" "top-20" "top-50" "top-100") # Log scale
+  SEED_LIST=$(seq 1 10)
   MEMO=5G
 
 fi
 
 
-
 # Slurm parameters
-TIME=00-01:00:00                    # Time required (1 h)
+TIME=00-02:00:00                    # Time required (2h)
 CORE=1                              # Cores required (1)
 
 # Assemble order prefix
-#ORDP="sbatch --mem="$MEMO" --nodes=1 --ntasks=1 --cpus-per-task=1 --time="$TIME
-ORDP="sbatch --mem="$MEMO" --nodes=1 --ntasks=1 --cpus-per-task=1 --time="$TIME" --account=sesia_1124 --partition=main"
+ORDP="sbatch --mem="$MEMO" --nodes=1 --ntasks=1 --cpus-per-task=1 --time="$TIME" --partition=main"
 
 # Create directory for log files
 LOGS="logs"
@@ -256,10 +270,10 @@ for SEED in $SEED_LIST; do
                           ORD=$ORDP" -J "$JOBN" -o "$OUTF" -e "$ERRF" "$SCRIPT
                           # Print order
                           echo $ORD
-                          # Submit order
-                          $ORD
+                          # Submit order to slurm scheduler (on cluster0
+#                          $ORD
                           # Run command now
-#                          ./$SCRIPT
+                          ./$SCRIPT
                         fi
                       done
                     done
