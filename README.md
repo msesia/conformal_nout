@@ -1,22 +1,34 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Repository contents
+# Repository overview
 
-This repository is organized into four main folders:
+This repository contains the code accompanying the paper  
+**“Collective Outlier Detection and Enumeration with Conformalized
+Closed Testing.”**
 
-- **`experiments/`**: Python and R scripts used to reproduce the
-  experiments in the paper.
-- **`methods/`**: Python utilities implementing the ACODE methodology.
-- **`nout/`**: the R package **`nout`**, with installation instructions,
-  implementing closed-testing shortcuts used by ACODE.
-- **`data/`**: datasets used in the experiments (see below).
+It provides implementations of ACODE (Automatic Conformal Outlier
+Detection and Enumeration), closed-testing procedures based on rank
+tests, and all simulation and real-data experiments reported in the
+paper. The repository includes:
 
-## Data
+- An R package (`nout/`) implementing local testing procedures with
+  closed testing shortcuts.
+- Python and R scripts (`experiments/`) used to conduct the experimental
+  studies and data analyses.
+- Core Python utilities (`methods/`) for data generation, ACODE
+  implementation, and interfacing with the R package for closed testing.
+- Dataset preparation scripts and experiment configuration files.
+- A `data/` folder containing the datasets used in the experiments.
+
+The sections below describe how the repository is organized and how to
+run the experiments.
+
+# Data
 
 > **Note.** The `data/` folder is not publicly shared on GitHub. The
-> datasets are included in the supplementary material for review, and
-> can be obtained from the authors upon request.
+> datasets are included in the supplementary material for review and can
+> be obtained from cited sources.
 
 | Dataset | File(s) | Description | Source / Prior usage |
 |----|----|----|----|
