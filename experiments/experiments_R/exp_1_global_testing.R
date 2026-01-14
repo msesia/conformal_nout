@@ -4,9 +4,9 @@ library(progress)     ## For displaying progress bars
 library(nout)         ## Custom library (assuming this contains necessary functions)
 
 ## Source utility functions for data generation and experiments
-source("../R/utils_data.R")
-source("../R/utils_experiments.R")
-source("../R/utils_g.R")
+source("utils_data.R")
+source("utils_experiments.R")
+source("../../nout/R/utils_g.R")
 
 ###########################
 ## Experiment parameters ##
