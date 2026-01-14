@@ -11,9 +11,11 @@ ACODE.
 
 ## Installation
 
+Install the package locally from this folder:
+
 ``` r
-# install.packages("devtools")
-devtools::install_github("msesia/conformal_nout", subdir="nout")
+install.packages("devtools")  # if needed
+devtools::install(".")
 ```
 
 ## Example

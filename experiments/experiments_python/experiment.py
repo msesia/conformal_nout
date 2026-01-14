@@ -78,10 +78,10 @@ else:
 n_perm = -1 # 200
 B_perm = 1000
 
-tables_t2_path = "../tables/table_t2.csv"
-tables_t3_path = "../tables/table_t3.csv"
-tables_t4_path = "../tables/table_t4.csv"
-tables_fisher_path = "../tables/table_fisher.csv"
+tables_t2_path = "../../tables/table_t2.csv"
+tables_t3_path = "../../tables/table_t3.csv"
+tables_t4_path = "../../tables/table_t4.csv"
+tables_fisher_path = "../../tables/table_fisher.csv"
 
 def load_table(path, alpha):
     if os.path.exists(path):

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Parameters
-SETUP=1
+SETUP=5
 
 if [[ $SETUP == 0 ]]; then
   DATA_LIST=("adversarial")
@@ -196,7 +196,7 @@ elif [[ $SETUP == 1005 ]]; then
   CLASSIFIER_LIST=("occ-if") # Note: use fixed model.
   ALPHA_LIST=(0.1)
   TUNE_SIZE_LIST=(0.5)
-  SELECTION_LIST=("top-1" "top-2" "top-5" "top-10" "top-20" "top-50" "none") # Log scale
+  SELECTION_LIST=("top-1" "top-2" "top-5" "top-10" "top-20" "top-50" "top-100") # Log scale
   SEED_LIST=$(seq 1 5)
   MEMO=1G
 

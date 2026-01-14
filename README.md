@@ -173,11 +173,12 @@ scripts to produce the figures in the paper.
 
 ## Computing time
 
-Reproducing all numerical results in the paper requires running several
-hundred experiment configurations across many datasets and parameter
-settings. On a computing cluster with dozens of parallel cores, the full
-experimental pipeline completes in a few hours.
+Reproducing all numerical results in the paper requires running
+thousands of experiment configurations across many datasets and
+parameter settings. On a computing cluster with dozens of parallel
+cores, the full experimental pipeline completes in a few hours.
 
 Each individual experiment, however, can be run locally on a standard
 machine. The overall computational cost arises from the large number of
-configurations explored, rather than from any single run.
+repetitions and configurations explored, rather than from any single
+run.
