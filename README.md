@@ -1,84 +1,146 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Structure of the repository
+# Repository contents
 
-The repository consists of three folders: *experiments*, *methods* and
-*nout*.
+This repository is organized into four main folders:
 
-Folder *experiments* contains Python code used to run the experiments to
-illustrate the ACODE method.
+- **`experiments/`**: Python and R scripts used to reproduce the
+  experiments in the paper.
+- **`methods/`**: Python utilities to define models, generate conformity
+  scores, and compute lower bounds on the number of outliers via *closed
+  testing* with different local tests.
+- **`nout/`**: the R package **`nout`**, with installation instructions.
+- **`data/`**: datasets used in the experiments (see below).
 
-Folder *methods* contains Python functions to define models, generate
-scores and find the lower bound for the number of outliers via Closed
-Testing with different local tests.
+## Data
 
-Folder *nout* contains the R package `nout` and instructions for
-download.
+> **Note.** The `data/` folder is not publicly shared on GitHub. The
+> datasets are included in the supplementary material for review, and
+> can be obtained from the authors upon request.
 
-# How to run the code
+| Dataset | File(s) | Description | Source / Prior usage |
+|----|----|----|----|
+| **LHC Olympics 2020 (LHCO)** | `events_anomalydetection_v2.features.h5`, `events_anomalydetection_Z_XY_qqq.features.h5`, `events_anomalydetection_Z_XY_qqq.h5` | Community benchmark for anomaly detection in high-energy physics. | Kasieczka et al., 2021. |
+| **ALOI** | `aloi.arff` | 27 variables, 1,508 outliers, 48,026 inliers. | Amsterdam Library of Object Images (Geusebroek et al., 2005). Previously used in Bates et al., 2023. |
+| **Covertype** | `cover.mat` | 10 variables, 2,747 outliers, 286,048 inliers. | Covertype dataset from UCI / ODDS repository. Previously used in Bates et al., 2023. |
+| **CreditCard** | `creditcard.csv` | 30 variables, 492 outliers, 284,315 inliers. | Kaggle Credit Card Fraud Dataset. Used in Bates et al., 2023, and Marandon et al., 2024. |
+| **Mammography** | `mammography.mat` | 6 variables, 260 outliers, 10,923 inliers. | Mammography dataset from ODDS repository. Used in Bates et al., 2023; Liang et al., 2024; Marandon et al., 2024. |
+| **Pendigits** | `pendigits.mat` | 16 variables, 156 outliers, 6,714 inliers. | Pen-Based Recognition of Handwritten Digits dataset (ODDS repository). Used in Bates et al., 2023. |
+| **Shuttle** | `shuttle.mat` | 9 variables, 3,511 outliers, 45,586 inliers. | Statlog Shuttle dataset (ODDS repository). Used in Bates et al., 2023 and Marandon et al., 2024. |
 
-## From the Anaconda terminal
+> **Note.** The `data/` folder is not hosted on GitHub due to size and
+> possible licensing restrictions.  
+> For access, please consult relevant references or contact the authors.
+> All datasets are included in the supplementary material for review
+> purposes.
 
-One way to run the code is using the Anaconda terminal, which can be
-open using the Anaconda Navigator app
-([download](https://www.anaconda.com/download)). Then, launch a Jupyter
-Notebook and open the terminal, setting the folder *experiments* as the
-working directory. Run the code from the terminal using the following
-command:
+# Code organization (experiments)
 
-`python experiment.py SETUP DATA N_TRAIN N_CAL N_TEST P A PURITY CLASSIFIER TUNE_SIZE ALPHA SELECTION SEED"`,
+## R package `nout` (required)
 
-where:
+Several experiments and all closed-testing procedures rely on the R
+package **`nout`**, included in this repository under: `nout/`.
 
-- SETUP: setup number to be chosen (or added) from file
-  `submit_experiment.sh`.
+The `nout` package implements ACODE and the closed-testing procedures
+used throughout the paper.  
+These routines are used both in the R experiments and in the Python
+experiments via an `rpy2` interface, so installing `nout` is required
+for all workflows.
 
-- DATA: dataset name. It can be a list.
+Before running experiments, install the package locally from this
+folder:
 
-- N_TRAIN: training sample size. It can be a list.
+``` r
+install.packages("devtools")  # if needed
+devtools::install("nout/")
+```
 
-- N_CAL: calibration sample size. It can be a list.
+## Python experiments (`experiments/experiments_python/`)
 
-- N_TEST: test sample size. It can be a list.
+This folder contains the main code used to reproduce most numerical
+experiments and analyses reported in the paper.
 
-- P: number of feature when generating simulated data. It can be a list.
+- `experiment.py`  
+  Main Python entry point: runs a single experiment given a complete set
+  of command-line arguments (setup, dataset, sample sizes, classifier
+  choice, tuning fraction, selection regime, seed, etc.).
 
-- A: amplitude parameter controlling how “different” the outliers are
-  from inliers. Each model uses it differently (see file `models.py` for
-  more details). It can be a list.
+- `experiment.sh`  
+  Thin shell wrapper around `experiment.py` (used both locally and on
+  clusters).
 
-- PURITY: proportion of inliers in the test set. It can be a list.
+- `submit_experiment.sh`  
+  Experiment launcher that enumerates parameter grids for many
+  predefined **setups** (e.g., synthetic, real tabular data, LHCO,
+  adaptive-selection variants).  
+  It is written to work either:
 
-- CLASSIFIER: classifiers names. It can be a list. Choose *auto* for
-  automatic selection among one-class classifiers and binary
-  classifiers; *occ-auto* for automatic selection among one-class
-  classifiers; *bc-auto* for automatic selection among binary
-  classifiers. Ssee file `experiments.py` for the full list of available
-  classifiers).
+  - **on a Slurm cluster** via `sbatch` (the `sbatch` line is present
+    but can be commented/uncommented), or
+  - **locally**, by directly executing `./experiment.sh ...` inside the
+    nested loops.
 
-- TUNE_SIZE: portion of the calibration data used for the automatic
-  selection of the classifier and the local test. It can be a list.
+  Each setup defines lists such as `DATA_LIST`, `N_TRAIN_LIST`,
+  `PURITY_LIST`, `CLASSIFIER_LIST`, `TUNE_SIZE_LIST`, `SELECTION_LIST`,
+  and `SEED_LIST`, and then loops over the Cartesian product to produce
+  reproducible outputs under `results/setup<SETUP>/...`.
 
-- ALPHA: significance level.
+- `utils_data.py`  
+  Dataset loading / simulation utilities used by the Python experiments.
 
-- SELECTION: type of selection. It can be a list. Choose *none* for no
-  selection and *top-q* for selecting the conformity scores
-  corresponding to the largest q%-quantile with q=1,2,5,20,50.
+- `make_plots.R`  
+  R plotting script used to aggregate Python experiment outputs and
+  reproduce figures.
 
-- SEED: list of set seed for independent replications of the experiment.
+## R experiments (`experiments/experiments_R/`)
 
-## From GitBash terminal
+This folder contains R-only experiments (and their shell wrappers) used
+for empirical power calculations presented in the Appendices.
 
-Another way to run the code is using the GitBash terminal as follows:
+- `exp_1_global_testing.R` + `exp_1_global_testing.sh`  
+  Runs the experiments for global testing (no selection), across grids
+  of:
 
-1.  Open the GitBash terminal in the folder *experiments*.
-2.  Modify the file `submit_experiment.sh` with the desired setup, e.g.,
-    `SETUP=0`.
-3.  Run from the terminal the command `./submit_experiment.sh`.
+  - calibration size (`N_CAL`),
+  - test size (`N_TEST`),
+  - alternative distribution (`ALT`),
+  - outlier proportion (`PROP_OUT`),
+  - seed.
 
-## References
+- `exp_2_enumeration.R` + `exp_2_enumeration.sh`  
+  Runs enumeration-focused experiments (analogous structure to Exp. 1
+  but targeting lower bounds / enumeration).
 
-Magnani, C. G., Sesia, M. and Solari, A. (2024) Collective Outlier
-Detection and Enumeration with Conformalized Closed Testing. *arXiv
-preprint arXiv:2308.05534*
+- `submit_experiment_1.sh` and `submit_experiment_2.sh`  
+  Grid launchers for the two R experiment families. Like the Python
+  launcher, they are compatible with both:
+
+  - Slurm submission (`sbatch`), or
+  - local execution via direct script calls (the `. /$SCRIPT` pattern).
+
+- `utils_data.R`, `utils_experiments.R`  
+  Helper functions for data generation/loading and shared experimental
+  utilities.
+
+## Outputs
+
+Both workflows write results into a `results/` directory, typically
+organized as:
+
+- `results/setup<SETUP>/...` (one file per configuration)
+- logs (if enabled): `logs/setup<SETUP>/...`
+
+These outputs are then aggregated by the corresponding `make_plots.R`
+scripts to produce the figures in the paper.
+
+## Computing time
+
+Reproducing all numerical results in the paper requires running several
+hundred experiment configurations across many datasets and parameter
+settings. On a computing cluster with dozens of parallel cores, the full
+experimental pipeline completes in a few hours.
+
+Each individual experiment, however, can be run locally on a standard
+machine. The overall computational cost arises from the large number of
+configurations explored, rather than from any single run.
