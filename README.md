@@ -7,10 +7,9 @@ This repository is organized into four main folders:
 
 - **`experiments/`**: Python and R scripts used to reproduce the
   experiments in the paper.
-- **`methods/`**: Python utilities to define models, generate conformity
-  scores, and compute lower bounds on the number of outliers via *closed
-  testing* with different local tests.
-- **`nout/`**: the R package **`nout`**, with installation instructions.
+- **`methods/`**: Python utilities implementing the ACODE methodology.
+- **`nout/`**: the R package **`nout`**, with installation instructions,
+  implementing closed-testing shortcuts used by ACODE.
 - **`data/`**: datasets used in the experiments (see below).
 
 ## Data
@@ -35,7 +34,7 @@ This repository is organized into four main folders:
 > All datasets are included in the supplementary material for review
 > purposes.
 
-# Code organization (experiments)
+# Code organization
 
 ## R package `nout` (required)
 
@@ -55,6 +54,24 @@ folder:
 install.packages("devtools")  # if needed
 devtools::install("nout/")
 ```
+
+## Methods (`methods/`)
+
+The `methods/` folder contains the core utilities used by the Python
+experiments: data handling, synthetic data generators, conformal score
+construction, the ACODE implementation and the interface to the R
+package for closed testing.
+
+- `methods/models.py`  
+  Synthetic data generators used in the paper’s simulation studies.
+
+- `methods/my_utils.py`  
+  Utilities for experiment bookkeeping and evaluation.
+
+- `methods/conformal.py`  
+  Implementation of ACODE. This imports the R package `nout` via
+  **`rpy2`** (`importr("nout")`) and exposes the closed-testing routines
+  implemented in R for use inside the Python code
 
 ## Python experiments (`experiments/experiments_python/`)
 
