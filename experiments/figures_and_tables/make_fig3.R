@@ -6,7 +6,7 @@
 ## Produces         : Figure A6, Figure A8
 ## -----------------------------------------------------------------------------
 
-source("plotting_utils_A.R")
+source("utils_plotting_A.R")
 
 ## ---- Plot function: 90% lower bound vs. proportion of top scores selected, faceted by # outliers ----
 make_plot_lower_bound_proportion_sel <- function(fig.name, plot.quantile=0.5) {

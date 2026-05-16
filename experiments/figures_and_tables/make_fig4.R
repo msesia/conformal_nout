@@ -3,7 +3,7 @@
 ## Produces         : Figure 4
 ## -----------------------------------------------------------------------------
 
-source("plotting_utils_A.R")
+source("utils_plotting_A.R")
 
 ## ---- Plot function: 90% lower bound vs. true number of outliers, faceted by classifier ----
 ## Used for paper Figure 4 (adversarial-anomaly experiments).

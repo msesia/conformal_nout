@@ -3,7 +3,7 @@
 ## Produces         : Figure A2
 ## -----------------------------------------------------------------------------
 
-source("plotting_utils_A.R")
+source("utils_plotting_A.R")
 
 ## ---- Plot function: tuning curves faceted by classifier x #outliers --------
 make_plot_lower_bound_tuning <- function(fig.name, plot.quantile=0.5, save.plot=TRUE) {

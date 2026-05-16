@@ -3,7 +3,7 @@
 ## Produces         : Figure A10
 ## -----------------------------------------------------------------------------
 
-source("plotting_utils_A.R")
+source("utils_plotting_A.R")
 
 ## ---- Plot function: lower bound vs mixture proportion, faceted by classifier
 make_plot_lower_bound_mixture <- function(fig.name, plot.p, plot.n_train, plot.signal, save.plot=TRUE) {

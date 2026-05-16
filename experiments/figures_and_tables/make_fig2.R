@@ -6,7 +6,7 @@
 ## Produces         : Figure A5, Figure A9
 ## -----------------------------------------------------------------------------
 
-source("plotting_utils_A.R")
+source("utils_plotting_A.R")
 
 ## ---- Plot function: 90% lower bound vs. true number of outliers, faceted by classifier ----
 make_plot_lower_bound_proportion <- function(fig.name, plot.quantile=0.5, include_BH=FALSE) {

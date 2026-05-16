@@ -3,7 +3,7 @@
 ## Produces         : Figure A14
 ## -----------------------------------------------------------------------------
 
-source("plotting_utils_A.R")
+source("utils_plotting_A.R")
 
 ## ---- Plot function: lower bound vs proportion of top scores selected -------
 make_plot_lower_bound_lhco_sel <- function(fig.name, plot.n_train, plot.quantile=0.5,
