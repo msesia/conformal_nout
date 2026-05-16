@@ -1,0 +1,30 @@
+| Paper item | Submit script | Results directory | Make script | Result key |
+|---|---|---|---|---|
+| Figure 1 | submit_exp_A.sh | results/fig1/ | make_fig1.R | fig1 |
+| Figure 2 | submit_exp_A.sh | results/fig2/ | make_fig2.R | fig2 |
+| Figure 3 | submit_exp_A.sh | results/fig3/ | make_fig3.R | fig3 |
+| Figure 4 | submit_exp_A.sh | results/fig4/ | make_fig4.R | fig4 |
+| Figure A1 | submit_exp_C1.sh | results/figA1/ | make_figA1.R | figA1 |
+| Figure A2 | submit_exp_A.sh | results/figA2/ | make_figA2.R | figA2 |
+| Figure A3 | submit_exp_A.sh | results/fig3/ | make_fig3.R | fig3 |
+| Figure A4 | submit_exp_A.sh | results/fig2/ | make_fig2.R | fig2 |
+| Figure A5 | submit_exp_A.sh | results/figA5/ | make_fig2.R | figA5 |
+| Figure A6 | submit_exp_A.sh | results/figA6/ | make_fig3.R | figA6 |
+| Figure A7 | submit_exp_A.sh | results/fig2/ | make_fig2.R | fig2 |
+| Figure A8 | submit_exp_A.sh | results/figA6/ | make_fig3.R | figA6 |
+| Figure A9 | submit_exp_A.sh | results/figA5/ | make_fig2.R | figA5 |
+| Figure A10 | submit_exp_A.sh | results/figA10/ | make_figA10.R | figA10 |
+| Figure A11 | submit_exp_B1.sh | results/figA11/ | make_figA11.R | figA11 |
+| Figure A12 | submit_exp_B2.sh | results/figA12/ | make_figA12.R | figA12 |
+| Figure A13 | submit_exp_A.sh | results/fig1/ | make_fig1.R | fig1 |
+| Figure A14 | submit_exp_A.sh | results/figA14/ | make_figA14.R | figA14 |
+| Figure A15 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A16 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A17 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A18 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A19 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A20 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A21 | submit_exp_A.sh | results/figA21/ | make_figA21.R | figA21 |
+| Figure A22 | submit_exp_A.sh | results/figA21/ | make_figA21.R | figA21 |
+| Table A2 | submit_exp_C2.sh | results/tabA2/ | make_tabA2.R | tabA2 |
+| Table A4 | submit_exp_A.sh | results/fig1/ | make_fig1.R | fig1 |

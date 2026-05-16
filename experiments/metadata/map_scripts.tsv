@@ -1,0 +1,16 @@
+script	required_results	produces
+make_fig1.R	fig1	Figure 1, Figure A13, Table A4
+make_fig2.R	fig2	Figure 2, Figure A4, Figure A7
+make_fig2.R	figA5	Figure A5, Figure A9
+make_fig3.R	fig3	Figure 3, Figure A3
+make_fig3.R	figA6	Figure A6, Figure A8
+make_fig4.R	fig4	Figure 4
+make_figA10.R	figA10	Figure A10
+make_figA11.R	figA11	Figure A11
+make_figA12.R	figA12	Figure A12
+make_figA14.R	figA14	Figure A14
+make_figA15.R	figA15	Figure A15, Figure A16, Figure A17, Figure A18, Figure A19, Figure A20
+make_figA1.R	figA1	Figure A1
+make_figA21.R	figA21	Figure A21, Figure A22
+make_figA2.R	figA2	Figure A2
+make_tabA2.R	tabA2	Table A2

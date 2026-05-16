@@ -1,0 +1,16 @@
+result	script	output_dir
+fig1	submit_exp_A.sh	results/fig1/
+fig2	submit_exp_A.sh	results/fig2/
+fig3	submit_exp_A.sh	results/fig3/
+fig4	submit_exp_A.sh	results/fig4/
+figA1	submit_exp_C1.sh	results/figA1/
+figA2	submit_exp_A.sh	results/figA2/
+figA5	submit_exp_A.sh	results/figA5/
+figA6	submit_exp_A.sh	results/figA6/
+figA10	submit_exp_A.sh	results/figA10/
+figA11	submit_exp_B1.sh	results/figA11/
+figA12	submit_exp_B2.sh	results/figA12/
+figA14	submit_exp_A.sh	results/figA14/
+figA15	submit_exp_A.sh	results/figA15/
+figA21	submit_exp_A.sh	results/figA21/
+tabA2	submit_exp_C2.sh	results/tabA2/

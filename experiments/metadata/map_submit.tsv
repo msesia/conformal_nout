@@ -1,0 +1,6 @@
+script	produces	output_dir
+submit_exp_A.sh	fig1, fig2, fig3, fig4, figA2, figA5, figA6, figA10, figA14, figA15, figA21	results/<FIGURE>/
+submit_exp_B1.sh	figA11	results/<FIGURE>/
+submit_exp_B2.sh	figA12	results/<FIGURE>/
+submit_exp_C1.sh	figA1	results/<FIGURE>/
+submit_exp_C2.sh	tabA2	results/<TABLE>/

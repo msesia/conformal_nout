@@ -1,42 +1,31 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+
+
 # Repository overview
 
-This repository contains the code accompanying the paper  
-**“Collective Outlier Detection and Enumeration with Conformalized
-Closed Testing.”**
+This repository contains the code accompanying the paper
+**"Collective Outlier Detection and Enumeration with Conformalized Closed Testing."**
 
-It provides implementations of ACODE (Automatic Conformal Outlier
-Detection and Enumeration), closed-testing procedures based on rank
-tests, and all simulation and real-data experiments reported in the
-paper. The repository includes:
+It provides implementations of ACODE (Automatic Conformal Outlier Detection and Enumeration), closed-testing procedures based on rank tests, and all simulation and real-data experiments reported in the paper, including those in the appendices. The repository includes:
 
-- An R package (`nout/`) implementing ACODE and closed-testing
-  procedures.
-- Python and R scripts (`experiments/`) used to run the simulation
-  studies and real-data analyses.
-- Core Python utilities (`methods/`) for data generation, conformal
-  scoring, ACODE orchestration, and interfacing with the R package for
-  closed testing via `rpy2`.
-- Precomputed critical value tables (`tables/`) for commonly used local
-  tests (Fisher, Wilcoxon–Mann–Whitney, and Shiraishi tests against
-  Lehmann alternatives), used to accelerate small-sample calculations
-  where asymptotic approximations may be unreliable.
-- Dataset preparation scripts and experiment configuration files.
-- A `data/` folder containing the datasets used in the experiments.
+- An R package (`nout/`) implementing ACODE and the closed-testing procedures.
+- Python and R experiment scripts (`experiments/`) used to run the simulation studies and real-data analyses, together with shell launchers that drive parameter sweeps on either a Slurm cluster or a single machine.
+- Core Python utilities (`methods/`) for data generation, conformal scoring, ACODE orchestration, and interfacing with the R package for closed testing via `rpy2`.
+- R scripts (`experiments/figures_and_tables/`) that assemble the final figures and tables in the paper from the experiment outputs.
+- A metadata layer (`experiments/metadata/`) mapping every figure and table in the manuscript to the scripts that produce it (see the *Reproducibility map* section below).
+- Precomputed critical value tables (`tables/`) for commonly used local tests (Fisher, Wilcoxon–Mann–Whitney, and Shiraishi tests against Lehmann alternatives), used to accelerate small-sample calculations where asymptotic approximations may be unreliable.
+- A `data/` folder containing the datasets used in the experiments (see the *Data* section below).
 
-The sections below describe how the repository is organized and how to
-run the experiments.
-
-The sections below describe how the repository is organized and how to
-run the experiments.
+The sections below describe how the repository is organized, how to install the dependencies, and how to reproduce every figure and table reported in the paper (including those in the appendices).
 
 # Data
 
-> **Note.** The `data/` folder is not publicly shared on GitHub. The
-> datasets are included in the supplementary material for review and can
-> be obtained from cited sources.
+> **Note.** The `data/` folder is not hosted on GitHub due to size and possible licensing restrictions. For the review process, all processed data files are included in the supplementary material accompanying the submission. Original sources are listed below; see Appendix A6.3 of the manuscript for further details.
 
 | Dataset | File(s) | Description | Source / Prior usage |
 |----|----|----|----|
@@ -48,137 +37,256 @@ run the experiments.
 | **Pendigits** | `pendigits.mat` | 16 variables, 156 outliers, 6,714 inliers. | Pen-Based Recognition of Handwritten Digits dataset (ODDS repository). Used in Bates et al., 2023. |
 | **Shuttle** | `shuttle.mat` | 9 variables, 3,511 outliers, 45,586 inliers. | Statlog Shuttle dataset (ODDS repository). Used in Bates et al., 2023 and Marandon et al., 2024. |
 
-> **Note.** The `data/` folder is not hosted on GitHub due to size and
-> possible licensing restrictions.  
-> For access, please consult relevant references or contact the authors.
-> All datasets are included in the supplementary material for review
-> purposes.
-
 # Code organization
 
-## R package `nout` (required)
+## R package `nout/` (required)
 
-Several experiments and all closed-testing procedures rely on the R
-package **`nout`**, included in this repository under: `nout/`.
+All closed-testing procedures rely on the R package **`nout`**, included in this repository under `nout/`. This package is called from both the R experiments and the Python experiments (via `rpy2`), so installing `nout` is required for all workflows.
 
-The `nout` package implements ACODE and the closed-testing procedures
-used throughout the paper.  
-These routines are used both in the R experiments and in the Python
-experiments via an `rpy2` interface, so installing `nout` is required
-for all workflows.
+Before running experiments, install the package locally:
 
-Before running experiments, install the package locally from this
-folder:
-
-``` r
+~~~r
 install.packages("devtools")  # if needed
 devtools::install("nout/")
-```
+~~~
 
 ## Methods (`methods/`)
 
-The `methods/` folder contains the core utilities used by the Python
-experiments: data handling, synthetic data generators, conformal score
-construction, the ACODE implementation and the interface to the R
-package for closed testing.
+Core utilities used by the Python experiments: data handling, synthetic data generators, conformal score construction, the ACODE implementation, and the interface to the R package for closed testing.
 
-- `methods/models.py`  
-  Synthetic data generators used in the paper’s simulation studies.
+- `methods/models.py` — synthetic data generators used in the simulation studies.
+- `methods/my_utils.py` — utilities for experiment bookkeeping and evaluation.
+- `methods/conformal.py` — ACODE implementation. Imports the R package `nout` via `rpy2` (`importr("nout")`) and exposes the closed-testing routines for use inside the Python code.
 
-- `methods/my_utils.py`  
-  Utilities for experiment bookkeeping and evaluation.
+## Experiments (`experiments/`)
 
-- `methods/conformal.py`  
-  Implementation of ACODE. This imports the R package `nout` via
-  **`rpy2`** (`importr("nout")`) and exposes the closed-testing routines
-  implemented in R for use inside the Python code
+This is where the simulation and real-data experiments are launched and where their outputs land. The folder layout is:
 
-## Python experiments (`experiments/experiments_python/`)
+~~~
+experiments/
+├── exp_A.py / exp_A.sh                        # Python experiment driver (synthetic, real tabular, LHCO)
+├── exp_B1_global_testing.R / .sh              # R experiment: global testing (Appendix B1)
+├── exp_B2_enumeration.R    / .sh              # R experiment: enumeration (Appendix B2)
+├── exp_C1_time.R                              # R experiment: timing comparison (Appendix C1)
+├── exp_C2_simes.R                             # R experiment: Simes-permutation comparison (Appendix C2)
+├── submit_exp_A.sh                            # Grid launcher for exp_A (produces fig1-4, figA2/5/6/10/14/15/21)
+├── submit_exp_B1.sh                           # Grid launcher for exp_B1 (produces figA11)
+├── submit_exp_B2.sh                           # Grid launcher for exp_B2 (produces figA12)
+├── submit_exp_C1.sh                           # Wrapper for exp_C1 (produces figA1)
+├── submit_exp_C2.sh                           # Wrapper for exp_C2 (produces tabA2)
+├── run_all_experiments.sh                     # Meta-launcher: submits every experiment via map_submit.tsv
+├── figures_and_tables/                        # R scripts that turn experiment outputs into final figures/tables
+│   ├── make_fig*.R, make_tab*.R               # one make_*.R per paper figure/table group
+│   ├── make_figures_tables.sh                 # builds all figures and tables sequentially
+│   ├── figures/                               # produced figures (.pdf)
+│   ├── tables/                                # produced tables (.tex)
+│   └── logs/                                  # per-script R output logs
+├── metadata/                                  # provenance map: paper item ↔ scripts ↔ result directory
+│   ├── map_full.tsv / map_full.md             # consolidated map (see Reproducibility map section)
+│   ├── map_submit.tsv, map_results.tsv        # extracted from submit_*.sh headers
+│   ├── map_scripts.tsv, map_figures.tsv       # extracted from make_*.R headers
+│   ├── extract_submit_metadata.sh             # rebuilds the submit-side maps
+│   ├── extract_make_metadata.sh               # rebuilds the make-side maps
+│   └── cross_reference_metadata.sh            # joins everything into map_full.tsv / .md
+├── logs/                                      # cluster job logs (one subdir per result key)
+└── results/                                   # experiment outputs (one subdir per result key)
+~~~
 
-This folder contains the main code used to reproduce most numerical
-experiments and analyses reported in the paper.
 
-- `experiment.py`  
-  Main Python entry point: runs a single experiment given a complete set
-  of command-line arguments (setup, dataset, sample sizes, classifier
-  choice, tuning fraction, selection regime, seed, etc.).
+All submit launchers accept the same three flags for consistency:
 
-- `experiment.sh`  
-  Thin shell wrapper around `experiment.py` (used both locally and on
-  clusters).
+- `--cluster` (default) submits jobs via `sbatch`.
+- `--local` runs jobs sequentially on the current machine.
+- `--dry-run` prints the commands without executing or submitting them.
 
-- `submit_experiment.sh`  
-  Experiment launcher that enumerates parameter grids for many
-  predefined **setups** (e.g., synthetic, real tabular data, LHCO,
-  adaptive-selection variants).  
-  It is written to work either:
+They also skip any configuration whose output already exists, so launching the same script a second time only fills in the missing pieces.
 
-  - **on a Slurm cluster** via `sbatch` (the `sbatch` line is present
-    but can be commented/uncommented), or
-  - **locally**, by directly executing `./experiment.sh ...` inside the
-    nested loops.
+# Reproducibility map (paper item → scripts)
 
-  Each setup defines lists such as `DATA_LIST`, `N_TRAIN_LIST`,
-  `PURITY_LIST`, `CLASSIFIER_LIST`, `TUNE_SIZE_LIST`, `SELECTION_LIST`,
-  and `SEED_LIST`, and then loops over the Cartesian product to produce
-  reproducible outputs under `results/setup<SETUP>/...`.
+| Paper item | Submit script | Results directory | Make script | Result key |
+|---|---|---|---|---|
+| Figure 1 | submit_exp_A.sh | results/fig1/ | make_fig1.R | fig1 |
+| Figure 2 | submit_exp_A.sh | results/fig2/ | make_fig2.R | fig2 |
+| Figure 3 | submit_exp_A.sh | results/fig3/ | make_fig3.R | fig3 |
+| Figure 4 | submit_exp_A.sh | results/fig4/ | make_fig4.R | fig4 |
+| Figure A1 | submit_exp_C1.sh | results/figA1/ | make_figA1.R | figA1 |
+| Figure A2 | submit_exp_A.sh | results/figA2/ | make_figA2.R | figA2 |
+| Figure A3 | submit_exp_A.sh | results/fig3/ | make_fig3.R | fig3 |
+| Figure A4 | submit_exp_A.sh | results/fig2/ | make_fig2.R | fig2 |
+| Figure A5 | submit_exp_A.sh | results/figA5/ | make_fig2.R | figA5 |
+| Figure A6 | submit_exp_A.sh | results/figA6/ | make_fig3.R | figA6 |
+| Figure A7 | submit_exp_A.sh | results/fig2/ | make_fig2.R | fig2 |
+| Figure A8 | submit_exp_A.sh | results/figA6/ | make_fig3.R | figA6 |
+| Figure A9 | submit_exp_A.sh | results/figA5/ | make_fig2.R | figA5 |
+| Figure A10 | submit_exp_A.sh | results/figA10/ | make_figA10.R | figA10 |
+| Figure A11 | submit_exp_B1.sh | results/figA11/ | make_figA11.R | figA11 |
+| Figure A12 | submit_exp_B2.sh | results/figA12/ | make_figA12.R | figA12 |
+| Figure A13 | submit_exp_A.sh | results/fig1/ | make_fig1.R | fig1 |
+| Figure A14 | submit_exp_A.sh | results/figA14/ | make_figA14.R | figA14 |
+| Figure A15 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A16 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A17 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A18 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A19 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A20 | submit_exp_A.sh | results/figA15/ | make_figA15.R | figA15 |
+| Figure A21 | submit_exp_A.sh | results/figA21/ | make_figA21.R | figA21 |
+| Figure A22 | submit_exp_A.sh | results/figA21/ | make_figA21.R | figA21 |
+| Table A2 | submit_exp_C2.sh | results/tabA2/ | make_tabA2.R | tabA2 |
+| Table A4 | submit_exp_A.sh | results/fig1/ | make_fig1.R | fig1 |
 
-- `utils_data.py`  
-  Dataset loading / simulation utilities used by the Python experiments.
+~~~bash
+cd experiments/metadata
+./extract_submit_metadata.sh
+./extract_make_metadata.sh
+./cross_reference_metadata.sh
+~~~
 
-- `make_plots.R`  
-  R plotting script used to aggregate Python experiment outputs and
-  reproduce figures.
+This is also the table to consult when only a subset of figures needs to be regenerated.
 
-## R experiments (`experiments/experiments_R/`)
+# Reproducibility workflow
 
-This folder contains R-only experiments (and their shell wrappers) used
-for empirical power calculations presented in the Appendices.
+## Dependencies
 
-- `exp_1_global_testing.R` + `exp_1_global_testing.sh`  
-  Runs the experiments for global testing (no selection), across grids
-  of:
+#### Version of primary software used
 
-  - calibration size (`N_CAL`),
-  - test size (`N_TEST`),
-  - alternative distribution (`ALT`),
-  - outlier proportion (`PROP_OUT`),
-  - seed.
+- R version: **4.4.2**
+- Python version: **3.12.3**
 
-- `exp_2_enumeration.R` + `exp_2_enumeration.sh`  
-  Runs enumeration-focused experiments (analogous structure to Exp. 1
-  but targeting lower bounds / enumeration).
+#### Libraries and dependencies used by the code
 
-- `submit_experiment_1.sh` and `submit_experiment_2.sh`  
-  Grid launchers for the two R experiment families. Like the Python
-  launcher, they are compatible with both:
+The R package `nout/` (installed locally from this repository) depends on the following R packages (from its `DESCRIPTION` `Imports:` field):
 
-  - Slurm submission (`sbatch`), or
-  - local execution via direct script calls (the `. /$SCRIPT` pattern).
+- `foreach` (1.5.2)
+- `hommel` (1.8)
+- `multcomp` (1.4-30)
+- `stats` (base R)
+- `sumSome` (1.1.1)
+- `Iso` (0.0-21)
+- `mixmodel` (>= 0.5; installed version: 0.5; not on CRAN — installed from GitHub via `devtools::install_github("rohitpatra/mixmodel")`)
+- `fitdistrplus` (1.2-6)
+- `GoFKernel` (2.1-3)
 
-- `utils_data.R`, `utils_experiments.R`  
-  Helper functions for data generation/loading and shared experimental
-  utilities.
+In addition, the repository uses the following R packages for experiment orchestration, result aggregation, and figure/table production:
 
-## Outputs
+- `tidyverse` (2.0.0), including `ggplot2` (3.5.2), `dplyr` (1.1.4), `tidyr` (1.3.1), `readr` (2.1.5), and `tibble`
+- `progress` (1.2.3)
+- `ggh4x` (0.3.1)
+- `scales` (1.4.0)
+- `latex2exp` (0.9.6)
+- `RColorBrewer` (1.1.3)
+- `kableExtra` (1.4.0)
+- `combinat` (0.0.8)
+- `knitr` (1.50)
+- `devtools` (2.4.5) — used to install the local `nout/` package
+- `testthat` (3.2.1.1) — only required to run unit tests for `nout/`
 
-Both workflows write results into a `results/` directory, typically
-organized as:
+The Python experiments and ACODE implementation rely on standard scientific computing and machine learning libraries:
 
-- `results/setup<SETUP>/...` (one file per configuration)
-- logs (if enabled): `logs/setup<SETUP>/...`
+- `numpy` (1.26.4)
+- `pandas` (2.2.3)
+- `scipy` (1.15.2)
+- `scikit-learn` (1.6.1)
+- `statsmodels` (0.14.4)
+- `tqdm` (4.67.1)
+- `matplotlib` (3.10.1)
+- `seaborn` (0.13.2)
+- `joblib` (1.4.2)
+- `mat73` (0.65) — required for reading HDF5-based `.mat` files; depends on the system HDF5 library (`libhdf5` on Linux, available via `brew install hdf5` on macOS)
 
-These outputs are then aggregated by the corresponding `make_plots.R`
-scripts to produce the figures in the paper.
+The Python code interfaces with the R implementation of closed testing via:
+
+- `rpy2` (3.5.11)
+
+## Workflow
+
+#### Precomputed results included
+
+The supplementary materials include the precomputed experiment outputs under `experiments/results/`, organized by result key:
+
+```
+experiments/results/
+├── fig1/    fig2/    fig3/    fig4/
+├── figA1/   figA2/   figA5/   figA6/   figA10/
+├── figA11/  figA12/  figA14/  figA15/  figA21/
+└── tabA2/
+```
+
+This means every figure and table in the manuscript can be reproduced without re-running the experiments --- skip Step 1 below and proceed directly to Step 2. The experiment-execution stage (Step 1) is documented for completeness and for anyone wishing to regenerate results from scratch.
+
+**Note.** The `experiments/results/` folder is not hosted on GitHub due to size. 
+
+#### Step 0: Install dependencies
+
+To install all dependencies from scratch:
+
+~~~r
+# R --- core install
+install.packages("devtools")
+
+devtools::install_github("rohitpatra/mixmodel")   # not on CRAN
+
+devtools::install("nout/")                        # local package
+
+install.packages(c(
+  "tidyverse", "progress", "ggplot2", "ggh4x", "scales", "latex2exp",
+  "RColorBrewer", "kableExtra", "combinat", "knitr"
+))
+~~~
+
+~~~bash
+# Python
+pip install numpy pandas scipy scikit-learn statsmodels tqdm rpy2 \
+            matplotlib seaborn joblib mat73
+~~~
+
+
+#### Step 1: Run experiments
+
+Reproducing every figure and table involves two stages: (1) running the experiments to populate `experiments/results/`, and (2) building the figures and tables from those results.
+
+To reproduce a **specific** figure or table, look up its row in the "reproducibility map" table (also saved in `experiments/metadata/map_full.md`), then run the corresponding submit script with the result key as the argument. 
+
+For example, to regenerate the results behind Figure 2 (which requires `results/fig2/`):
+
+~~~bash
+cd experiments
+./submit_exp_A.sh fig2 --cluster        # submit ~thousands of jobs via sbatch
+# or, for local sequential execution (slow):
+./submit_exp_A.sh fig2 --local
+# or, to just see what would happen:
+./submit_exp_A.sh fig2 --local --dry-run
+~~~
+
+To reproduce **all** experiments in the paper:
+
+~~~bash
+cd experiments
+./run_all_experiments.sh                # cluster mode, asks for confirmation
+./run_all_experiments.sh --dry-run -y   # preview the full job list, no submission
+~~~
+
+`run_all_experiments.sh` reads `metadata/map_submit.tsv` and invokes each submit script with every result key it produces. The script prints a warning before submitting because the total number of jobs is in the thousands; this stage is intended for a cluster (see *Computing time* below).
+
+#### Step 2: Build figures and tables
+
+Once the experiments have completed and `experiments/results/` is populated, build every figure and table in the paper with:
+
+~~~bash
+cd experiments
+./make_figures_tables.sh
+~~~
+
+This reads `figures_and_tables/script_map.tsv` and runs each `make_*.R` in turn, redirecting the per-script R output to `figures_and_tables/logs/`. Output PDFs land in `figures_and_tables/figures/` and `.tex` tables in `figures_and_tables/tables/`. A summary at the end reports how many scripts succeeded and where the outputs are.
+
+To rebuild a **single** figure or table instead, run the corresponding `make_*.R` directly:
+
+~~~bash
+cd experiments/figures_and_tables
+Rscript make_fig2.R                     # produces Figure 2, Figure A4, Figure A7
+Rscript make_tabA2.R                    # produces Table A2
+~~~
+
 
 ## Computing time
 
-Reproducing all numerical results in the paper requires running
-thousands of experiment configurations across many datasets and
-parameter settings. On a computing cluster with dozens of parallel
-cores, the full experimental pipeline completes in a few hours.
-
-Each individual experiment, however, can be run locally on a standard
-machine. The overall computational cost arises from the large number of
-repetitions and configurations explored, rather than from any single
-run.
+Each individual experiment runs in seconds to a few minutes on a standard laptop. The aggregate computational cost arises from the large number of configurations and repetitions, not from any single run. On a Slurm cluster with dozens of parallel cores, the full pipeline completes in a few hours; on a single laptop, completing it sequentially is impractical.

@@ -18,12 +18,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 import os, sys
-sys.path.append("../../methods")
+sys.path.append("../methods")
 
 from models import GaussianMixture, ConcentricCircles, ConcentricCirclesMixture, BinomialModel, AdversarialModel
 import conformal
 from my_utils import DataSet, fdr_filter_bh, fdr_filter_storey_bh, eval_discoveries
-from utils_data import load_real_data
+from utils_exp_A_data import load_real_data
 
 #########################
 # Experiment parameters #
@@ -38,7 +38,7 @@ if True: # Input parameters
         print("Error: incorrect number of parameters.")
         quit()
 
-    setup = sys.argv[1]
+    figure = sys.argv[1]
     data_name = sys.argv[2]
     n_train = int(sys.argv[3])
     n_cal = int(sys.argv[4])
@@ -53,7 +53,7 @@ if True: # Input parameters
     random_state = int(sys.argv[13])
 
 else: # Default parameters
-    setup = 1100
+    figure = 1100
     data_name = "lhco"
     n_train = 10000
     n_cal = 2000
@@ -70,18 +70,17 @@ else: # Default parameters
 
 # Fixed experiment parameters
 allow_sign_flip = True
-if setup in [5]:
+if figure in [5]:
     num_repetitions = 100
 else:
     num_repetitions = 10
-#n_perm = 200
 n_perm = -1 # 200
 B_perm = 1000
 
-tables_t2_path = "../../tables/table_t2.csv"
-tables_t3_path = "../../tables/table_t3.csv"
-tables_t4_path = "../../tables/table_t4.csv"
-tables_fisher_path = "../../tables/table_fisher.csv"
+tables_t2_path = "../tables/table_t2.csv"
+tables_t3_path = "../tables/table_t3.csv"
+tables_t4_path = "../tables/table_t4.csv"
+tables_fisher_path = "../tables/table_fisher.csv"
 
 def load_table(path, alpha):
     if os.path.exists(path):
@@ -104,9 +103,11 @@ table_t4 = load_table(tables_t4_path, alpha)
 table_fisher = load_table(tables_fisher_path, alpha)
 
 # Candidate values of K for WMW local test
-#method_candidates = ["wmw-K2", "wmw-K3", "wmw-K4", "fisher", "simes", "storey_simes"]
 if selection_method == "none":
-    method_candidates = ["wmw", "lmp", "fisher", "simes", "storey_simes"]
+    if figure == "fig4":
+        method_candidates = ["wmw", "higher-K2", "lmp", "fisher", "simes", "storey_simes"]
+    else:
+        method_candidates = ["wmw", "higher-K2", "fisher", "simes", "storey_simes"]
 else:
     method_candidates = ["wmw", "fisher", "simes", "storey_simes"]
 
@@ -215,7 +216,7 @@ else:
 ###############
 # Output file #
 ###############
-outfile_prefix = "results/setup" + str(setup) + "/" +str(data_name) + "_n"+str(n_train) + "_"+str(n_cal) + "_"+str(n_test)
+outfile_prefix = "results/" + str(figure) + "/" +str(data_name) + "_n"+str(n_train) + "_"+str(n_cal) + "_"+str(n_test)
 outfile_prefix += "_p" + str(p) + "_a" + str(a) + "_pt" + str(prop_out)
 outfile_prefix += "_" + classifier + "_ts"+str(tune_size) + "_alpha" + str(alpha) + "_" + str(selection_method) + "_s" + str(random_state)
 outfile = outfile_prefix + ".txt"
@@ -223,7 +224,7 @@ print("Output file: {:s}".format(outfile), end="\n")
 
 # Header for results file
 def add_header(df):
-    df["Setup"] = setup
+    df["Figure"] = figure
     df["Data"] = data_name
     df["n_train"] = n_train
     df["n_cal"] = n_cal
@@ -294,28 +295,26 @@ def run_experiment(dataset, random_state):
 
     # Calculate confidence lower bound for the number of true outliers in closed testing procedure using Wilcoxon-Mann-Whitney local test
     # applied to conformal p-values.
-    lb_wmw_2, pval_wmw_2 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw", n_perm=n_perm, B=B_perm, selected=selected, table_t2=table_t2)
+    lb_wmw, pval_wmw = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw", n_perm=n_perm, B=B_perm, selected=selected, table_t2=table_t2)
     lb_auto, pval_auto = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method=sel_method, n_perm=n_perm, B=B_perm,
                                                          selected=selected,
                                                          table_t2=table_t2, table_t3=table_t3, table_t4=table_t4, table_fisher=table_fisher)
-    if selected is None:
-        lb_wmw_3, pval_wmw_3 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw-K3", n_perm=n_perm, B=B_perm,
-                                                           selected=selected, table_t3=table_t3)
-        lb_wmw_4, pval_wmw_4 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="wmw-K4", n_perm=n_perm, B=B_perm,
-                                                           selected=selected, table_t4=table_t4)
-        lb_lmp, pval_lmp = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="lmp", n_perm=n_perm, B=B_perm,
-                                                           selected=selected)
-    else: # Method with selection is currently slow
-        lb_wmw_3, pval_wmw_3 = None, None
-        lb_wmw_4, pval_wmw_4 = None, None
-        lb_lmp, pval_lmp = None, None
-        
 
+    if "higher-K2" in method_candidates:
+        lb_higher_k2, pval_higher_k2 = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="higher-K2", n_perm=n_perm, B=B_perm,
+                                                               selected=selected, table_t3=table_t3)
+    else:
+        lb_higher_k2, pval_higher_k2 = None, None
+
+    if "lmp" in method_candidates:
+        lb_lmp, pval_lmp = conformal.estimate_num_outliers(scores_cal, scores_test, alpha, method="lmp", n_perm=n_perm, B=B_perm, selected=selected)
+    else:
+        lb_lmp, pval_lmp = None, None
+               
     def fmt_int(x):
         return "None" if x is None else f"{x:d}"
-    print("WMW-2 lower bound: {}.".format(fmt_int(lb_wmw_2)))
-    print("WMW-3 lower bound: {}.".format(fmt_int(lb_wmw_3)))
-    print("WMW-4 lower bound: {}.".format(fmt_int(lb_wmw_4)))
+    print("WMW lower bound: {}.".format(fmt_int(lb_wmw)))
+    print("higher-k2 lower bound: {}.".format(fmt_int(lb_higher_k2)))
     print("LMP lower bound: {}.".format(fmt_int(lb_lmp)))
     print("Automatic lower bound: {}.".format(fmt_int(lb_auto)))
 
@@ -351,16 +350,17 @@ def run_experiment(dataset, random_state):
     res_new = pd.DataFrame({'n_cal_eff':[n_cal_eff],
                             'n_out':[total_nout], 'n_out_sel':[selected_nout], 'selected_num':[selected_num],
                             'lb_simes':[lb_simes], 'lb_storey_simes': [lb_storey_simes], 'lb_fisher':[lb_fisher],
-                            'lb_auto':[lb_auto], 'lb_wmw_k2':[lb_wmw_2], 'lb_wmw_k3':[lb_wmw_3], 'lb_wmw_k4':[lb_wmw_4],
+                            'lb_auto':[lb_auto], 'lb_wmw':[lb_wmw], 'lb_higher_k2':[lb_higher_k2],
                             'lb_lmp':[lb_lmp],
                             'pval_simes':[pval_simes], 'pval_storey_simes': [pval_storey_simes], 'pval_fisher':[pval_fisher],
-                            'pval_auto':[pval_auto], 'pval_wmw_k2':[pval_wmw_2], 'pval_wmw_k3':[pval_wmw_3], 'pval_wmw_k4':[pval_wmw_4],
+                            'pval_auto':[pval_auto], 'pval_wmw':[pval_wmw], 'pval_higher_k2':[pval_higher_k2],
                             'pval_lmp':[pval_lmp],
                             'disc_bh':[disc_bh], 'fdp_bh':[fdp_bh], 'power_bh':[power_bh],
                             'disc_sbh':[disc_sbh], 'fdp_sbh':[fdp_sbh], 'power_sbh':[power_sbh],
                             'selected_classifier':[sel_classifier], 'selected_method':[sel_method],
                             'seed':[random_state]})
 
+    print(res_new['lb_wmw'])
     return res_new
 
 # Initialize result data frame
@@ -383,5 +383,3 @@ for r in range(num_repetitions):
 
 print("\nAll experiments completed.\n")
 sys.stdout.flush()
-
-#pdb.set_trace()

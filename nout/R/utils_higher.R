@@ -1,4 +1,3 @@
-
 # ---------------------------------------------------------------------- #
 #  Implementation of generalized WMW tests with asymptotic distribution  #
 # ---------------------------------------------------------------------- #
@@ -246,3 +245,68 @@ asymptotic.pvalue.Tk <- function(m, n, k, T.obs) {
 }
 
 
+#' stat.Tk_from_R
+#'
+#' @description Compute the higher-order WMW T_k statistic directly from a
+#' precomputed rank vector R, given the pool size N_h = m + h. Mathematically
+#' identical to \code{stat.Tk} applied to a pool whose test-point ranks are R,
+#' but bypasses the internal \code{rank()} call so the caller can hoist that
+#' work out of a loop.
+#'
+#' Formula (same as \code{stat.Tk}):
+#'   \deqn{T_{k,i} = \frac{k+1}{\prod_{r=1}^{k}(N+r)} \prod_{l=0}^{k-1}(R_i + l)}
+#'
+#' @param R     vector of test-point ranks in the pool of size N_h.
+#' @param N_h   pool size used in the normalization factor.
+#' @param k     order of the higher-order WMW statistic.
+#'
+#' @return Vector of the same length as R, containing T_{k,i} for each rank.
+#'
+#' @keywords internal
+stat.Tk_from_R <- function(R, N_h, k) {
+  if (k == 1) return(R)
+  factor <- (k + 1) / prod((N_h + 1):(N_h + k))
+  if (k == 2) return(factor * R * (R + 1))
+  prods <- R
+  for (l in seq_len(k - 1)) prods <- prods * (R + l)
+  factor * prods
+}
+ 
+ 
+#' fast_asymp_crit_Tk
+#'
+#' @description Vectorized re-implementation of \code{asymptotic.critical.Tk}
+#' that avoids the interpreted-loop overhead of \code{asymptotic.moments.Tk}'s
+#' inner \code{sapply(1:N, k_mom_beta(...))}. Mathematically identical: it
+#' builds the same \code{stats_G} vector, the same mean, and the same variance.
+#'
+#' Derivation. For the k-th moment of \eqn{Beta(j, N-j+1)}:
+#'   \deqn{E[Beta(j, N-j+1)^k] = \prod_{r=0}^{k-1} (j+r) / (N+1+r).}
+#' The score vector is
+#'   \deqn{stats\_G[j] = (k+1) \cdot E[Beta(j, N-j+1)^k].}
+#' The null mean and variance of \eqn{T_k} are
+#'   \deqn{\mu = h \cdot \bar{g}, \quad \sigma^2 = h m \sum (g_j - \bar{g})^2 / (N (N-1)).}
+#' This routine builds stats_G vectorized over j and computes the critical
+#' value in one normal-quantile call.
+#'
+#' @param m     calibration size.
+#' @param h     test sample size at which the critical value is desired.
+#' @param k     order of the higher-order WMW statistic.
+#' @param alpha significance level.
+#'
+#' @return A numeric scalar: the asymptotic \eqn{(1-\alpha)}-critical value.
+#'
+#' @keywords internal
+fast_asymp_crit_Tk <- function(m, h, k, alpha) {
+  N_h <- m + h
+  j   <- seq_len(N_h)
+  moments <- rep(1.0, N_h)
+  for (r in 0:(k - 1)) {
+    moments <- moments * (j + r) / (N_h + 1 + r)
+  }
+  stats_G <- (k + 1) * moments
+  mu_g   <- mean(stats_G)
+  mean_T <- h * mu_g
+  var_T  <- h * m * sum((stats_G - mu_g)^2) / (N_h * (N_h - 1))
+  stats::qnorm(alpha, mean = mean_T, sd = sqrt(var_T), lower.tail = FALSE)
+}

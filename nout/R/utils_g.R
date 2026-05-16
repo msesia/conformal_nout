@@ -355,9 +355,9 @@ estimate_g <- function(scores_reference, scores_pooled, method="betamix", monoto
   }
   
     ## Transform the reference scores to make them approximately uniform
-    null.fit <- fitdistrplus::fitdist(as.numeric(scores_reference), "beta", start = list(shape1 = 0.999, shape2 = 0.999))
-    F.hat <- function(x) stats::pbeta(x, null.fit$estimate[[1]], null.fit$estimate[[2]])
-    scores_pooled = F.hat(scores_pooled)
+    ##null.fit <- fitdistrplus::fitdist(as.numeric(scores_reference), "beta", start = list(shape1 = 0.999, shape2 = 0.999))
+    ##F.hat <- function(x) stats::pbeta(x, null.fit$estimate[[1]], null.fit$estimate[[2]])
+    ##scores_pooled = F.hat(scores_pooled)
 
     monotonicity <- NULL
 
@@ -474,3 +474,6 @@ compute.global.pvalue.shirashi.adaptive <- function(S_X, S_Y, prop_cal=0.5, num_
 
     return(p.val)
 }
+                                        
+
+                                        

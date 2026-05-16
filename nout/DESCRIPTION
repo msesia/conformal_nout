@@ -1,26 +1,27 @@
 Package: nout
-Title: Outliers quantification in Closed Testing procedure using conformal p-values
+Title: Quantification of Outliers via Closed Testing Procedures
 Version: 0.0.0.9000
 Authors@R: 
     person("Anonymous", "Author",
            role = c("aut", "cre"),
            email = "anonymous@example.com")
-Description: The R package ***nout*** closed testing shortcuts used by ACODE, an Automatic Conformal Outlier Detection and Enumeration method. 
+Description: Implements closed-testing shortcuts used by ACODE, an
+    Automatic Conformal Outlier Detection and Enumeration method.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 Imports: 
     foreach,
+    GoFKernel,
     hommel,
-    multcomp,
-    stats,
-    sumSome,
     Iso,
     mixmodel (>= 0.5),
-    fitdistrplus,
-    GoFKernel
+    multcomp,
+    stats,
+    sumSome
 Suggests: 
+    fitdistrplus,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Remotes:  

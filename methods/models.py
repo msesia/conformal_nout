@@ -3,7 +3,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
 from sklearn.base import BaseEstimator
 from scipy import optimize
-import pdb
 
 class DataModel:
     def __init__(self, p, amplitude, random_state=None):

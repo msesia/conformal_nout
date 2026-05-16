@@ -4,9 +4,9 @@ library(progress)     ## For displaying progress bars
 library(nout)         ## Custom library (assuming this contains necessary functions)
 
 ## Source utility functions for data generation and experiments
-source("utils_data.R")
-source("utils_experiments.R")
-source("../../nout/R/utils_g.R")
+source("utils_exp_B_data.R")
+source("utils_exp_B.R")
+source("../nout/R/utils_g.R")
 
 ###########################
 ## Experiment parameters ##
@@ -23,7 +23,7 @@ if(parse_input) {
         stop("Insufficient arguments provided. Expected 6 arguments.")
     }
     ## Assigning command line arguments to variables
-    setup <- as.integer(args[1])
+    figure <- args[1]
     n_cal <- as.integer(args[2])
     n_test <- as.integer(args[3])
     seed <- as.integer(args[4])
@@ -31,12 +31,12 @@ if(parse_input) {
     prop_out <- as.numeric(args[6])
 } else {
     ## Use default values
-    setup <- 1
+    figure <- "figA12"
     n_cal <- 500
     n_test <- 200
     seed <- 1
-    alternative <- "beta_0.25_0.25"
-    prop_out <- 0.05
+    alternative <- "normal_1.5_1"
+    prop_out <- 0.6
 }
 
 ## Print the values to verify they are correctly assigned
@@ -47,7 +47,7 @@ cat("alternative:", alternative, "\n")
 cat("prop_out:", prop_out, "\n")
 
 ## Generate a unique and interpretable file name based on the input parameters
-output_file <- paste0("results/", "setup", setup, "/",
+output_file <- paste0("results/", figure, "/",
   "n_cal_", n_cal, "_",
   "n_test_", n_test, "_",
   "seed_", seed, "_",
@@ -58,12 +58,14 @@ output_file <- paste0("results/", "setup", setup, "/",
 ## Print the output file name to verify
 cat("Output file name:", output_file, "\n")
 
-
 ## Number of repetitions for each experimental setting
-n_exp <- 100
+n_exp <- 50
+
+## Alpha level
+alpha <- 0.1
 
 ## Make tibble with experiment meta-data
-header <- tibble(n_cal=n_cal, n_test=n_test, alternative=alternative, prop_out=prop_out)
+header <- tibble(n_cal=n_cal, n_test=n_test, Alpha=alpha, alternative=alternative, prop_out=prop_out)
 
 ##########################
 ## Experiment functions ##
@@ -81,11 +83,14 @@ run_experiment <- function(i) {
     ## Generate calibration and test data with specified parameters
     data <- generate_cal_test_scores(n_cal = n_cal, n_test = n_test, prop_out = prop_out, alternative = alternative)
 
+    ## Calculate true number of outliers
+    n.out <- sum(data$outlier.test)
+
     ## Apply global testing methods to the generated data
-    res <- run_global_testing(data, alternative = alternative)
+    res <- run_outlier_enumeration(data, alpha=alpha, alternative = alternative) |> select(Method, Lower)
 
     ## Combine the results with experiment metadata
-    results <- tibble(Seed = random_state) |> cbind(header) |> cbind(res)
+    results <- tibble(Seed = random_state, n.out=n.out) |> cbind(header) |> cbind(res)
 
     return(results)
 }

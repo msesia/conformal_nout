@@ -289,3 +289,61 @@ compute.1critical.value <- function(m, n, local_test="wmw", alpha, k=NULL, stats
   return(critical.value)
 }
 
+#' get_crit_h
+#'
+#' @description Critical value for one test sample size \eqn{h}, with the same
+#' dispatch as \code{compute.1critical.value} but using the vectorized
+#' \code{fast_asymp_crit_Tk} for the asymptotic branch. Used by
+#' \code{d_selection_higher}'s closed-testing loop to avoid the slow
+#' \code{asymptotic.moments.Tk} sapply on each iteration.
+#'
+#' Dispatch (matches \code{compute.1critical.value} exactly):
+#' \itemize{
+#'   \item If \eqn{\min(m, h) \le n_{perm}}: delegate to
+#'         \code{compute.1critical.value}, which itself reads from
+#'         \code{critical_values[h]} if available or runs permutation
+#'         otherwise. Behavior is preserved EXACTLY (including seeding and
+#'         foreach evaluation), so the permutation branch is unchanged.
+#'   \item Otherwise: use the vectorized \code{fast_asymp_crit_Tk}, which is
+#'         mathematically identical to \code{asymptotic.critical.Tk}.
+#' }
+#'
+#' This function currently only optimizes the \code{"higher"} (and equivalently
+#' \code{"wmw"}) branch. The \code{"fisher"} and \code{"g"} branches still
+#' delegate fully to \code{compute.1critical.value}.
+#'
+#' @param m                calibration size.
+#' @param h                test sample size at which to evaluate.
+#' @param k                order of the higher-order WMW statistic. Required
+#'                         for \code{local_test = "higher"}.
+#' @param alpha            significance level.
+#' @param n_perm           threshold below which the permutation branch is used.
+#' @param B                number of permutations (passed through).
+#' @param critical_values  optional precomputed table.
+#' @param seed             RNG seed (passed through).
+#' @param local_test       "wmw", "higher", "fisher", or "g". Default "higher".
+#'
+#' @return A numeric scalar: the critical value at \eqn{h} for level \eqn{\alpha}.
+#'
+#' @keywords internal
+get_crit_h <- function(m, h, k, alpha, n_perm, B, critical_values, seed,
+                       local_test = "higher") {
+  if (min(m, h) <= n_perm) {
+    return(as.double(compute.1critical.value(
+      m = m, n = h, local_test = local_test,
+      alpha = alpha, k = k, n_perm = n_perm, B = B,
+      critical_values = critical_values, seed = seed
+    )))
+  }
+  ## Asymptotic branch. Only the higher/wmw case has a vectorized fast path;
+  ## others delegate to the package.
+  if (local_test %in% c("higher", "wmw")) {
+    return(fast_asymp_crit_Tk(m = m, h = h, k = k, alpha = alpha))
+  }
+  as.double(compute.1critical.value(
+    m = m, n = h, local_test = local_test,
+    alpha = alpha, k = k, n_perm = n_perm, B = B,
+    critical_values = critical_values, seed = seed
+  ))
+}
+
