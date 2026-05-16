@@ -32,17 +32,17 @@ The sections below describe how the repository is organized, how to install the 
 
 # Data
 
-> **Note.** The `data/` folder is not hosted on GitHub due to size and possible licensing restrictions. For the review process, all processed data files are included in the supplementary material accompanying the submission. Original sources are listed below; see Appendix A6.3 of the manuscript for further details.
+> **Note.** The `data/` folder is not hosted on GitHub due to size and possible licensing restrictions. All processed data files are included in the supplementary material. Original sources are listed below; see Appendix A6.3 of the manuscript for further details.
 
 | Dataset | File(s) | Description | Source / Prior usage |
 |----|----|----|----|
 | **LHC Olympics 2020 (LHCO)** | `events_anomalydetection_v2.features.h5`, `events_anomalydetection_Z_XY_qqq.features.h5`, `events_anomalydetection_Z_XY_qqq.h5` | Community benchmark for anomaly detection in high-energy physics. | Kasieczka et al., 2021. |
 | **ALOI** | `aloi.arff` | 27 variables, 1,508 outliers, 48,026 inliers. | Amsterdam Library of Object Images (Geusebroek et al., 2005). Previously used in Bates et al., 2023. |
 | **Covertype** | `cover.mat` | 10 variables, 2,747 outliers, 286,048 inliers. | Covertype dataset from UCI / ODDS repository. Previously used in Bates et al., 2023. |
-| **CreditCard** | `creditcard.csv` | 30 variables, 492 outliers, 284,315 inliers. | Kaggle Credit Card Fraud Dataset. Used in Bates et al., 2023, and Marandon et al., 2024. |
+| **CreditCard** | `creditcard.csv` | 30 variables, 492 outliers, 284,315 inliers. | Kaggle Credit Card Fraud Dataset. Used in Bates et al., 2023; and Marandon et al., 2024. |
 | **Mammography** | `mammography.mat` | 6 variables, 260 outliers, 10,923 inliers. | Mammography dataset from ODDS repository. Used in Bates et al., 2023; Liang et al., 2024; Marandon et al., 2024. |
 | **Pendigits** | `pendigits.mat` | 16 variables, 156 outliers, 6,714 inliers. | Pen-Based Recognition of Handwritten Digits dataset (ODDS repository). Used in Bates et al., 2023. |
-| **Shuttle** | `shuttle.mat` | 9 variables, 3,511 outliers, 45,586 inliers. | Statlog Shuttle dataset (ODDS repository). Used in Bates et al., 2023 and Marandon et al., 2024. |
+| **Shuttle** | `shuttle.mat` | 9 variables, 3,511 outliers, 45,586 inliers. | Statlog Shuttle dataset (ODDS repository). Used in Bates et al., 2023; and Marandon et al., 2024. |
 
 # Code organization
 
@@ -71,40 +71,42 @@ This is where the simulation and real-data experiments are launched and where th
 
 ~~~
 experiments/
-├── exp_A.py / exp_A.sh                        # Python experiment driver (synthetic, real tabular, LHCO)
-├── exp_B1_global_testing.R / .sh              # R experiment: global testing (Appendix B1)
-├── exp_B2_enumeration.R    / .sh              # R experiment: enumeration (Appendix B2)
-├── exp_C1_time.R                              # R experiment: timing comparison (Appendix C1)
-├── exp_C2_simes.R                             # R experiment: Simes-permutation comparison (Appendix C2)
-├── submit_exp_A.sh                            # Grid launcher for exp_A (produces fig1-4, figA2/5/6/10/14/15/21)
-├── submit_exp_B1.sh                           # Grid launcher for exp_B1 (produces figA11)
-├── submit_exp_B2.sh                           # Grid launcher for exp_B2 (produces figA12)
-├── submit_exp_C1.sh                           # Wrapper for exp_C1 (produces figA1)
-├── submit_exp_C2.sh                           # Wrapper for exp_C2 (produces tabA2)
-├── run_all_experiments.sh                     # Meta-launcher: submits every experiment via map_submit.tsv
-├── figures_and_tables/                        # R scripts that turn experiment outputs into final figures/tables
-│   ├── make_fig*.R, make_tab*.R               # one make_*.R per paper figure/table group
-│   ├── make_figures_tables.sh                 # builds all figures and tables sequentially
-│   ├── figures/                               # produced figures (.pdf)
-│   ├── tables/                                # produced tables (.tex)
-│   └── logs/                                  # per-script R output logs
-├── metadata/                                  # provenance map: paper item ↔ scripts ↔ result directory
-│   ├── map_full.tsv / map_full.md             # consolidated map (see Reproducibility map section)
-│   ├── map_submit.tsv, map_results.tsv        # extracted from submit_*.sh headers
-│   ├── map_scripts.tsv, map_figures.tsv       # extracted from make_*.R headers
-│   ├── extract_submit_metadata.sh             # rebuilds the submit-side maps
-│   ├── extract_make_metadata.sh               # rebuilds the make-side maps
-│   └── cross_reference_metadata.sh            # joins everything into map_full.tsv / .md
-├── logs/                                      # cluster job logs (one subdir per result key)
-└── results/                                   # experiment outputs (one subdir per result key)
+├── exp_A.py / exp_A.sh                          # Python experiment driver (synthetic, real tabular, LHCO)
+├── exp_B1_global_testing.R / .sh                # R experiment: global testing (Appendix B1)
+├── exp_B2_enumeration.R    / .sh                # R experiment: enumeration (Appendix B2)
+├── exp_C1_time.R                                # R experiment: timing comparison (Appendix C1)
+├── exp_C2_simes.R                               # R experiment: Simes-permutation comparison (Appendix C2)
+├── make_figures_tables.sh                       # builds all figures and tables sequentially
+├── submit_exp_A.sh                              # Grid launcher for exp_A (for Figures 1-4, Figures A2-A10, Figures A13-A22, Table A4)
+├── submit_exp_B1.sh                             # Grid launcher for exp_B1 (for Figure A11)
+├── submit_exp_B2.sh                             # Grid launcher for exp_B2 (for Figure A12)
+├── submit_exp_C1.sh                             # Wrapper for exp_C1 (for Figure A1)
+├── submit_exp_C2.sh                             # Wrapper for exp_C2 (for Table A2)
+├── run_all_experiments.sh                       # Meta-launcher: submits every experiment via map_submit.tsv
+├── figures_and_tables/                          # R scripts that turn experiment outputs into final figures/tables
+│   ├── make_fig*.R, make_tab*.R                 # one make_*.R per paper figure/table group
+│   ├── utils_plotting_*.R                       # helper functions for making figures and tables
+│   ├── figures/                                 # produced figures (.pdf)
+│   ├── tables/                                  # produced tables (.tex)
+│   └── logs/                                    # per-script R output logs
+├── metadata/                                    # provenance map: paper item ↔ scripts ↔ result directory
+│   ├── map_full.tsv, map_full.md, map_full.tex  # consolidated map (see Reproducibility map section)
+│   ├── map_submit.tsv, map_results.tsv          # extracted from submit_*.sh headers
+│   ├── map_scripts.tsv, map_figures.tsv         # extracted from make_*.R headers
+│   ├── extract_submit_metadata.sh               # rebuilds the submit-side maps
+│   ├── extract_make_metadata.sh                 # rebuilds the make-side maps
+│   └── cross_reference_metadata.sh              # joins everything into map_full.tsv / .md
+├── logs/                                        # cluster job logs (one subdir per result key)
+└── results/                                     # experiment outputs (one subdir per result key)
 ~~~
 
 
-All submit launchers accept the same three flags for consistency:
+All submit launchers accept the same flags for consistency:
 
 - `--cluster` (default) submits jobs via `sbatch`.
 - `--local` runs jobs sequentially on the current machine.
 - `--dry-run` prints the commands without executing or submitting them.
+- `--force` re-runs experiments even if result files already exist.
 
 They also skip any configuration whose output already exists, so launching the same script a second time only fills in the missing pieces.
 

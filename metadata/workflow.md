@@ -75,7 +75,7 @@ cd experiments
 ./make_figures_tables.sh
 ~~~
 
-This reads `figures_and_tables/script_map.tsv` and runs each `make_*.R` in turn, redirecting the per-script R output to `figures_and_tables/logs/`. Output PDFs land in `figures_and_tables/figures/` and `.tex` tables in `figures_and_tables/tables/`. A summary at the end reports how many scripts succeeded and where the outputs are.
+This reads `metadata/map_scripts.tsv` and runs each `make_*.R` in turn, redirecting the per-script R output to `figures_and_tables/logs/`. Output PDFs land in `figures_and_tables/figures/` and `.tex` tables in `figures_and_tables/tables/`. A summary at the end reports how many scripts succeeded and where the outputs are.
 
 To rebuild a **single** figure or table instead, run the corresponding `make_*.R` directly:
 
