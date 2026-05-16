@@ -32,6 +32,12 @@ paper, including those in the appendices. The repository includes:
 - A `data/` folder containing the datasets used in the experiments (see
   the *Data* section below).
 
+> **Platform.** This code was developed and tested on Linux. macOS
+> should work for the local (non-cluster) workflow, though shell scripts
+> assume GNU coreutils and bash 4+ (install via
+> `brew install bash coreutils`); the cluster workflow requires Slurm.
+> Windows is not supported.
+
 The sections below describe how the repository is organized, how to
 install the dependencies, and how to reproduce every figure and table
 reported in the paper (including those in the appendices).
